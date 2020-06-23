@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<JUCERPROJECT id="cGhDkY" name="Vocodec" projectType="audioplug" jucerVersion="5.4.7">
+  <MAINGROUP id="oLbiLF" name="Vocodec">
+    <GROUP id="{29EC2926-B2B3-835E-10B8-6B178A91C068}" name="Resources-Vocoder">
+      <FILE id="CWc6ux" name="1.png" compile="0" resource="1" file="../../Downloads/Resources-Vocoder/1.png"/>
+      <FILE id="Cb3IYH" name="2.png" compile="0" resource="1" file="../../Downloads/Resources-Vocoder/2.png"/>
+      <FILE id="fQD4EO" name="3.png" compile="0" resource="1" file="../../Downloads/Resources-Vocoder/3.png"/>
+      <FILE id="rJU4Bp" name="4.png" compile="0" resource="1" file="../../Downloads/Resources-Vocoder/4.png"/>
+      <FILE id="ChiBzX" name="5.png" compile="0" resource="1" file="../../Downloads/Resources-Vocoder/5.png"/>
+      <FILE id="PmRnWJ" name="A (1).png" compile="0" resource="1" file="../../Downloads/Resources-Vocoder/A (1).png"/>
+      <FILE id="vXBkUi" name="A (2).png" compile="0" resource="1" file="../../Downloads/Resources-Vocoder/A (2).png"/>
+      <FILE id="YHOHyl" name="A.png" compile="0" resource="1" file="../../Downloads/Resources-Vocoder/A.png"/>
+      <FILE id="jIykSh" name="B (2).png" compile="0" resource="1" file="../../Downloads/Resources-Vocoder/B (2).png"/>
+      <FILE id="pvFwWd" name="B-off.png" compile="0" resource="1" file="../../Downloads/Resources-Vocoder/B-off.png"/>
+      <FILE id="yiIcdq" name="B.png" compile="0" resource="1" file="../../Downloads/Resources-Vocoder/B.png"/>
+      <FILE id="drruDS" name="blank.png" compile="0" resource="1" file="../../Downloads/Resources-Vocoder/blank.png"/>
+      <FILE id="yhKPRb" name="ButtonsDown - Copy.png" compile="0" resource="1"
+            file="../../Downloads/Resources-Vocoder/ButtonsDown - Copy.png"/>
+      <FILE id="EBpedR" name="ButtonsDown.png" compile="0" resource="1" file="../../Downloads/Resources-Vocoder/ButtonsDown.png"/>
+      <FILE id="SmDSiN" name="C (1).png" compile="0" resource="1" file="../../Downloads/Resources-Vocoder/C (1).png"/>
+      <FILE id="viACXp" name="C.png" compile="0" resource="1" file="../../Downloads/Resources-Vocoder/C.png"/>
+      <FILE id="NpCmXX" name="D.png" compile="0" resource="1" file="../../Downloads/Resources-Vocoder/D.png"/>
+      <FILE id="tQOHsU" name="Default.png" compile="0" resource="1" file="../../Downloads/Resources-Vocoder/Default.png"/>
+      <FILE id="slyuK5" name="Down.png" compile="0" resource="1" file="../../Downloads/Resources-Vocoder/Down.png"/>
+      <FILE id="D1NmfK" name="E.png" compile="0" resource="1" file="../../Downloads/Resources-Vocoder/E.png"/>
+      <FILE id="JrtpjR" name="edit.png" compile="0" resource="1" file="../../Downloads/Resources-Vocoder/edit.png"/>
+      <FILE id="f3DbkS" name="In1.png" compile="0" resource="1" file="../../Downloads/Resources-Vocoder/In1.png"/>
+      <FILE id="E0gaD3" name="In2.png" compile="0" resource="1" file="../../Downloads/Resources-Vocoder/In2.png"/>
+      <FILE id="V1dbec" name="Left.png" compile="0" resource="1" file="../../Downloads/Resources-Vocoder/Left.png"/>
+      <FILE id="bG7DKN" name="menu.png" compile="0" resource="1" file="../../Downloads/Resources-Vocoder/menu.png"/>
+      <FILE id="rPTW9X" name="mic.png" compile="0" resource="1" file="../../Downloads/Resources-Vocoder/mic.png"/>
+      <FILE id="JhTNan" name="Out1.png" compile="0" resource="1" file="../../Downloads/Resources-Vocoder/Out1.png"/>
+      <FILE id="R1VJVn" name="Out2.png" compile="0" resource="1" file="../../Downloads/Resources-Vocoder/Out2.png"/>
+      <FILE id="YKxZrc" name="Right.png" compile="0" resource="1" file="../../Downloads/Resources-Vocoder/Right.png"/>
+      <FILE id="erKPo2" name="UP.png" compile="0" resource="1" file="../../Downloads/Resources-Vocoder/UP.png"/>
+      <FILE id="YAHMqJ" name="wet.png" compile="0" resource="1" file="../../Downloads/Resources-Vocoder/wet.png"/>
+    </GROUP>
+    <GROUP id="{0018BF84-37A0-F3EC-DA88-B62A4F6D7612}" name="Source">
+      <FILE id="rcZJip" name="sfx.cpp" compile="1" resource="0" file="../leaf-stuff/sfx.cpp"/>
+      <FILE id="g1pZ0T" name="sfx.h" compile="0" resource="0" file="../leaf-stuff/sfx.h"/>
+      <FILE id="PkWwIu" name="tunings.cpp" compile="1" resource="0" file="../leaf-stuff/tunings.cpp"/>
+      <FILE id="P2b9HQ" name="tunings.h" compile="0" resource="0" file="../leaf-stuff/tunings.h"/>
+      <FILE id="UodBQ9" name="ui.cpp" compile="1" resource="0" file="../leaf-stuff/ui.cpp"/>
+      <FILE id="ABbxLq" name="ui.h" compile="0" resource="0" file="../leaf-stuff/ui.h"/>
+      <FILE id="V59k1g" name="PluginProcessor.cpp" compile="1" resource="0"
+            file="Source/PluginProcessor.cpp"/>
+      <FILE id="eajk8j" name="PluginProcessor.h" compile="0" resource="0"
+            file="Source/PluginProcessor.h"/>
+      <FILE id="CgYDZS" name="PluginEditor.cpp" compile="1" resource="0"
+            file="Source/PluginEditor.cpp"/>
+      <FILE id="GVAY3g" name="PluginEditor.h" compile="0" resource="0" file="Source/PluginEditor.h"/>
+    </GROUP>
+  </MAINGROUP>
+  <EXPORTFORMATS>
+    <XCODE_MAC targetFolder="Builds/MacOSX">
+      <CONFIGURATIONS>
+        <CONFIGURATION isDebug="1" name="Debug"/>
+        <CONFIGURATION isDebug="0" name="Release"/>
+      </CONFIGURATIONS>
+      <MODULEPATHS>
+        <MODULEPATH id="juce_audio_basics" path="../../../../Applications/JUCE/modules"/>
+        <MODULEPATH id="juce_audio_devices" path="../../../../Applications/JUCE/modules"/>
+        <MODULEPATH id="juce_audio_formats" path="../../../../Applications/JUCE/modules"/>
+        <MODULEPATH id="juce_audio_plugin_client" path="../../../../Applications/JUCE/modules"/>
+        <MODULEPATH id="juce_audio_processors" path="../../../../Applications/JUCE/modules"/>
+        <MODULEPATH id="juce_audio_utils" path="../../../../Applications/JUCE/modules"/>
+        <MODULEPATH id="juce_core" path="../../../../Applications/JUCE/modules"/>
+        <MODULEPATH id="juce_cryptography" path="../../../../Applications/JUCE/modules"/>
+        <MODULEPATH id="juce_data_structures" path="../../../../Applications/JUCE/modules"/>
+        <MODULEPATH id="juce_events" path="../../../../Applications/JUCE/modules"/>
+        <MODULEPATH id="juce_graphics" path="../../../../Applications/JUCE/modules"/>
+        <MODULEPATH id="juce_gui_basics" path="../../../../Applications/JUCE/modules"/>
+        <MODULEPATH id="juce_gui_extra" path="../../../../Applications/JUCE/modules"/>
+        <MODULEPATH id="juce_opengl" path="../../../../Applications/JUCE/modules"/>
+        <MODULEPATH id="leaf" path="../LEAF-master"/>
+      </MODULEPATHS>
+    </XCODE_MAC>
+  </EXPORTFORMATS>
+  <MODULES>
+    <MODULE id="juce_audio_basics" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
+    <MODULE id="juce_audio_devices" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
+    <MODULE id="juce_audio_formats" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
+    <MODULE id="juce_audio_plugin_client" showAllCode="1" useLocalCopy="0"
+            useGlobalPath="1"/>
+    <MODULE id="juce_audio_processors" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
+    <MODULE id="juce_audio_utils" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
+    <MODULE id="juce_core" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
+    <MODULE id="juce_cryptography" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
+    <MODULE id="juce_data_structures" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
+    <MODULE id="juce_events" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
+    <MODULE id="juce_graphics" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
+    <MODULE id="juce_gui_basics" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
+    <MODULE id="juce_gui_extra" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
+    <MODULE id="juce_opengl" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
+    <MODULE id="leaf" showAllCode="1" useLocalCopy="0" useGlobalPath="0"/>
+  </MODULES>
+  <LIVE_SETTINGS>
+    <OSX/>
+  </LIVE_SETTINGS>
+  <JUCEOPTIONS JUCE_VST3_CAN_REPLACE_VST2="0" JUCE_STRICT_REFCOUNTEDPOINTER="1"/>
+</JUCERPROJECT>
