@@ -1,55 +1,56 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<JUCERPROJECT id="cGhDkY" name="Vocodec" projectType="audioplug" jucerVersion="5.4.7">
-  <MAINGROUP id="oLbiLF" name="Vocodec">
-    <GROUP id="{29EC2926-B2B3-835E-10B8-6B178A91C068}" name="Resources-Vocoder">
-      <FILE id="CWc6ux" name="1.png" compile="0" resource="1" file="../../Downloads/Resources-Vocoder/1.png"/>
-      <FILE id="Cb3IYH" name="2.png" compile="0" resource="1" file="../../Downloads/Resources-Vocoder/2.png"/>
-      <FILE id="fQD4EO" name="3.png" compile="0" resource="1" file="../../Downloads/Resources-Vocoder/3.png"/>
-      <FILE id="rJU4Bp" name="4.png" compile="0" resource="1" file="../../Downloads/Resources-Vocoder/4.png"/>
-      <FILE id="ChiBzX" name="5.png" compile="0" resource="1" file="../../Downloads/Resources-Vocoder/5.png"/>
-      <FILE id="PmRnWJ" name="A (1).png" compile="0" resource="1" file="../../Downloads/Resources-Vocoder/A (1).png"/>
-      <FILE id="vXBkUi" name="A (2).png" compile="0" resource="1" file="../../Downloads/Resources-Vocoder/A (2).png"/>
-      <FILE id="YHOHyl" name="A.png" compile="0" resource="1" file="../../Downloads/Resources-Vocoder/A.png"/>
-      <FILE id="jIykSh" name="B (2).png" compile="0" resource="1" file="../../Downloads/Resources-Vocoder/B (2).png"/>
-      <FILE id="pvFwWd" name="B-off.png" compile="0" resource="1" file="../../Downloads/Resources-Vocoder/B-off.png"/>
-      <FILE id="yiIcdq" name="B.png" compile="0" resource="1" file="../../Downloads/Resources-Vocoder/B.png"/>
-      <FILE id="drruDS" name="blank.png" compile="0" resource="1" file="../../Downloads/Resources-Vocoder/blank.png"/>
-      <FILE id="yhKPRb" name="ButtonsDown - Copy.png" compile="0" resource="1"
-            file="../../Downloads/Resources-Vocoder/ButtonsDown - Copy.png"/>
-      <FILE id="EBpedR" name="ButtonsDown.png" compile="0" resource="1" file="../../Downloads/Resources-Vocoder/ButtonsDown.png"/>
-      <FILE id="SmDSiN" name="C (1).png" compile="0" resource="1" file="../../Downloads/Resources-Vocoder/C (1).png"/>
-      <FILE id="viACXp" name="C.png" compile="0" resource="1" file="../../Downloads/Resources-Vocoder/C.png"/>
-      <FILE id="NpCmXX" name="D.png" compile="0" resource="1" file="../../Downloads/Resources-Vocoder/D.png"/>
-      <FILE id="tQOHsU" name="Default.png" compile="0" resource="1" file="../../Downloads/Resources-Vocoder/Default.png"/>
-      <FILE id="slyuK5" name="Down.png" compile="0" resource="1" file="../../Downloads/Resources-Vocoder/Down.png"/>
-      <FILE id="D1NmfK" name="E.png" compile="0" resource="1" file="../../Downloads/Resources-Vocoder/E.png"/>
-      <FILE id="JrtpjR" name="edit.png" compile="0" resource="1" file="../../Downloads/Resources-Vocoder/edit.png"/>
-      <FILE id="f3DbkS" name="In1.png" compile="0" resource="1" file="../../Downloads/Resources-Vocoder/In1.png"/>
-      <FILE id="E0gaD3" name="In2.png" compile="0" resource="1" file="../../Downloads/Resources-Vocoder/In2.png"/>
-      <FILE id="V1dbec" name="Left.png" compile="0" resource="1" file="../../Downloads/Resources-Vocoder/Left.png"/>
-      <FILE id="bG7DKN" name="menu.png" compile="0" resource="1" file="../../Downloads/Resources-Vocoder/menu.png"/>
-      <FILE id="rPTW9X" name="mic.png" compile="0" resource="1" file="../../Downloads/Resources-Vocoder/mic.png"/>
-      <FILE id="JhTNan" name="Out1.png" compile="0" resource="1" file="../../Downloads/Resources-Vocoder/Out1.png"/>
-      <FILE id="R1VJVn" name="Out2.png" compile="0" resource="1" file="../../Downloads/Resources-Vocoder/Out2.png"/>
-      <FILE id="YKxZrc" name="Right.png" compile="0" resource="1" file="../../Downloads/Resources-Vocoder/Right.png"/>
-      <FILE id="erKPo2" name="UP.png" compile="0" resource="1" file="../../Downloads/Resources-Vocoder/UP.png"/>
-      <FILE id="YAHMqJ" name="wet.png" compile="0" resource="1" file="../../Downloads/Resources-Vocoder/wet.png"/>
+<JUCERPROJECT id="zM8rA0" name="Vocodec" projectType="audioplug" jucerVersion="5.4.7">
+  <MAINGROUP id="uEka6H" name="Vocodec">
+    <GROUP id="{01880B7F-B075-06C8-13C4-AA7342A3B95F}" name="Resources-Vocoder">
+      <FILE id="XgHnTa" name="1.png" compile="0" resource="1" file="../Resources-Vocoder/1.png"/>
+      <FILE id="wm4yZ0" name="2.png" compile="0" resource="1" file="../Resources-Vocoder/2.png"/>
+      <FILE id="EpYxZH" name="3.png" compile="0" resource="1" file="../Resources-Vocoder/3.png"/>
+      <FILE id="MbYPcY" name="4.png" compile="0" resource="1" file="../Resources-Vocoder/4.png"/>
+      <FILE id="EAFXRT" name="5.png" compile="0" resource="1" file="../Resources-Vocoder/5.png"/>
+      <FILE id="Pl6dH4" name="A (1).png" compile="0" resource="1" file="../Resources-Vocoder/A (1).png"/>
+      <FILE id="aZYsDv" name="A (2).png" compile="0" resource="1" file="../Resources-Vocoder/A (2).png"/>
+      <FILE id="MijKpd" name="A.png" compile="0" resource="1" file="../Resources-Vocoder/A.png"/>
+      <FILE id="eUDXPv" name="B (2).png" compile="0" resource="1" file="../Resources-Vocoder/B (2).png"/>
+      <FILE id="bIGNfN" name="B-off.png" compile="0" resource="1" file="../Resources-Vocoder/B-off.png"/>
+      <FILE id="FLfOv3" name="B.png" compile="0" resource="1" file="../Resources-Vocoder/B.png"/>
+      <FILE id="mTSXpF" name="blank.png" compile="0" resource="1" file="../Resources-Vocoder/blank.png"/>
+      <FILE id="mBR3Q8" name="ButtonsDown - Copy.png" compile="0" resource="1"
+            file="../Resources-Vocoder/ButtonsDown - Copy.png"/>
+      <FILE id="wXwAS8" name="ButtonsDown.png" compile="0" resource="1" file="../Resources-Vocoder/ButtonsDown.png"/>
+      <FILE id="kTnNAp" name="C (1).png" compile="0" resource="1" file="../Resources-Vocoder/C (1).png"/>
+      <FILE id="JTII8B" name="C.png" compile="0" resource="1" file="../Resources-Vocoder/C.png"/>
+      <FILE id="xChcai" name="D.png" compile="0" resource="1" file="../Resources-Vocoder/D.png"/>
+      <FILE id="ZNhfMT" name="Default.png" compile="0" resource="1" file="../Resources-Vocoder/Default.png"/>
+      <FILE id="Y8fq01" name="Down.png" compile="0" resource="1" file="../Resources-Vocoder/Down.png"/>
+      <FILE id="Cc0Fth" name="E.png" compile="0" resource="1" file="../Resources-Vocoder/E.png"/>
+      <FILE id="PKVjTV" name="edit.png" compile="0" resource="1" file="../Resources-Vocoder/edit.png"/>
+      <FILE id="S1ZlaX" name="In1.png" compile="0" resource="1" file="../Resources-Vocoder/In1.png"/>
+      <FILE id="UVmy1U" name="In2.png" compile="0" resource="1" file="../Resources-Vocoder/In2.png"/>
+      <FILE id="Pa2S7T" name="Left.png" compile="0" resource="1" file="../Resources-Vocoder/Left.png"/>
+      <FILE id="PADnUZ" name="menu.png" compile="0" resource="1" file="../Resources-Vocoder/menu.png"/>
+      <FILE id="ftpSWj" name="mic.png" compile="0" resource="1" file="../Resources-Vocoder/mic.png"/>
+      <FILE id="lUjgXV" name="Out1.png" compile="0" resource="1" file="../Resources-Vocoder/Out1.png"/>
+      <FILE id="W0i2wB" name="Out2.png" compile="0" resource="1" file="../Resources-Vocoder/Out2.png"/>
+      <FILE id="OFUX3D" name="Right.png" compile="0" resource="1" file="../Resources-Vocoder/Right.png"/>
+      <FILE id="iVGGUR" name="UP.png" compile="0" resource="1" file="../Resources-Vocoder/UP.png"/>
+      <FILE id="Y8a1JB" name="wet.png" compile="0" resource="1" file="../Resources-Vocoder/wet.png"/>
     </GROUP>
-    <GROUP id="{0018BF84-37A0-F3EC-DA88-B62A4F6D7612}" name="Source">
-      <FILE id="rcZJip" name="sfx.cpp" compile="1" resource="0" file="../leaf-stuff/sfx.cpp"/>
-      <FILE id="g1pZ0T" name="sfx.h" compile="0" resource="0" file="../leaf-stuff/sfx.h"/>
-      <FILE id="PkWwIu" name="tunings.cpp" compile="1" resource="0" file="../leaf-stuff/tunings.cpp"/>
-      <FILE id="P2b9HQ" name="tunings.h" compile="0" resource="0" file="../leaf-stuff/tunings.h"/>
-      <FILE id="UodBQ9" name="ui.cpp" compile="1" resource="0" file="../leaf-stuff/ui.cpp"/>
-      <FILE id="ABbxLq" name="ui.h" compile="0" resource="0" file="../leaf-stuff/ui.h"/>
-      <FILE id="V59k1g" name="PluginProcessor.cpp" compile="1" resource="0"
-            file="Source/PluginProcessor.cpp"/>
-      <FILE id="eajk8j" name="PluginProcessor.h" compile="0" resource="0"
-            file="Source/PluginProcessor.h"/>
-      <FILE id="CgYDZS" name="PluginEditor.cpp" compile="1" resource="0"
-            file="Source/PluginEditor.cpp"/>
-      <FILE id="GVAY3g" name="PluginEditor.h" compile="0" resource="0" file="Source/PluginEditor.h"/>
+    <GROUP id="{B405E64B-4792-254D-5BDE-97BC1F91F9E6}" name="Source">
+      <FILE id="ZxjSMa" name="PluginEditor.cpp" compile="1" resource="0"
+            file="../vocodec_code/PluginEditor.cpp"/>
+      <FILE id="McFNuS" name="PluginEditor.h" compile="0" resource="0" file="../vocodec_code/PluginEditor.h"/>
+      <FILE id="LtALFi" name="PluginProcessor.cpp" compile="1" resource="0"
+            file="../vocodec_code/PluginProcessor.cpp"/>
+      <FILE id="v24GPB" name="PluginProcessor.h" compile="0" resource="0"
+            file="../vocodec_code/PluginProcessor.h"/>
+      <FILE id="JBUZyO" name="sfx.c" compile="1" resource="0" file="../../Downloads/Vocodec-master/Src/sfx.c"/>
+      <FILE id="j3xuVC" name="sfx.cpp" compile="1" resource="0" file="../vocodec_code/sfx.cpp"/>
+      <FILE id="rZYyti" name="sfx.h" compile="0" resource="0" file="../vocodec_code/sfx.h"/>
+      <FILE id="p3g8XH" name="tunings.cpp" compile="1" resource="0" file="../vocodec_code/tunings.cpp"/>
+      <FILE id="G87Qzu" name="tunings.h" compile="0" resource="0" file="../vocodec_code/tunings.h"/>
+      <FILE id="QgYpHd" name="ui.cpp" compile="1" resource="0" file="../vocodec_code/ui.cpp"/>
+      <FILE id="W9gaxi" name="ui.h" compile="0" resource="0" file="../vocodec_code/ui.h"/>
     </GROUP>
   </MAINGROUP>
   <EXPORTFORMATS>

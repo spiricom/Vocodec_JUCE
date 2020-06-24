@@ -351,7 +351,7 @@
  #define JucePlugin_ManufacturerCode       0x4d616e75 // 'Manu'
 #endif
 #ifndef  JucePlugin_PluginCode
- #define JucePlugin_PluginCode             0x43676864 // 'Cghd'
+ #define JucePlugin_PluginCode             0x5a6d3872 // 'Zm8r'
 #endif
 #ifndef  JucePlugin_IsSynth
  #define JucePlugin_IsSynth                0
