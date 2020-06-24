@@ -305,3 +305,107 @@ void setLED_Edit(int onOFF){
 
 }
 
+void OLED_process(void)
+{
+    
+}
+
+void OLED_writePreset(void)
+{
+    
+}
+
+void OLED_writeEditScreen(void)
+{
+    
+}
+
+void OLED_writeKnobParameter(uint8_t whichParam)
+{
+    
+}
+
+void OLED_writeButtonAction(uint8_t whichButton, uint8_t whichAction)
+{
+    
+}
+
+void OLED_writeTuning(void)
+{
+    
+}
+
+void OLED_draw(void)
+{
+    
+}
+
+void OLEDclear(void)
+{
+    
+}
+
+void OLEDclearLine(OLEDLine line)
+{
+    
+}
+
+void OLEDwriteString(const char* myCharArray, uint8_t arrayLength, uint8_t startCursor, OLEDLine line)
+{
+    
+}
+
+void OLEDwriteLine(const char* myCharArray, uint8_t arrayLength, OLEDLine line)
+{
+    
+}
+
+void OLEDwriteInt(uint32_t myNumber, uint8_t numDigits, uint8_t startCursor, OLEDLine line)
+{
+    
+}
+
+void OLEDwriteIntLine(uint32_t myNumber, uint8_t numDigits, OLEDLine line)
+{
+    
+}
+
+void OLEDwritePitch(float midi, uint8_t startCursor, OLEDLine line, uint8_t showCents)
+{
+    
+}
+
+void OLEDwritePitchClass(float midi, uint8_t startCursor, OLEDLine line)
+{
+    
+}
+
+void OLEDwritePitchLine(float midi, OLEDLine line, uint8_t showCents)
+{
+    
+}
+
+void OLEDwriteFixedFloat(float input, uint8_t numDigits, uint8_t numDecimal, uint8_t startCursor, OLEDLine line)
+{
+    
+}
+
+void OLEDwriteFixedFloatLine(float input, uint8_t numDigits, uint8_t numDecimal, OLEDLine line)
+{
+    
+}
+
+void OLEDwriteFloat(float input, uint8_t startCursor, OLEDLine line)
+{
+    
+}
+
+void OLEDdrawFloatArray(float* input, float min, float max, uint8_t size, uint8_t offset, uint8_t startCursor, OLEDLine line)
+{
+    
+}
+
+int16_t OLEDgetCursor(void)
+{
+    return 0;
+}
