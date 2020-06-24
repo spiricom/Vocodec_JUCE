@@ -1,0 +1,153 @@
+/*
+  ==============================================================================
+
+    ui.h
+    Created: 18 Jun 2020 2:38:26pm
+    Author:  Sebastian
+
+  ==============================================================================
+*/
+
+#pragma once
+#ifndef UI_H_
+#define UI_H_
+
+#define NUM_ADC_CHANNELS 6
+#define NUM_BUTTONS 10
+#define NUM_PRESET_KNOB_VALUES 25
+#define KNOB_PAGE_SIZE 5
+
+#include <stdint.h>
+
+#ifdef __cplusplus
+extern "C"
+{
+#endif
+namespace vocodec {
+    typedef enum VocodecPresetType
+    {
+        Vocoder = 0,
+        VocoderCh,
+        Pitchshift,
+        AutotuneMono,
+        AutotunePoly,
+        SamplerButtonPress,
+        SamplerKeyboard,
+        SamplerAutoGrab,
+        Distortion,
+        Wavefolder,
+        BitCrusher,
+        Delay,
+        Reverb,
+        Reverb2,
+        LivingString,
+        LivingStringSynth,
+        ClassicSynth,
+        Rhodes,
+        PresetNil
+    } VocodecPresetType;
+
+
+
+typedef enum _VocodecButton
+{
+    ButtonEdit = 0,
+    ButtonLeft,
+    ButtonRight,
+    ButtonDown,
+    ButtonUp,
+    ButtonA,
+    ButtonB,
+    ButtonC,
+    ButtonD,
+    ButtonE,
+    ExtraMessage,
+    ButtonNil
+} VocodecButton;
+
+typedef enum _ButtonAction
+{
+    ActionPress = 0,
+    ActionRelease,
+    ActionHoldInstant,
+    ActionHoldContinuous,
+    ActionNil
+} ButtonAction;
+
+extern uint16_t ADC_values[NUM_ADC_CHANNELS];
+
+extern uint8_t buttonValues[NUM_BUTTONS];
+//extern uint8_t buttonPressed[NUM_BUTTONS];
+//extern uint8_t buttonReleased[NUM_BUTTONS];
+
+extern int8_t writeKnobFlag;
+extern int8_t writeButtonFlag;
+extern int8_t writeActionFlag;
+
+extern float floatADCUI[NUM_ADC_CHANNELS];
+
+extern uint8_t currentPreset;
+extern uint8_t previousPreset;
+extern uint8_t loadingPreset;
+// Display values
+extern char* modeNames[PresetNil];
+extern char* modeNamesDetails[PresetNil];
+extern char* shortModeNames[PresetNil];
+extern char* knobParamNames[PresetNil][NUM_PRESET_KNOB_VALUES];
+extern float displayValues[NUM_PRESET_KNOB_VALUES];
+extern int8_t cvAddParam[PresetNil];
+extern uint8_t knobPage;
+extern uint8_t buttonActionsUI[NUM_BUTTONS+1][ActionNil];
+extern uint8_t buttonActionsSFX[NUM_BUTTONS+1][ActionNil];
+extern char* (*buttonActionFunctions[PresetNil])(VocodecButton, ButtonAction);
+
+void initModeNames(void);
+
+void buttonCheck(void);
+
+void adcCheck(void);
+
+void clearButtonActions(void);
+
+void changeTuning(void);
+
+void writeCurrentPresetToFlash(void);
+
+void incrementPage(void);
+
+void decrementPage(void);
+
+void resetKnobValues(void);
+
+void setKnobValues(float* values);
+
+void deactivateKnob(int knob);
+void deactivateAllKnobs(void);
+
+char* UIVocoderButtons(VocodecButton button, ButtonAction action);
+char* UIVocoderChButtons(VocodecButton button, ButtonAction action);
+char* UIPitchShiftButtons(VocodecButton button, ButtonAction action);
+char* UINeartuneButtons(VocodecButton button, ButtonAction action);
+char* UIAutotuneButtons(VocodecButton button, ButtonAction action);
+char* UISamplerBPButtons(VocodecButton button, ButtonAction action);
+char* UISamplerKButtons(VocodecButton button, ButtonAction action);
+char* UISamplerAutoButtons(VocodecButton button, ButtonAction action);
+char* UIDistortionButtons(VocodecButton button, ButtonAction action);
+char* UIWaveFolderButtons(VocodecButton button, ButtonAction action);
+char* UIBitcrusherButtons(VocodecButton button, ButtonAction action);
+char* UIDelayButtons(VocodecButton button, ButtonAction action);
+char* UIReverbButtons(VocodecButton button, ButtonAction action);
+char* UIReverb2Buttons(VocodecButton button, ButtonAction action);
+char* UILivingStringButtons(VocodecButton button, ButtonAction action);
+char* UILivingStringSynthButtons(VocodecButton button, ButtonAction action);
+char* UIClassicSynthButtons(VocodecButton button, ButtonAction action);
+char* UIRhodesButtons(VocodecButton button, ButtonAction action);
+
+
+}
+#endif /* UI_H_ */
+
+#ifdef __cplusplus
+
+}
+#endif

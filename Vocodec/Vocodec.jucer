@@ -74,7 +74,7 @@
         <MODULEPATH id="juce_gui_basics" path="../../../../Applications/JUCE/modules"/>
         <MODULEPATH id="juce_gui_extra" path="../../../../Applications/JUCE/modules"/>
         <MODULEPATH id="juce_opengl" path="../../../../Applications/JUCE/modules"/>
-        <MODULEPATH id="leaf" path="../LEAF-master"/>
+        <MODULEPATH id="leaf" path="../../../Documents/GitHub/LEAF/leaf"/>
       </MODULEPATHS>
     </XCODE_MAC>
   </EXPORTFORMATS>

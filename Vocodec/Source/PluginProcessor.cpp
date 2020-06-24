@@ -24,6 +24,7 @@ VocodecAudioProcessor::VocodecAudioProcessor()
                        )
 #endif
 {
+    
 }
 
 VocodecAudioProcessor::~VocodecAudioProcessor()
@@ -95,8 +96,14 @@ void VocodecAudioProcessor::changeProgramName (int index, const String& newName)
 //==============================================================================
 void VocodecAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlock)
 {
-    // Use this method as the place to do any pre-playback
-    // initialisation that you need..
+   
+    
+    LEAF_init(sampleRate, samplesPerBlock, vocodec::medium_memory, 519000, []() {return (float)rand() / RAND_MAX; });
+    tMempool_init(&vocodec::smallPool, vocodec::small_memory, 80328);
+    tMempool_init(&vocodec::largePool, vocodec::large_memory, 33554432);
+    vocodec::initGlobalSFXObjects();
+    vocodec::SFXVocoderAlloc();
+    
 }
 
 void VocodecAudioProcessor::releaseResources()
@@ -131,31 +138,50 @@ bool VocodecAudioProcessor::isBusesLayoutSupported (const BusesLayout& layouts) 
 
 void VocodecAudioProcessor::processBlock (AudioBuffer<float>& buffer, MidiBuffer& midiMessages)
 {
+    vocodec::SFXVocoderFrame();
     ScopedNoDenormals noDenormals;
     auto totalNumInputChannels  = getTotalNumInputChannels();
     auto totalNumOutputChannels = getTotalNumOutputChannels();
-
-    // In case we have more outputs than inputs, this code clears any output
-    // channels that didn't contain input data, (because these aren't
-    // guaranteed to be empty - they may contain garbage).
-    // This is here to avoid people getting screaming feedback
-    // when they first compile a plugin, but obviously you don't need to keep
-    // this code if your algorithm always overwrites all the output channels.
     for (auto i = totalNumInputChannels; i < totalNumOutputChannels; ++i)
         buffer.clear (i, 0, buffer.getNumSamples());
-
-    // This is the place where you'd normally do the guts of your plugin's
-    // audio processing...
-    // Make sure to reset the state if your inner loop is processing
-    // the samples and the outer loop is handling the channels.
-    // Alternatively, you can process the samples with the channels
-    // interleaved by keeping the same state.
-    for (int channel = 0; channel < totalNumInputChannels; ++channel)
-    {
-        auto* channelData = buffer.getWritePointer (channel);
-
-        // ..do something to the data...
+    
+       float* leftChannel = buffer.getWritePointer(0);
+       float* rightChannel;
+    
+    if (buffer.getNumChannels()== 1){
+  
+        rightChannel = buffer.getWritePointer(0);
+    }else{
+        rightChannel = buffer.getWritePointer(1);
     }
+    
+    int time;
+        MidiMessage m;
+        for (MidiBuffer::Iterator i (midiMessages); i.getNextEvent (m, time);)
+        {
+            if(m.isNoteOn()){
+                    vocodec::noteOn(m.getNoteNumber(), m.getVelocity());
+            }
+            
+            if(m.isNoteOff()){
+                vocodec::noteOff(m.getNoteNumber(), m.getVelocity());
+            }
+            
+        }
+    
+for (int i = 0; i < buffer.getNumSamples(); i++){
+    
+    float audio [2];
+    audio[0] = leftChannel[i];
+    audio[1] = rightChannel[i];
+    vocodec::SFXVocoderTick(audio);
+    buffer.setSample(0, i, audio[0]);
+    if(buffer.getNumChannels() > 1){
+       buffer.setSample(1, i, audio[1]);
+    }
+ }
+
+    
 }
 
 //==============================================================================
