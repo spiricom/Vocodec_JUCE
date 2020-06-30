@@ -19,15 +19,25 @@ VocodecAudioProcessorEditor::VocodecAudioProcessorEditor (VocodecAudioProcessor&
     // editor's size to whatever you need it to be.
 	baseline = ImageCache::getFromMemory(BinaryData::Default_png, BinaryData::Default_pngSize);
 
+	vocodec::initModeNames();
+	vocodec::initGlobalSFXObjects();
+
 	for (int i = 0; i < NUM_KNOBS; i++) {
 		knobs.add(new DrawableImage());
+		dials.add(new Slider());
+		addAndMakeVisible(dials[i]);
 		addAndMakeVisible(knobs[i]);
+		dials[i]->setLookAndFeel(&knobOne);
+		dials[i]->setSliderStyle(Slider::Rotary);
+		dials[i]->setTextBoxStyle(Slider::NoTextBox, false, 0, 0);
+		addAndMakeVisible(dials[i]);
+		dials[i]->addListener(this);
+		dials[i]->setRange(0, 1);
 	}
 	for (int i = 0; i < NUM_LIGHTS; i++) {
 		lights.add(new DrawableImage());
 		addAndMakeVisible(lights[i]);
 	}
-
 
 	for (int i = 0; i < NUM_BUTTONS; i++) {
 		buttons.add(new ImageButton());
@@ -83,61 +93,31 @@ VocodecAudioProcessorEditor::VocodecAudioProcessorEditor (VocodecAudioProcessor&
 
 	setSize(baseline.getWidth(), baseline.getHeight());
 
-	dial1.setLookAndFeel(&knobOne);
-	dial1.setSliderStyle(Slider::Rotary);
-	dial1.setTextBoxStyle(Slider::NoTextBox, false, 0, 0);
-	addAndMakeVisible(dial1);
-	dial1.addListener(this);
-
-	dial2.setLookAndFeel(&knobTwo);
-	dial2.setSliderStyle(Slider::Rotary);
-	dial2.setTextBoxStyle(Slider::NoTextBox, false, 0, 0);
-	addAndMakeVisible(dial2);
-	dial2.addListener(this);
-
-	dial3.setLookAndFeel(&knobThree);
-	dial3.setSliderStyle(Slider::Rotary);
-	dial3.setTextBoxStyle(Slider::NoTextBox, false, 0, 0);
-	addAndMakeVisible(dial3);
-	dial3.addListener(this);
-
-	dial4.setLookAndFeel(&knobFour);
-	dial4.setSliderStyle(Slider::Rotary);
-	dial4.setTextBoxStyle(Slider::NoTextBox, false, 0, 0);
-	addAndMakeVisible(dial4);
-	dial4.addListener(this);
-
-	dial5.setLookAndFeel(&knobFive);
-	dial5.setSliderStyle(Slider::Rotary);
-	dial5.setTextBoxStyle(Slider::NoTextBox, false, 0, 0);
-	addAndMakeVisible(dial5);
-	dial5.addListener(this);
-
-	dial6.setLookAndFeel(&knobSix);
-	dial6.setSliderStyle(Slider::Rotary);
-	dial6.setTextBoxStyle(Slider::NoTextBox, false, 0, 0);
-	addAndMakeVisible(dial6);
-	dial6.addListener(this);
-
-	dial7.setLookAndFeel(&knobSeven);
-	dial7.setSliderStyle(Slider::Rotary);
-	dial7.setTextBoxStyle(Slider::NoTextBox, false, 0, 0);
-	addAndMakeVisible(dial7);
-	dial7.addListener(this);
-
-
 	addAndMakeVisible(menu);
-	menu.addItem("PRESET 1", 1);
-	menu.addItem("PRESET 2", 2);
-	menu.addItem("PRESET 3", 3);
-	menu.addItem("PRESET 4", 4);
+	menu.addItem("Vocoder", 1);
+	menu.addItem("VocoderCh", 2);
+	menu.addItem("Pitchshift", 3);
+	menu.addItem("AutotuneMono", 4);
+	menu.addItem("AutotunePoly", 5);
+	menu.addItem("SamplerButtonPress", 6);
+	menu.addItem("SamplerKeyboard", 7);
+	menu.addItem("SamplerAutoGrab", 8);
+	menu.addItem("Distortion", 9);
+	menu.addItem("Wavefolder", 10);
+	menu.addItem("BitCrusher", 11);
+	menu.addItem("Delay", 12);
+	menu.addItem("Reverb", 13);
+	menu.addItem("Reverb 2", 14);
+	menu.addItem("LivingString", 15);
+	menu.addItem("LivingStringSynth", 16);
+	menu.addItem("ClassicSynth", 17);
+	menu.addItem("Rhodes", 18);
 	Colour translucent(0.0f, 0.0f, 0.0f, 0.65f);
 	menu.setColour(ComboBox::ColourIds::backgroundColourId, translucent);
 	menu.setColour(ComboBox::ColourIds::textColourId, Colours::blue);
 	menu.setColour(ComboBox::ColourIds::buttonColourId, Colours::black);
 	menu.setColour(ComboBox::ColourIds::outlineColourId, Colours::transparentWhite);
 	menu.setJustificationType(Justification::centred);
-	menu.setSelectedId(1);
 }
 
 VocodecAudioProcessorEditor::~VocodecAudioProcessorEditor()
@@ -151,10 +131,13 @@ void VocodecAudioProcessorEditor::paint (Graphics& g)
     // (Our component is opaque, so we must completely fill the background with a solid colour)
     g.fillAll (getLookAndFeel().findColour (ResizableWindow::backgroundColourId));
 
-    g.setColour (Colours::white);
     g.setFont (15.0f);
-    g.drawFittedText ("Hello World!", getLocalBounds(), Justification::centred, 1);
-	g.drawImageAt(baseline,0, 0);
+	g.drawImageAt(baseline, 0, 0);
+	Colour translucent(0.0f, 0.0f, 0.0f, 0.50f);
+	g.setColour(translucent);
+	g.fillRect(Rectangle<int>(175, 80, 150, 35));
+	g.setColour(Colours::blue);
+	g.drawFittedText(paramName, Rectangle<int>(175,80,150,50), Justification::centred, 1);
 	knobs[0]->setBounds(0, 3, getWidth(), getHeight());
 }
 
@@ -170,25 +153,25 @@ void VocodecAudioProcessorEditor::resized()
 		buttons[i]->setBounds(0, 1, getWidth(), getHeight());
 	}
 
-	dial1.setBounds(110, 18, 52, 61);
+	dials[0]->setBounds(110, 18, 52, 61);
 	
-	dial2.setBounds(160, 106, 52, 68);
-	dial3.setBounds(316, 113, 52, 66);
+	dials[1]->setBounds(160, 106, 52, 68);
+	dials[2]->setBounds(316, 113, 52, 66);
 
-	dial4.setBounds(210, 210, 54, 68);
+	dials[3]->setBounds(210, 210, 54, 68);
 
-	dial5.setBounds(363, 210, 54, 68);
+	dials[4]->setBounds(363, 210, 54, 68);
 
-	dial6.setBounds(155, 325, 57, 68);
+	dials[5]->setBounds(155, 325, 57, 68);
 
-	dial7.setBounds(318, 326, 57, 68);
+	dials[6]->setBounds(318, 326, 57, 68);
 
 	menu.setBounds(175, 50, 150, 50);
 
 }
 
 void VocodecAudioProcessorEditor::sliderValueChanged(Slider* slider) {
-	if (slider == &dial1) {
+	if (slider == dials[0]) {
 		if (sliderOpacity[0] == 0) {
 			sliderOpacity[0] = 1;
 			knobs[0]->setOpacity(sliderOpacity[0]);
@@ -199,7 +182,10 @@ void VocodecAudioProcessorEditor::sliderValueChanged(Slider* slider) {
 			knobs[0]->setOpacity(sliderOpacity[0]);
 		}
 	}
-	if (slider == &dial2) {
+	if (slider == dials[1]) {
+		vocodec::presetKnobValues[vocodec::currentPreset][(vocodec::knobPage * 5 + 0)] = slider->getValue();
+		paramName = String(vocodec::knobParamNames[menu.getSelectedId()-1][(vocodec::knobPage * 5 + 0)]);
+		paramName += String(vocodec::displayValues[vocodec::knobPage * 5 + 0]);
 		if (sliderOpacity[1] == 0) {
 			sliderOpacity[1] = 1;
 			knobs[1]->setOpacity(sliderOpacity[1]);
@@ -209,8 +195,12 @@ void VocodecAudioProcessorEditor::sliderValueChanged(Slider* slider) {
 			sliderOpacity[1] = 0;
 			knobs[1]->setOpacity(sliderOpacity[1]);
 		}
+		
 	}
-	if (slider == &dial3) {
+	if (slider == dials[2]) {
+		vocodec::presetKnobValues[menu.getSelectedId()][(vocodec::knobPage * 5 + 1)] = slider->getValue();
+		paramName = String(vocodec::knobParamNames[menu.getSelectedId() - 1][(vocodec::knobPage * 5 + 1)]);
+		paramName += String(vocodec::displayValues[vocodec::knobPage * 5 + 1]);
 		if (sliderOpacity[2] == 0) {
 			sliderOpacity[2] = 1;
 			knobs[2]->setOpacity(sliderOpacity[2]);
@@ -221,7 +211,10 @@ void VocodecAudioProcessorEditor::sliderValueChanged(Slider* slider) {
 			knobs[2]->setOpacity(sliderOpacity[2]);
 		}
 	}
-	if (slider == &dial4) {
+	if (slider == dials[3]) {
+		vocodec::presetKnobValues[vocodec::currentPreset][(vocodec::knobPage * 5 + 2)] = slider->getValue();
+		paramName = String(vocodec::knobParamNames[menu.getSelectedId()-1][(vocodec::knobPage * 5 + 2)]);
+		paramName += String(vocodec::displayValues[vocodec::knobPage * 5 + 2]);
 		if (sliderOpacity[3] == 0) {
 			sliderOpacity[3] = 1;
 			knobs[3]->setOpacity(sliderOpacity[3]);
@@ -232,7 +225,10 @@ void VocodecAudioProcessorEditor::sliderValueChanged(Slider* slider) {
 			knobs[3]->setOpacity(sliderOpacity[3]);
 		}
 	}
-	if (slider == &dial5) {
+	if (slider == dials[4]) {
+		vocodec::presetKnobValues[vocodec::currentPreset][(vocodec::knobPage * 5 + 3)] = slider->getValue();
+		paramName = String(vocodec::knobParamNames[menu.getSelectedId() - 1][(vocodec::knobPage * 5 + 3)]);
+		paramName += String(vocodec::displayValues[vocodec::knobPage * 5 + 3]);
 		if (sliderOpacity[4] == 0) {
 			sliderOpacity[4] = 1;
 			knobs[4]->setOpacity(sliderOpacity[4]);
@@ -243,7 +239,10 @@ void VocodecAudioProcessorEditor::sliderValueChanged(Slider* slider) {
 			knobs[4]->setOpacity(sliderOpacity[4]);
 		}
 	}
-	if (slider == &dial6) {
+	if (slider == dials[5]) {
+		vocodec::presetKnobValues[vocodec::currentPreset][(vocodec::knobPage * 5 + 4)] = slider->getValue();
+		paramName = String(vocodec::knobParamNames[menu.getSelectedId()-1][(vocodec::knobPage * 5 + 4)]);
+		paramName += String(vocodec::displayValues[vocodec::knobPage * 5 + 4]);
 		if (sliderOpacity[5] == 0) {
 			sliderOpacity[5] = 1;
 			knobs[5]->setOpacity(sliderOpacity[5]);
@@ -254,7 +253,7 @@ void VocodecAudioProcessorEditor::sliderValueChanged(Slider* slider) {
 			knobs[5]->setOpacity(sliderOpacity[5]);
 		}
 	}
-	if (slider == &dial7) {
+	if (slider == dials[6]) {
 		if (sliderOpacity[6] == 0) {
 			sliderOpacity[6] = 1;
 			knobs[6]->setOpacity(sliderOpacity[6]);

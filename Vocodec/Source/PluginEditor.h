@@ -12,6 +12,7 @@
 
 #include <JuceHeader.h>
 #include "PluginProcessor.h"
+#include "sfx.h"
 
 //==============================================================================
 /**
@@ -59,6 +60,8 @@ private:
 	#define NUM_LIGHTS 7
 	#define NUM_BUTTONS 10
 
+
+	String paramName = String("THIS IS A TEST");
 	Image baseline;
 	Array<DrawableImage*> knobs;
 	Array<DrawableImage*> lights;
@@ -70,13 +73,7 @@ private:
 	OtherLookAndFeel knobSix;
 	OtherLookAndFeel knobSeven;
 
-	Slider dial1;
-	Slider dial2;
-	Slider dial3;
-	Slider dial4;
-	Slider dial5;
-	Slider dial6;
-	Slider dial7;
+	Array<Slider*> dials;
 
 	Array<ImageButton*> buttons;
 

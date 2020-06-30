@@ -406,8 +406,8 @@ namespace vocodec
                         }
                         if (cleanButtonValues[i] == 1)
                         {
-                            buttonActionsSFX[i][ActionHoldContinuous] = TRUE;
-                            buttonActionsUI[i][ActionHoldContinuous] = TRUE;
+                            buttonActionsSFX[i][ActionHoldContinuous] = true;
+                            buttonActionsUI[i][ActionHoldContinuous] = true;
                             writeButtonFlag = i;
                             writeActionFlag = ActionHoldContinuous;
                         }
@@ -416,8 +416,8 @@ namespace vocodec
                             if (buttonCounters[i] < buttonHoldMax) buttonCounters[i]++;
                             if ((buttonCounters[i] >= buttonHoldThreshold) && (cleanButtonValues[i] == 1))
                             {
-                                buttonActionsSFX[i][ActionHoldInstant] = TRUE;
-                                buttonActionsUI[i][ActionHoldInstant] = TRUE;
+                                buttonActionsSFX[i][ActionHoldInstant] = true;
+                                buttonActionsUI[i][ActionHoldInstant] = true;
                                 writeButtonFlag = i;
                                 writeActionFlag = ActionHoldInstant;
                             }
@@ -430,15 +430,15 @@ namespace vocodec
                             
                             if (cleanButtonValues[i] == 1)
                             {
-                                buttonActionsSFX[i][ActionPress] = TRUE;
-                                buttonActionsUI[i][ActionPress] = TRUE;
+                                buttonActionsSFX[i][ActionPress] = true;
+                                buttonActionsUI[i][ActionPress] = true;
                                 writeButtonFlag = i;
                                 writeActionFlag = ActionPress;
                             }
                             else if (cleanButtonValues[i] == 0)
                             {
-                                buttonActionsSFX[i][ActionRelease] = TRUE;
-                                buttonActionsUI[i][ActionRelease] = TRUE;
+                                buttonActionsSFX[i][ActionRelease] = true;
+                                buttonActionsUI[i][ActionRelease] = true;
                                 writeButtonFlag = i;
                                 writeActionFlag = ActionRelease;
                             }
