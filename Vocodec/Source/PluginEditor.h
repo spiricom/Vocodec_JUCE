@@ -54,6 +54,7 @@ public:
     void resized() override;
 	void sliderValueChanged(Slider* slider) override;
 	void buttonFunction(int i);
+    void presetChanged();
 
 private:
 	#define NUM_KNOBS 7

@@ -118,6 +118,8 @@ VocodecAudioProcessorEditor::VocodecAudioProcessorEditor (VocodecAudioProcessor&
 	menu.setColour(ComboBox::ColourIds::buttonColourId, Colours::black);
 	menu.setColour(ComboBox::ColourIds::outlineColourId, Colours::transparentWhite);
 	menu.setJustificationType(Justification::centred);
+    menu.onChange = [this] { presetChanged(); };
+    
 }
 
 VocodecAudioProcessorEditor::~VocodecAudioProcessorEditor()
@@ -407,4 +409,134 @@ void OLEDdrawFloatArray(float* input, float min, float max, uint8_t size, uint8_
 int16_t OLEDgetCursor(void)
 {
     return 0;
+}
+
+
+void VocodecAudioProcessorEditor::presetChanged(){
+    
+    switch (processor.presetNumber) {
+        case 1:
+                vocodec::SFXVocoderFree();
+            break;
+            
+        case 2:
+            vocodec::SFXVocoderChFree();
+            break;
+        case 3:
+            vocodec::SFXPitchShiftFree();
+            break;
+        case 4:
+            vocodec::SFXNeartuneFree();
+            break;
+        case 5:
+            vocodec::SFXAutotuneFree();
+            break;
+        case 6:
+            vocodec::SFXSamplerBPFree();
+            break;
+        case 7:
+            vocodec::SFXSamplerKFree();
+            break;
+        case 8:
+            vocodec::SFXSamplerAutoFree();
+            break;
+        case 9:
+            vocodec::SFXDistortionFree();
+            break;
+        case 10:
+            vocodec::SFXWaveFolderFree();
+            break;
+        case 11:
+            vocodec::SFXBitcrusherFree();
+            break;
+        case 12:
+            vocodec::SFXDelayFree();
+            break;
+        case 13:
+            vocodec::SFXReverbFree();
+            break;
+        case 14:
+            vocodec::SFXReverb2Free();
+            break;
+        case 15:
+            vocodec::SFXLivingStringFree();
+            break;
+        case 16:
+            vocodec::SFXLivingStringSynthFree();
+            break;
+        case 17:
+            vocodec::SFXClassicSynthFree();
+            break;
+        case 18:
+            vocodec::SFXRhodesFree();
+            break;
+        default:
+            break;
+    }
+    
+    processor.presetNumber = menu.getSelectedId();
+    
+    switch (processor.presetNumber) {
+         case 1:
+                 vocodec::SFXVocoderAlloc();
+             break;
+             
+         case 2:
+             vocodec::SFXVocoderChAlloc();
+             break;
+         case 3:
+             vocodec::SFXPitchShiftAlloc();
+             break;
+         case 4:
+             vocodec::SFXNeartuneAlloc();
+             break;
+         case 5:
+             vocodec::SFXAutotuneAlloc();
+             break;
+         case 6:
+             vocodec::SFXSamplerBPAlloc();
+             break;
+         case 7:
+             vocodec::SFXSamplerKAlloc();
+             break;
+         case 8:
+             vocodec::SFXSamplerAutoAlloc();
+             break;
+         case 9:
+             vocodec::SFXDistortionAlloc();
+             break;
+         case 10:
+             vocodec::SFXWaveFolderAlloc();
+             break;
+         case 11:
+             vocodec::SFXBitcrusherAlloc();
+             break;
+         case 12:
+             vocodec::SFXDelayAlloc();
+             break;
+         case 13:
+             vocodec::SFXReverbAlloc();
+             break;
+         case 14:
+             vocodec::SFXReverb2Alloc();
+             break;
+         case 15:
+             vocodec::SFXLivingStringAlloc();
+             break;
+         case 16:
+             vocodec::SFXLivingStringSynthAlloc();
+             break;
+         case 17:
+             vocodec::SFXClassicSynthAlloc();
+             break;
+         case 18:
+             vocodec::SFXRhodesAlloc();
+             break;
+         default:
+             break;
+     
+     }
+    
+    
+    
 }

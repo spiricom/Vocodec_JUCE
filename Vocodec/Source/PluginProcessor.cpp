@@ -98,12 +98,12 @@ void VocodecAudioProcessor::changeProgramName (int index, const String& newName)
 void VocodecAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlock)
 {
    
+     LEAF_init(sampleRate, samplesPerBlock, vocodec::medium_memory, 519000, []() {return (float)rand() / RAND_MAX; });
+       tMempool_init(&vocodec::smallPool, vocodec::small_memory, 80328);
+       tMempool_init(&vocodec::largePool, vocodec::large_memory, 33554432);
+       vocodec::initGlobalSFXObjects();
     
-    LEAF_init(sampleRate, samplesPerBlock, vocodec::medium_memory, 519000, []() {return (float)rand() / RAND_MAX; });
-    tMempool_init(&vocodec::smallPool, vocodec::small_memory, 80328);
-    tMempool_init(&vocodec::largePool, vocodec::large_memory, 33554432);
-    vocodec::initGlobalSFXObjects();
-    vocodec::SFXVocoderAlloc();
+
     
 }
 
@@ -139,7 +139,66 @@ bool VocodecAudioProcessor::isBusesLayoutSupported (const BusesLayout& layouts) 
 
 void VocodecAudioProcessor::processBlock (AudioBuffer<float>& buffer, MidiBuffer& midiMessages)
 {
-    vocodec::SFXVocoderFrame();
+
+    switch (presetNumber) {
+        case 1:
+            vocodec::SFXVocoderFrame();
+            break;
+        case 2:
+            vocodec::SFXVocoderChFrame();
+            break;
+        case 3:
+            vocodec::SFXPitchShiftFrame();
+            break;
+        case 4:
+            vocodec::SFXNeartuneFrame();
+            break;
+        case 5:
+            vocodec::SFXAutotuneFrame();
+            break;
+        case 6:
+            vocodec::SFXSamplerBPFrame();
+            break;
+        case 7:
+            vocodec::SFXSamplerKFrame();
+            break;
+        case 8:
+            vocodec::SFXSamplerAutoFrame();
+            break;
+        case 9:
+            vocodec::SFXDistortionFrame();
+            break;
+        case 10:
+            vocodec::SFXWaveFolderFrame();
+            break;
+        case 11:
+            vocodec::SFXBitcrusherFrame();
+            break;
+        case 12:
+            vocodec::SFXDelayFrame();
+            break;
+        case 13:
+            vocodec::SFXReverbFrame();
+            break;
+        case 14:
+            vocodec::SFXReverb2Frame();
+            break;
+        case 15:
+            vocodec::SFXLivingStringFrame();
+            break;
+        case 16:
+            vocodec::SFXLivingStringSynthFrame();
+            break;
+        case 17:
+            vocodec::SFXClassicSynthFrame();
+            break;
+        case 18:
+            vocodec::SFXRhodesFrame();
+            break;
+        default:
+            break;
+    }
+    
     ScopedNoDenormals noDenormals;
     auto totalNumInputChannels  = getTotalNumInputChannels();
     auto totalNumOutputChannels = getTotalNumOutputChannels();
@@ -175,7 +234,67 @@ for (int i = 0; i < buffer.getNumSamples(); i++){
     float audio [2];
     audio[0] = leftChannel[i];
     audio[1] = rightChannel[i];
-    vocodec::SFXVocoderTick(audio);
+    
+    switch (presetNumber) {
+        case 1:
+            vocodec::SFXVocoderTick(audio);
+            break;
+        case 2:
+            vocodec::SFXVocoderChTick(audio);
+            break;
+        case 3:
+            vocodec::SFXPitchShiftTick(audio);
+            break;
+        case 4:
+            vocodec::SFXNeartuneTick(audio);
+            break;
+        case 5:
+            vocodec::SFXAutotuneTick(audio);
+            break;
+        case 6:
+            vocodec::SFXSamplerBPTick(audio);
+            break;
+        case 7:
+            vocodec::SFXSamplerKTick(audio);
+            break;
+        case 8:
+            vocodec::SFXSamplerAutoTick(audio);
+            break;
+        case 9:
+            vocodec::SFXDistortionTick(audio);
+            break;
+        case 10:
+            vocodec::SFXWaveFolderTick(audio);
+            break;
+        case 11:
+            vocodec::SFXBitcrusherTick(audio);
+            break;
+        case 12:
+            vocodec::SFXDelayTick(audio);
+            break;
+        case 13:
+            vocodec::SFXReverbTick(audio);
+            break;
+        case 14:
+            vocodec::SFXReverb2Tick(audio);
+            break;
+        case 15:
+            vocodec::SFXLivingStringTick(audio);
+            break;
+        case 16:
+            vocodec::SFXLivingStringSynthTick(audio);
+            break;
+        case 17:
+            vocodec::SFXClassicSynthTick(audio);
+            break;
+        case 18:
+            vocodec::SFXRhodesTick(audio);
+            break;
+        default:
+            break;
+    }
+    
+ 
     buffer.setSample(0, i, audio[0]);
     if(buffer.getNumChannels() > 1){
        buffer.setSample(1, i, audio[1]);
