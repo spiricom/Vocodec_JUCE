@@ -139,7 +139,7 @@ bool VocodecAudioProcessor::isBusesLayoutSupported (const BusesLayout& layouts) 
 
 void VocodecAudioProcessor::processBlock (AudioBuffer<float>& buffer, MidiBuffer& midiMessages)
 {
-
+	if (loading)
     switch (presetNumber) {
         case 1:
             vocodec::SFXVocoderFrame();
@@ -198,6 +198,14 @@ void VocodecAudioProcessor::processBlock (AudioBuffer<float>& buffer, MidiBuffer
         default:
             break;
     }
+
+
+	int time;
+	MidiMessage m;
+	for (MidiBuffer::Iterator i(midiMessages); i.getNextEvent(m, time);) {
+		// kludgy, but just trying to see if this works...
+		handleIncomingMidiMessage(nullptr, m);
+	}
     
     ScopedNoDenormals noDenormals;
     auto totalNumInputChannels  = getTotalNumInputChannels();
@@ -214,27 +222,14 @@ void VocodecAudioProcessor::processBlock (AudioBuffer<float>& buffer, MidiBuffer
     }else{
         rightChannel = buffer.getWritePointer(1);
     }
-    
-    int time;
-        MidiMessage m;
-        for (MidiBuffer::Iterator i (midiMessages); i.getNextEvent (m, time);)
-        {
-            if(m.isNoteOn()){
-                    vocodec::noteOn(m.getNoteNumber(), m.getVelocity());
-            }
-            
-            if(m.isNoteOff()){
-                vocodec::noteOff(m.getNoteNumber(), m.getVelocity());
-            }
-            
-        }
+   
     
 for (int i = 0; i < buffer.getNumSamples(); i++){
     
     float audio [2];
     audio[0] = leftChannel[i];
     audio[1] = rightChannel[i];
-    
+	if (loading)
     switch (presetNumber) {
         case 1:
             vocodec::SFXVocoderTick(audio);
@@ -334,4 +329,32 @@ void VocodecAudioProcessor::setStateInformation (const void* data, int sizeInByt
 AudioProcessor* JUCE_CALLTYPE createPluginFilter()
 {
     return new VocodecAudioProcessor();
+}
+
+void VocodecAudioProcessor::handleIncomingMidiMessage(MidiInput* source, const MidiMessage& message)
+{
+	const ScopedValueSetter<bool> scopedInputFlag(isAddingFromMidiInput, true);
+	if (message.isNoteOn()) {
+		vocodec::noteOn(message.getNoteNumber(), message.getVelocity());
+	}
+	else {
+		vocodec::noteOff(message.getNoteNumber(), message.getVelocity());
+	}
+	keyboardState.processNextMidiEvent(message);
+}
+void VocodecAudioProcessor::handleNoteOn(MidiKeyboardState*, int midiChannel, int midiNoteNumber, float velocity)
+{
+	if (!isAddingFromMidiInput)
+	{
+		auto m = MidiMessage::noteOn(midiChannel, midiNoteNumber, velocity);
+		m.setTimeStamp(Time::getMillisecondCounterHiRes() * 0.001);
+	}
+}
+void VocodecAudioProcessor::handleNoteOff(MidiKeyboardState*, int midiChannel, int midiNoteNumber, float velocity)
+{
+	if (!isAddingFromMidiInput)
+	{
+		auto m = MidiMessage::noteOff(midiChannel, midiNoteNumber);
+		m.setTimeStamp(Time::getMillisecondCounterHiRes() * 0.001);
+	}
 }

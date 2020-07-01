@@ -15,13 +15,20 @@
 //==============================================================================
 /**
 */
-class VocodecAudioProcessor  : public AudioProcessor
+class VocodecAudioProcessor  : public AudioProcessor, public MidiInputCallback, public MidiKeyboardStateListener
 {
 public:
     //==============================================================================
     VocodecAudioProcessor();
     ~VocodecAudioProcessor();
+	//==============================================================================
+	MidiKeyboardState keyboardState;
+	void handleIncomingMidiMessage(MidiInput* source, const MidiMessage& message) override;
+	void handleNoteOn(MidiKeyboardState*, int midiChannel, int midiNoteNumber, float velocity) override;
 
+	void handleNoteOff(MidiKeyboardState*, int midiChannel, int midiNoteNumber, float velocity) override;
+
+	void setMidiInput();
     //==============================================================================
     void prepareToPlay (double sampleRate, int samplesPerBlock) override;
     void releaseResources() override;
@@ -56,9 +63,10 @@ public:
     void setStateInformation (const void* data, int sizeInBytes) override;
     
     int presetNumber;
+	bool loading;
     
 private:
-
+	bool isAddingFromMidiInput = false;
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (VocodecAudioProcessor)
 };

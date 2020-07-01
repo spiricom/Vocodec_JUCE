@@ -414,6 +414,7 @@ int16_t OLEDgetCursor(void)
 
 void VocodecAudioProcessorEditor::presetChanged(){
     
+	processor.loading = true;
     switch (processor.presetNumber) {
         case 1:
                 vocodec::SFXVocoderFree();
@@ -536,7 +537,7 @@ void VocodecAudioProcessorEditor::presetChanged(){
              break;
      
      }
-    
+	processor.loading = false;
     
     
 }

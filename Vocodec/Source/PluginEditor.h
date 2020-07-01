@@ -61,7 +61,6 @@ private:
 	#define NUM_LIGHTS 7
 	#define NUM_BUTTONS 10
 
-
 	String paramName = String("THIS IS A TEST");
 	Image baseline;
 	Array<DrawableImage*> knobs;
