@@ -10,7 +10,7 @@
 #include "oled.h"
 #include "MIDI_application.h"
 #endif
-
+#include "PluginEditor.h"
 #include "sfx.h"
 #include "tunings.h"
 
@@ -33,6 +33,7 @@ namespace vocodec
         char medium_memory[MED_MEM_SIZE] __ATTR_RAM_D1;
         char large_memory[LARGE_MEM_SIZE] __ATTR_SDRAM;
 #endif
+
         
         tMempool smallPool;
         tMempool largePool;

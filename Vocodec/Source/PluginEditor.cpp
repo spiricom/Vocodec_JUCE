@@ -42,13 +42,14 @@ VocodecAudioProcessorEditor::VocodecAudioProcessorEditor (VocodecAudioProcessor&
 	for (int i = 0; i < NUM_BUTTONS; i++) {
 		buttons.add(new ImageButton());
 		addAndMakeVisible(buttons[i]);
+		buttons[i]->addListener(this);
 	}
-	buttons[0]->setTriggeredOnMouseDown(true);
-	buttons[0]->onClick = [this] { buttonFunction(0); };
-	buttons[1]->onClick = [this] { buttonFunction(1); };
-	buttons[2]->onClick = [this] { buttonFunction(2); };
-	buttons[3]->onClick = [this] { buttonFunction(3); };
-	buttons[4]->onClick = [this] { buttonFunction(4); };
+	//buttons[0]->setTriggeredOnMouseDown(true);
+	//buttons[0]->onClick = [this] { buttonFunction(0); };
+	//buttons[1]->onClick = [this] { buttonFunction(1); };
+	//buttons[2]->onClick = [this] { buttonFunction(2); };
+	//buttons[3]->onClick = [this] { buttonFunction(3); };
+	//buttons[4]->onClick = [this] { buttonFunction(4); };
 
 	knobs[0]->setImage(ImageCache::getFromMemory(BinaryData::mic_png, BinaryData::mic_pngSize));
 	knobs[1]->setImage(ImageCache::getFromMemory(BinaryData::_1_png, BinaryData::_1_pngSize));
@@ -270,40 +271,56 @@ void VocodecAudioProcessorEditor::sliderValueChanged(Slider* slider) {
 		//	lights[i]->setAlpha(slider->getValue() / 10.0f);
 		//}
 }
-
-void VocodecAudioProcessorEditor::buttonFunction(int i) {
-		if (lights[i]->getOpacity() == 0) {
-			lights[i]->setOpacity(1);
-		}
-		else {
-			lights[i]->setOpacity(0);
-		}
+void VocodecAudioProcessorEditor::buttonClicked(Button*button){}
+void VocodecAudioProcessorEditor::buttonStateChanged(Button *button) {
+	if (button->getState() == 2) {
+		if (button == buttons[0])
+		vocodec::buttonActionsSFX[0][1] = true;
+		if (button == buttons[1])
+			vocodec::buttonActionsSFX[1][1] = true;
+		if (button == buttons[2])
+			vocodec::buttonActionsSFX[2][1] = true;
+		if (button == buttons[3])
+			vocodec::buttonActionsSFX[3][1] = true;
+		if (button == buttons[4])
+			vocodec::buttonActionsSFX[4][1] = true;
+		if (button == buttons[5])
+			vocodec::buttonActionsSFX[5][1] = true;
+		if (button == buttons[6])
+			vocodec::buttonActionsSFX[6][1] = true;
+		if (button == buttons[7])
+			vocodec::buttonActionsSFX[7][1] = true;
+		if (button == buttons[8])
+			vocodec::buttonActionsSFX[8][1] = true;
+		if (button == buttons[9])
+			vocodec::buttonActionsSFX[9][1] = true;
+	}
 }
 
 
 void setLED_A(int onOFF){
-   // lights[0]->setOpacity();
+  // lights[1]->setOpacity(onOFF);
 }
 
 void setLED_B(int onOFF){
-   // lights[1]->setOpacity();
+	//lights[2]->setOpacity(onOFF);
     
 }
 
 void setLED_C(int onOFF){
-   // lights[2]->setOpacity();
+	//lights[3]->setOpacity(onOFF);
 }
 
 void setLED_1(int onOFF){
-    
+	//lights[4]->setOpacity(onOFF);
 }
 
 void setLED_2(int onOFF){
-    
+	//lights[5]->setOpacity(onOFF);
 }
 
 void setLED_Edit(int onOFF){
-
+	//lights[0]->setOpacity(onOFF);
 }
 
 void OLED_process(void)

@@ -43,7 +43,7 @@ class OtherLookAndFeel : public LookAndFeel_V4
 	}
 
 };
-class VocodecAudioProcessorEditor : public AudioProcessorEditor, public Slider::Listener
+class VocodecAudioProcessorEditor : public AudioProcessorEditor, public Slider::Listener, public Button::Listener
 {
 public:
     VocodecAudioProcessorEditor (VocodecAudioProcessor&);
@@ -55,6 +55,8 @@ public:
 	void sliderValueChanged(Slider* slider) override;
 	void buttonFunction(int i);
     void presetChanged();
+	void buttonClicked(juce::Button* button) override;
+	void buttonStateChanged(Button *button) override;
 
 private:
 	#define NUM_KNOBS 7
@@ -64,7 +66,6 @@ private:
 	String paramName = String("THIS IS A TEST");
 	Image baseline;
 	Array<DrawableImage*> knobs;
-	Array<DrawableImage*> lights;
 	OtherLookAndFeel knobOne;
 	OtherLookAndFeel knobTwo;
 	OtherLookAndFeel knobThree;
@@ -72,6 +73,8 @@ private:
 	OtherLookAndFeel knobFive;
 	OtherLookAndFeel knobSix;
 	OtherLookAndFeel knobSeven;
+
+	Array<DrawableImage*> lights;
 
 	Array<Slider*> dials;
 

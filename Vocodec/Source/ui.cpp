@@ -11,7 +11,7 @@
 #include "oled.h"
 #include "eeprom.h"
 #endif
-
+#include "PluginEditor.h"
 #include "sfx.h"
 #include "ui.h"
 #include "tunings.h"
