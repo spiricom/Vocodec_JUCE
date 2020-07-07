@@ -18,6 +18,10 @@
 /**
 */
 
+#define NUM_KNOBS 7
+#define NUM_LIGHTS 7
+#define NUM_BUTTONS 10
+
 class OtherLookAndFeel : public LookAndFeel_V4
 {
 	void drawRotarySlider(Graphics& g, int x, int y, int width, int height, float sliderPos, const float rotaryStartAngle, const float rotaryEndAngle, Slider& slider) override
@@ -43,7 +47,7 @@ class OtherLookAndFeel : public LookAndFeel_V4
 	}
 
 };
-class VocodecAudioProcessorEditor : public AudioProcessorEditor, public Slider::Listener, public Button::Listener
+class VocodecAudioProcessorEditor : public AudioProcessorEditor, public Slider::Listener, public Button::Listener, public Timer
 {
 public:
     VocodecAudioProcessorEditor (VocodecAudioProcessor&);
@@ -57,11 +61,10 @@ public:
     void presetChanged();
 	void buttonClicked(juce::Button* button) override;
 	void buttonStateChanged(Button *button) override;
+    
+    void timerCallback() override;
 
 private:
-	#define NUM_KNOBS 7
-	#define NUM_LIGHTS 7
-	#define NUM_BUTTONS 10
 
 	String paramName = String("THIS IS A TEST");
 	Image baseline;
@@ -89,7 +92,6 @@ private:
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (VocodecAudioProcessorEditor)
 };
-
 
 typedef enum _OLEDLine
 {

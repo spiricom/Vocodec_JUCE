@@ -25,7 +25,7 @@ VocodecAudioProcessor::VocodecAudioProcessor()
                        )
 #endif
 {
-    
+    presetNumber = 0;
 }
 
 VocodecAudioProcessor::~VocodecAudioProcessor()
@@ -103,7 +103,11 @@ void VocodecAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBloc
        tMempool_init(&vocodec::largePool, vocodec::large_memory, 33554432);
        vocodec::initGlobalSFXObjects();
     
-
+    if (presetNumber == 0)
+    {
+        presetNumber = 1;
+        vocodec::SFXVocoderAlloc();
+    }
     
 }
 
