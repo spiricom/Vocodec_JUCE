@@ -100,7 +100,7 @@
         <MODULEPATH id="juce_audio_formats" path="../../juce"/>
         <MODULEPATH id="juce_audio_devices" path="../../juce"/>
         <MODULEPATH id="juce_audio_basics" path="../../juce"/>
-        <MODULEPATH id="leaf" path="../../LEAF-master"/>
+        <MODULEPATH id="leaf" path="..\..\..\..\Documents"/>
       </MODULEPATHS>
     </VS2017>
   </EXPORTFORMATS>
