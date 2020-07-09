@@ -5,8 +5,11 @@
   <MAINGROUP id="uEka6H" name="Vocodec">
     <GROUP id="{B405E64B-4792-254D-5BDE-97BC1F91F9E6}" name="Source">
       <GROUP id="{F62A9309-7BE1-5B65-A806-641EB05C4C88}" name="Resources-Vocoder">
+        <FILE id="ZRoFeC" name="1-light.png" compile="0" resource="1" file="Source/Resources-Vocoder/1-light.png"/>
         <FILE id="dVtLJF" name="1.png" compile="0" resource="1" file="Source/Resources-Vocoder/1.png"/>
+        <FILE id="ZVoBkf" name="2-light.png" compile="0" resource="1" file="Source/Resources-Vocoder/2-light.png"/>
         <FILE id="jLqzaW" name="2.png" compile="0" resource="1" file="Source/Resources-Vocoder/2.png"/>
+        <FILE id="NtSOJY" name="3-light.png" compile="0" resource="1" file="Source/Resources-Vocoder/3-light.png"/>
         <FILE id="tvsZoL" name="3.png" compile="0" resource="1" file="Source/Resources-Vocoder/3.png"/>
         <FILE id="EIBeTU" name="4.png" compile="0" resource="1" file="Source/Resources-Vocoder/4.png"/>
         <FILE id="OvsecO" name="5.png" compile="0" resource="1" file="Source/Resources-Vocoder/5.png"/>
@@ -74,7 +77,7 @@
         <MODULEPATH id="juce_gui_basics" path="../../../../Applications/JUCE/modules"/>
         <MODULEPATH id="juce_gui_extra" path="../../../../Applications/JUCE/modules"/>
         <MODULEPATH id="juce_opengl" path="../../../../Applications/JUCE/modules"/>
-        <MODULEPATH id="leaf" path="../../LEAF"/>
+        <MODULEPATH id="leaf" path="../../LEAF-master"/>
       </MODULEPATHS>
     </XCODE_MAC>
     <VS2017 targetFolder="Builds/VisualStudio2017">
@@ -83,7 +86,6 @@
         <CONFIGURATION isDebug="0" name="Release"/>
       </CONFIGURATIONS>
       <MODULEPATHS>
-        <MODULEPATH id="leaf" path="..\..\..\..\Documents"/>
         <MODULEPATH id="juce_opengl" path="../../juce"/>
         <MODULEPATH id="juce_gui_extra" path="../../juce"/>
         <MODULEPATH id="juce_gui_basics" path="../../juce"/>
@@ -98,6 +100,7 @@
         <MODULEPATH id="juce_audio_formats" path="../../juce"/>
         <MODULEPATH id="juce_audio_devices" path="../../juce"/>
         <MODULEPATH id="juce_audio_basics" path="../../juce"/>
+        <MODULEPATH id="leaf" path="../../LEAF-master"/>
       </MODULEPATHS>
     </VS2017>
   </EXPORTFORMATS>

@@ -317,15 +317,52 @@ AudioProcessorEditor* VocodecAudioProcessor::createEditor()
 //==============================================================================
 void VocodecAudioProcessor::getStateInformation (MemoryBlock& destData)
 {
-    // You should use this method to store your parameters in the memory block.
-    // You could do that either as raw data, or use the XML or ValueTree classes
-    // as intermediaries to make it easy to save and load complex data.
+    std::unique_ptr<XmlElement> xml(new XmlElement("Vocodec"));
+    
+    xml->setAttribute("Knob1", vocodec::presetKnobValues[vocodec::currentPreset][(vocodec::knobPage * 5 + 0)]);
+    xml->setAttribute("Knob2", vocodec::presetKnobValues[vocodec::currentPreset][(vocodec::knobPage * 5 + 1)]);
+    xml->setAttribute("Knob3", vocodec::presetKnobValues[vocodec::currentPreset][(vocodec::knobPage * 5 + 2)]);
+    xml->setAttribute("Knob4", vocodec::presetKnobValues[vocodec::currentPreset][(vocodec::knobPage * 5 + 3)]);
+    xml->setAttribute("Knob5", vocodec::presetKnobValues[vocodec::currentPreset][(vocodec::knobPage * 5 + 4)]);
+    //missig dryWet knob
+    xml->setAttribute("ButtonEdit", vocodec::buttonActionsSFX[0][vocodec::ActionPress]);
+    xml->setAttribute("ButtonLeft", vocodec::buttonActionsSFX[1][vocodec::ActionPress]);
+    xml->setAttribute("ButtonRight", vocodec::buttonActionsSFX[2][vocodec::ActionPress]);
+    xml->setAttribute("ButtonDown", vocodec::buttonActionsSFX[3][vocodec::ActionPress]);
+    xml->setAttribute("ButtonUp", vocodec::buttonActionsSFX[4][vocodec::ActionPress]);
+    xml->setAttribute("ButtonA", vocodec::buttonActionsSFX[5][vocodec::ActionPress]);
+    xml->setAttribute("ButtonB", vocodec::buttonActionsSFX[6][vocodec::ActionPress]);
+    xml->setAttribute("ButtonC", vocodec::buttonActionsSFX[7][vocodec::ActionPress]);
+    xml->setAttribute("ButtonD", vocodec::buttonActionsSFX[8][vocodec::ActionPress]);
+    xml->setAttribute("ButtonE", vocodec::buttonActionsSFX[9][vocodec::ActionPress]);
+    
+    copyXmlToBinary(*xml, destData);
 }
 
 void VocodecAudioProcessor::setStateInformation (const void* data, int sizeInBytes)
 {
-    // You should use this method to restore your parameters from this memory block,
-    // whose contents will have been created by the getStateInformation() call.
+      std::unique_ptr<XmlElement> xml(getXmlFromBinary(data, sizeInBytes));
+      
+      if(xml.get() != nullptr && xml->hasTagName("Vocodec")){
+          vocodec::presetKnobValues[vocodec::currentPreset][(vocodec::knobPage * 5 + 0)] = xml->getDoubleAttribute("Knob1");
+          vocodec::presetKnobValues[vocodec::currentPreset][(vocodec::knobPage * 5 + 1)] = xml->getDoubleAttribute("Knob2");
+          vocodec::presetKnobValues[vocodec::currentPreset][(vocodec::knobPage * 5 + 2)] = xml->getDoubleAttribute("Knob3");
+          vocodec::presetKnobValues[vocodec::currentPreset][(vocodec::knobPage * 5 + 3)] = xml->getDoubleAttribute("Knob4");
+          vocodec::presetKnobValues[vocodec::currentPreset][(vocodec::knobPage * 5 + 4)] = xml->getDoubleAttribute("Knob5");
+          //missing dryWet knob
+          
+         vocodec::buttonActionsSFX[0][vocodec::ActionPress] = xml->getDoubleAttribute("ButtonEdit");
+         vocodec::buttonActionsSFX[1][vocodec::ActionPress] = xml->getDoubleAttribute("ButtonLeft");
+         vocodec::buttonActionsSFX[2][vocodec::ActionPress] = xml->getDoubleAttribute("ButtonRight");
+         vocodec::buttonActionsSFX[3][vocodec::ActionPress] = xml->getDoubleAttribute("ButtonDown");
+         vocodec::buttonActionsSFX[4][vocodec::ActionPress] = xml->getDoubleAttribute("ButtonUp");
+         vocodec::buttonActionsSFX[5][vocodec::ActionPress] = xml->getDoubleAttribute("ButtonA");
+         vocodec::buttonActionsSFX[6][vocodec::ActionPress] = xml->getDoubleAttribute("ButtonB");
+         vocodec::buttonActionsSFX[7][vocodec::ActionPress] = xml->getDoubleAttribute("ButtonC");
+         vocodec::buttonActionsSFX[8][vocodec::ActionPress] = xml->getDoubleAttribute("ButtonD");
+         vocodec::buttonActionsSFX[9][vocodec::ActionPress] = xml->getDoubleAttribute("ButtonE");
+          
+      }
 }
 
 //==============================================================================

@@ -69,6 +69,9 @@ VocodecAudioProcessorEditor::VocodecAudioProcessorEditor (VocodecAudioProcessor&
 	lights[4]->setImage(ImageCache::getFromMemory(BinaryData::In2_png, BinaryData::In2_pngSize));
 	lights[5]->setImage(ImageCache::getFromMemory(BinaryData::Out1_png, BinaryData::Out1_pngSize));
 	lights[6]->setImage(ImageCache::getFromMemory(BinaryData::Out2_png, BinaryData::Out2_pngSize));
+    lights[7]->setImage(ImageCache::getFromMemory(BinaryData::_1light_png, BinaryData::_1light_pngSize));
+    lights[8]->setImage(ImageCache::getFromMemory(BinaryData::_2light_png, BinaryData::_2light_pngSize));
+    lights[9]->setImage(ImageCache::getFromMemory(BinaryData::_3light_png, BinaryData::_3light_pngSize));
 
 	Image upA = ImageCache::getFromMemory(BinaryData::A_1_png, BinaryData::A_1_pngSize);
 	Image upB = ImageCache::getFromMemory(BinaryData::B_2_png, BinaryData::B_2_pngSize);
@@ -207,7 +210,7 @@ void VocodecAudioProcessorEditor::sliderValueChanged(Slider* slider) {
 		
 	}
 	if (slider == dials[2]) {
-		vocodec::presetKnobValues[menu.getSelectedId()][(vocodec::knobPage * 5 + 1)] = slider->getValue();
+		vocodec::presetKnobValues[vocodec::currentPreset][(vocodec::knobPage * 5 + 1)] = slider->getValue();
 		paramName = String(vocodec::knobParamNames[menu.getSelectedId() - 1][(vocodec::knobPage * 5 + 1)]);
 		paramName += String(vocodec::displayValues[vocodec::knobPage * 5 + 1]);
 		if (sliderOpacity[2] == 0) {
@@ -344,32 +347,32 @@ void VocodecAudioProcessorEditor::timerCallback()
 
 void setLED_A(int onOFF)
 {
-    lightStates[1] = (bool) onOFF;
+    lightStates[0] = (bool) onOFF;
 }
 
 void setLED_B(int onOFF)
 {
-	lightStates[2] = (bool) onOFF;
+	lightStates[1] = (bool) onOFF;
 }
 
 void setLED_C(int onOFF)
 {
-	lightStates[3] = (bool) onOFF;
+	lightStates[2] = (bool) onOFF;
 }
 
 void setLED_1(int onOFF)
 {
-	lightStates[4] = (bool) onOFF;
+	lightStates[8] = (bool) onOFF;
 }
 
 void setLED_2(int onOFF)
 {
-	lightStates[5] = (bool) onOFF;
+	lightStates[9] = (bool) onOFF;
 }
 
 void setLED_Edit(int onOFF)
 {
-	lightStates[0] = (bool) onOFF;
+	//lightStates[] = (bool) onOFF;
 }
 
 void OLED_process(void)

@@ -19,7 +19,7 @@
 */
 
 #define NUM_KNOBS 7
-#define NUM_LIGHTS 7
+#define NUM_LIGHTS 10
 #define NUM_BUTTONS 10
 
 class OtherLookAndFeel : public LookAndFeel_V4
