@@ -64,6 +64,7 @@ public:
     void setStateInformation (const void* data, int sizeInBytes) override;
     
     int presetNumber;
+    int prevPresetNumber;
 	bool loading;
     
 private:

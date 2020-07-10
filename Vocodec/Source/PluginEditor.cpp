@@ -20,30 +20,33 @@ VocodecAudioProcessorEditor::VocodecAudioProcessorEditor (VocodecAudioProcessor&
 {
     // Make sure that before the constructor has finished, you've set the
     // editor's size to whatever you need it to be.
-	baseline = ImageCache::getFromMemory(BinaryData::Default_png, BinaryData::Default_pngSize);
+    baseline = ImageCache::getFromMemory(BinaryData::Default_png, BinaryData::Default_pngSize);
 
 	vocodec::initModeNames();
 
 	for (int i = 0; i < NUM_KNOBS; i++) {
-		knobs.add(new DrawableImage());
+//        knobs.add(new DrawableImage());
 		dials.add(new Slider());
 		addAndMakeVisible(dials[i]);
-		addAndMakeVisible(knobs[i]);
+//        addAndMakeVisible(knobs[i]);
 		dials[i]->setLookAndFeel(&knobOne);
 		dials[i]->setSliderStyle(Slider::Rotary);
-		dials[i]->setTextBoxStyle(Slider::NoTextBox, false, 0, 0);
+        dials[i]->setTextBoxStyle(Slider::NoTextBox, false, 0, 0);
 		addAndMakeVisible(dials[i]);
 		dials[i]->addListener(this);
 		dials[i]->setRange(0, 1);
 	}
-	for (int i = 0; i < NUM_LIGHTS; i++) {
-        lightStates[i] = false;
-		lights.add(new DrawableImage());
-		addAndMakeVisible(lights[i]);
-	}
+    
+//    for (int i = 0; i < NUM_LIGHTS; i++) {
+//        lightStates[i] = false;
+//        lights.add(new DrawableImage());
+//        addAndMakeVisible(lights[i]);
+//    }
 
 	for (int i = 0; i < NUM_BUTTONS; i++) {
-		buttons.add(new ImageButton());
+        buttons.add(new TextButton());
+        buttons[i]->setButtonText(String(i));
+        buttons[i]->setAlpha(0.2f);
 		addAndMakeVisible(buttons[i]);
 		buttons[i]->addListener(this);
 	}
@@ -54,52 +57,51 @@ VocodecAudioProcessorEditor::VocodecAudioProcessorEditor (VocodecAudioProcessor&
 	//buttons[3]->onClick = [this] { buttonFunction(3); };
 	//buttons[4]->onClick = [this] { buttonFunction(4); };
 
-	knobs[0]->setImage(ImageCache::getFromMemory(BinaryData::mic_png, BinaryData::mic_pngSize));
-	knobs[1]->setImage(ImageCache::getFromMemory(BinaryData::_1_png, BinaryData::_1_pngSize));
-	knobs[2]->setImage(ImageCache::getFromMemory(BinaryData::_2_png, BinaryData::_2_pngSize));
-	knobs[3]->setImage(ImageCache::getFromMemory(BinaryData::_3_png, BinaryData::_3_pngSize));
-	knobs[4]->setImage(ImageCache::getFromMemory(BinaryData::_4_png, BinaryData::_4_pngSize));
-	knobs[5]->setImage(ImageCache::getFromMemory(BinaryData::_5_png, BinaryData::_5_pngSize));
-	knobs[6]->setImage(ImageCache::getFromMemory(BinaryData::wet_png, BinaryData::wet_pngSize));
+//    knobs[0]->setImage(ImageCache::getFromMemory(BinaryData::mic_png, BinaryData::mic_pngSize));
+//    knobs[1]->setImage(ImageCache::getFromMemory(BinaryData::_1_png, BinaryData::_1_pngSize));
+//    knobs[2]->setImage(ImageCache::getFromMemory(BinaryData::_2_png, BinaryData::_2_pngSize));
+//    knobs[3]->setImage(ImageCache::getFromMemory(BinaryData::_3_png, BinaryData::_3_pngSize));
+//    knobs[4]->setImage(ImageCache::getFromMemory(BinaryData::_4_png, BinaryData::_4_pngSize));
+//    knobs[5]->setImage(ImageCache::getFromMemory(BinaryData::_5_png, BinaryData::_5_pngSize));
+//    knobs[6]->setImage(ImageCache::getFromMemory(BinaryData::wet_png, BinaryData::wet_pngSize));
     
-	lights[0]->setImage(ImageCache::getFromMemory(BinaryData::A_png, BinaryData::A_pngSize));
-	lights[1]->setImage(ImageCache::getFromMemory(BinaryData::B_png, BinaryData::B_pngSize));
-	lights[2]->setImage(ImageCache::getFromMemory(BinaryData::C_png, BinaryData::C_pngSize));
-	lights[3]->setImage(ImageCache::getFromMemory(BinaryData::In1_png, BinaryData::In1_pngSize));
-	lights[4]->setImage(ImageCache::getFromMemory(BinaryData::In2_png, BinaryData::In2_pngSize));
-	lights[5]->setImage(ImageCache::getFromMemory(BinaryData::Out1_png, BinaryData::Out1_pngSize));
-	lights[6]->setImage(ImageCache::getFromMemory(BinaryData::Out2_png, BinaryData::Out2_pngSize));
-    lights[7]->setImage(ImageCache::getFromMemory(BinaryData::_1light_png, BinaryData::_1light_pngSize));
-    lights[8]->setImage(ImageCache::getFromMemory(BinaryData::_2light_png, BinaryData::_2light_pngSize));
-    lights[9]->setImage(ImageCache::getFromMemory(BinaryData::_3light_png, BinaryData::_3light_pngSize));
+//    lights[0]->setImage(ImageCache::getFromMemory(BinaryData::A_png, BinaryData::A_pngSize));
+//    lights[1]->setImage(ImageCache::getFromMemory(BinaryData::B_png, BinaryData::B_pngSize));
+//    lights[2]->setImage(ImageCache::getFromMemory(BinaryData::C_png, BinaryData::C_pngSize));
+//    lights[3]->setImage(ImageCache::getFromMemory(BinaryData::In1_png, BinaryData::In1_pngSize));
+//    lights[4]->setImage(ImageCache::getFromMemory(BinaryData::In2_png, BinaryData::In2_pngSize));
+//    lights[5]->setImage(ImageCache::getFromMemory(BinaryData::Out1_png, BinaryData::Out1_pngSize));
+//    lights[6]->setImage(ImageCache::getFromMemory(BinaryData::Out2_png, BinaryData::Out2_pngSize));
+//    lights[7]->setImage(ImageCache::getFromMemory(BinaryData::_1light_png, BinaryData::_1light_pngSize));
+//    lights[8]->setImage(ImageCache::getFromMemory(BinaryData::_2light_png, BinaryData::_2light_pngSize));
+//    lights[9]->setImage(ImageCache::getFromMemory(BinaryData::_3light_png, BinaryData::_3light_pngSize));
 
-	Image upA = ImageCache::getFromMemory(BinaryData::A_1_png, BinaryData::A_1_pngSize);
-	Image upB = ImageCache::getFromMemory(BinaryData::B_2_png, BinaryData::B_2_pngSize);
-	Image downB = ImageCache::getFromMemory(BinaryData::Boff_png, BinaryData::Boff_pngSize);
-	Image upC = ImageCache::getFromMemory(BinaryData::C_1_png, BinaryData::C_1_pngSize);
-	Image upD = ImageCache::getFromMemory(BinaryData::D_png, BinaryData::D_pngSize);
-	Image upE = ImageCache::getFromMemory(BinaryData::E_png, BinaryData::E_pngSize);
-	Image upEdit = ImageCache::getFromMemory(BinaryData::edit_png, BinaryData::edit_pngSize);
-	Image upUp = ImageCache::getFromMemory(BinaryData::UP_png, BinaryData::UP_pngSize);
-	Image upDown = ImageCache::getFromMemory(BinaryData::Down_png, BinaryData::Down_pngSize);
-	Image upLeft = ImageCache::getFromMemory(BinaryData::Left_png, BinaryData::Left_pngSize);
-	Image upRight = ImageCache::getFromMemory(BinaryData::Right_png, BinaryData::Right_pngSize);
+//    Image upA = ImageCache::getFromMemory(BinaryData::A_1_png, BinaryData::A_1_pngSize);
+//    Image upB = ImageCache::getFromMemory(BinaryData::B_2_png, BinaryData::B_2_pngSize);
+//    Image downB = ImageCache::getFromMemory(BinaryData::Boff_png, BinaryData::Boff_pngSize);
+//    Image upC = ImageCache::getFromMemory(BinaryData::C_1_png, BinaryData::C_1_pngSize);
+//    Image upD = ImageCache::getFromMemory(BinaryData::D_png, BinaryData::D_pngSize);
+//    Image upE = ImageCache::getFromMemory(BinaryData::E_png, BinaryData::E_pngSize);
+//    Image upEdit = ImageCache::getFromMemory(BinaryData::edit_png, BinaryData::edit_pngSize);
+//    Image upUp = ImageCache::getFromMemory(BinaryData::UP_png, BinaryData::UP_pngSize);
+//    Image upDown = ImageCache::getFromMemory(BinaryData::Down_png, BinaryData::Down_pngSize);
+//    Image upLeft = ImageCache::getFromMemory(BinaryData::Left_png, BinaryData::Left_pngSize);
+//    Image upRight = ImageCache::getFromMemory(BinaryData::Right_png, BinaryData::Right_pngSize);
+//
+//    Image blank = ImageCache::getFromMemory(BinaryData::blank_png, BinaryData::blank_pngSize);
 
-	Image blank = ImageCache::getFromMemory(BinaryData::blank_png, BinaryData::blank_pngSize);
-	
-	
-    buttons[vocodec::ButtonA]->setImages(false, false, true, upA, 1, Colours::transparentBlack, upA, 1, Colours::transparentBlack, blank, 1, Colours::transparentBlack, 0.5);
-	buttons[vocodec::ButtonB]->setImages(false, false, true, upB, 1, Colours::transparentBlack, upB, 1, Colours::transparentBlack, downB, 1, Colours::transparentBlack, 0.5);
-	buttons[vocodec::ButtonC]->setImages(false, false, true, upC, 1, Colours::transparentBlack, upC, 1, Colours::transparentBlack, blank, 1, Colours::transparentBlack, 0.5);
-	buttons[vocodec::ButtonD]->setImages(false, false, true, upD, 1, Colours::transparentBlack, upD, 1, Colours::transparentBlack, blank, 1, Colours::transparentBlack, 0.5);
-	buttons[vocodec::ButtonE]->setImages(false, false, true, upE, 1, Colours::transparentBlack, upE, 1, Colours::transparentBlack, blank, 1, Colours::transparentBlack, 0.5);
-	buttons[vocodec::ButtonEdit]->setImages(false, false, true, upEdit, 1, Colours::transparentBlack, upEdit, 1, Colours::transparentBlack, blank, 1, Colours::transparentBlack, 0.5);
-	buttons[vocodec::ButtonUp]->setImages(false, false, true, upUp, 1, Colours::transparentBlack, upUp, 1, Colours::transparentBlack, blank, 1, Colours::transparentBlack, 0.5);
-	buttons[vocodec::ButtonDown]->setImages(false, false, true, upDown, 1, Colours::transparentBlack, upDown, 1, Colours::transparentBlack, blank, 1, Colours::transparentBlack, 0.5);
-	buttons[vocodec::ButtonLeft]->setImages(false, false, true, upLeft, 1, Colours::transparentBlack, upLeft, 1, Colours::transparentBlack, blank, 1, Colours::transparentBlack, 0.5);
-	buttons[vocodec::ButtonRight]->setImages(false, false, true, upRight, 1, Colours::transparentBlack, upRight, 1, Colours::transparentBlack, blank, 1, Colours::transparentBlack, 0.5);
+//    buttons[vocodec::ButtonA]->setImages(false, false, true, upA, 1, Colours::transparentBlack, upA, 1, Colours::transparentBlack, blank, 1, Colours::transparentBlack, 0.5);
+//    buttons[vocodec::ButtonB]->setImages(false, false, true, upB, 1, Colours::transparentBlack, upB, 1, Colours::transparentBlack, downB, 1, Colours::transparentBlack, 0.5);
+//    buttons[vocodec::ButtonC]->setImages(false, false, true, upC, 1, Colours::transparentBlack, upC, 1, Colours::transparentBlack, blank, 1, Colours::transparentBlack, 0.5);
+//    buttons[vocodec::ButtonD]->setImages(false, false, true, upD, 1, Colours::transparentBlack, upD, 1, Colours::transparentBlack, blank, 1, Colours::transparentBlack, 0.5);
+//    buttons[vocodec::ButtonE]->setImages(false, false, true, upE, 1, Colours::transparentBlack, upE, 1, Colours::transparentBlack, blank, 1, Colours::transparentBlack, 0.5);
+//    buttons[vocodec::ButtonEdit]->setImages(false, false, true, upEdit, 1, Colours::transparentBlack, upEdit, 1, Colours::transparentBlack, blank, 1, Colours::transparentBlack, 0.5);
+//    buttons[vocodec::ButtonUp]->setImages(false, false, true, upUp, 1, Colours::transparentBlack, upUp, 1, Colours::transparentBlack, blank, 1, Colours::transparentBlack, 0.5);
+//    buttons[vocodec::ButtonDown]->setImages(false, false, true, upDown, 1, Colours::transparentBlack, upDown, 1, Colours::transparentBlack, blank, 1, Colours::transparentBlack, 0.5);
+//    buttons[vocodec::ButtonLeft]->setImages(false, false, true, upLeft, 1, Colours::transparentBlack, upLeft, 1, Colours::transparentBlack, blank, 1, Colours::transparentBlack, 0.5);
+//    buttons[vocodec::ButtonRight]->setImages(false, false, true, upRight, 1, Colours::transparentBlack, upRight, 1, Colours::transparentBlack, blank, 1, Colours::transparentBlack, 0.5);
 
-	setSize(baseline.getWidth(), baseline.getHeight());
+    setSize(baseline.getWidth(), baseline.getHeight());
 
 	addAndMakeVisible(menu);
 	menu.addItem("Vocoder", 1);
@@ -126,15 +128,16 @@ VocodecAudioProcessorEditor::VocodecAudioProcessorEditor (VocodecAudioProcessor&
 	menu.setColour(ComboBox::ColourIds::buttonColourId, Colours::black);
 	menu.setColour(ComboBox::ColourIds::outlineColourId, Colours::transparentWhite);
 	menu.setJustificationType(Justification::centred);
-    menu.setSelectedId(1);
+    menu.setSelectedId(1, dontSendNotification);
     menu.onChange = [this] { presetChanged(); };
     
-    startTimerHz(30);
+    startTimerHz(10);
 }
 
 VocodecAudioProcessorEditor::~VocodecAudioProcessorEditor()
 {
-	
+    for (int i = 0; i < NUM_KNOBS; i++)
+        dials[i]->setLookAndFeel(nullptr);
 }
 
 //==============================================================================
@@ -144,26 +147,32 @@ void VocodecAudioProcessorEditor::paint (Graphics& g)
     g.fillAll (getLookAndFeel().findColour (ResizableWindow::backgroundColourId));
 
     g.setFont (15.0f);
-	g.drawImageAt(baseline, 0, 0);
+//    g.drawImageAt(baseline, 0, 0);
 	Colour translucent(0.0f, 0.0f, 0.0f, 0.50f);
 	g.setColour(translucent);
 	g.fillRect(Rectangle<int>(175, 80, 150, 35));
 	g.setColour(Colours::blue);
 	g.drawFittedText(paramName, Rectangle<int>(175,80,150,50), Justification::centred, 1);
-	knobs[0]->setBounds(0, 3, getWidth(), getHeight());
+//    knobs[0]->setBounds(0, 3, getWidth(), getHeight());
 }
 
 void VocodecAudioProcessorEditor::resized()
 {
 	for (int i = 1; i < NUM_KNOBS; i++) {
-		knobs[i]->setBounds(0, 1, getWidth(), getHeight());
+//        knobs[i]->setBounds(0, 1, getWidth(), getHeight());
 	}
 	for (int i = 0; i < NUM_LIGHTS; i++) {
-		lights[i]->setBounds(0, 1, getWidth(), getHeight());
+//        lights[i]->setBounds(0, 1, getWidth(), getHeight());
 	}
+    Rectangle<int> area = getBounds();
+    area.removeFromRight(area.getWidth() * 0.5);
+    float h = area.getHeight() * 0.1f;
 	for (int i = 0; i < NUM_BUTTONS; i++) {
-		buttons[i]->setBounds(0, 1, getWidth(), getHeight());
+        
+		buttons[i]->setBounds(area.removeFromTop(h));
 	}
+    
+    
 
 	dials[0]->setBounds(110, 18, 52, 61);
 	
@@ -186,12 +195,12 @@ void VocodecAudioProcessorEditor::sliderValueChanged(Slider* slider) {
 	if (slider == dials[0]) {
 		if (sliderOpacity[0] == 0) {
 			sliderOpacity[0] = 1;
-			knobs[0]->setOpacity(sliderOpacity[0]);
+//            knobs[0]->setOpacity(sliderOpacity[0]);
 		}
 		else
 		{
 			sliderOpacity[0] = 0;
-			knobs[0]->setOpacity(sliderOpacity[0]);
+//            knobs[0]->setOpacity(sliderOpacity[0]);
 		}
 	}
 	if (slider == dials[1]) {
@@ -200,12 +209,12 @@ void VocodecAudioProcessorEditor::sliderValueChanged(Slider* slider) {
 		paramName += String(vocodec::displayValues[vocodec::knobPage * 5 + 0]);
 		if (sliderOpacity[1] == 0) {
 			sliderOpacity[1] = 1;
-			knobs[1]->setOpacity(sliderOpacity[1]);
+//            knobs[1]->setOpacity(sliderOpacity[1]);
 		}
 		else
 		{
 			sliderOpacity[1] = 0;
-			knobs[1]->setOpacity(sliderOpacity[1]);
+//            knobs[1]->setOpacity(sliderOpacity[1]);
 		}
 		
 	}
@@ -215,12 +224,12 @@ void VocodecAudioProcessorEditor::sliderValueChanged(Slider* slider) {
 		paramName += String(vocodec::displayValues[vocodec::knobPage * 5 + 1]);
 		if (sliderOpacity[2] == 0) {
 			sliderOpacity[2] = 1;
-			knobs[2]->setOpacity(sliderOpacity[2]);
+//            knobs[2]->setOpacity(sliderOpacity[2]);
 		}
 		else
 		{
 			sliderOpacity[2] = 0;
-			knobs[2]->setOpacity(sliderOpacity[2]);
+//            knobs[2]->setOpacity(sliderOpacity[2]);
 		}
 	}
 	if (slider == dials[3]) {
@@ -229,12 +238,12 @@ void VocodecAudioProcessorEditor::sliderValueChanged(Slider* slider) {
 		paramName += String(vocodec::displayValues[vocodec::knobPage * 5 + 2]);
 		if (sliderOpacity[3] == 0) {
 			sliderOpacity[3] = 1;
-			knobs[3]->setOpacity(sliderOpacity[3]);
+//            knobs[3]->setOpacity(sliderOpacity[3]);
 		}
 		else
 		{
 			sliderOpacity[3] = 0;
-			knobs[3]->setOpacity(sliderOpacity[3]);
+//            knobs[3]->setOpacity(sliderOpacity[3]);
 		}
 	}
 	if (slider == dials[4]) {
@@ -243,12 +252,12 @@ void VocodecAudioProcessorEditor::sliderValueChanged(Slider* slider) {
 		paramName += String(vocodec::displayValues[vocodec::knobPage * 5 + 3]);
 		if (sliderOpacity[4] == 0) {
 			sliderOpacity[4] = 1;
-			knobs[4]->setOpacity(sliderOpacity[4]);
+//            knobs[4]->setOpacity(sliderOpacity[4]);
 		}
 		else
 		{
 			sliderOpacity[4] = 0;
-			knobs[4]->setOpacity(sliderOpacity[4]);
+//            knobs[4]->setOpacity(sliderOpacity[4]);
 		}
 	}
 	if (slider == dials[5]) {
@@ -257,29 +266,30 @@ void VocodecAudioProcessorEditor::sliderValueChanged(Slider* slider) {
 		paramName += String(vocodec::displayValues[vocodec::knobPage * 5 + 4]);
 		if (sliderOpacity[5] == 0) {
 			sliderOpacity[5] = 1;
-			knobs[5]->setOpacity(sliderOpacity[5]);
+//            knobs[5]->setOpacity(sliderOpacity[5]);
 		}
 		else
 		{
 			sliderOpacity[5] = 0;
-			knobs[5]->setOpacity(sliderOpacity[5]);
+//            knobs[5]->setOpacity(sliderOpacity[5]);
 		}
 	}
 	if (slider == dials[6]) {
 		if (sliderOpacity[6] == 0) {
 			sliderOpacity[6] = 1;
-			knobs[6]->setOpacity(sliderOpacity[6]);
+//            knobs[6]->setOpacity(sliderOpacity[6]);
 		}
 		else
 		{
 			sliderOpacity[6] = 0;
-			knobs[6]->setOpacity(sliderOpacity[6]);
+//            knobs[6]->setOpacity(sliderOpacity[6]);
 		}
 	}
 		//for (int i = 0; i < NUM_LIGHTS; i++) {
 		//	lights[i]->setAlpha(slider->getValue() / 10.0f);
 		//}
 }
+
 void VocodecAudioProcessorEditor::buttonClicked(Button*button)
 {
     
@@ -339,7 +349,7 @@ void VocodecAudioProcessorEditor::timerCallback()
 {
     for (int i = 0; i < NUM_LIGHTS; i++)
     {
-        lights[i]->setOpacity(lightStates[i]);
+//        lights[i]->setOpacity(lightStates[i]);
     }
     
     repaint();
@@ -485,135 +495,7 @@ void VocodecAudioProcessorEditor::presetChanged(){
     
 	processor.loading = true;
     
-    for (int i = 0; i < vocodec::ButtonNil; ++i)
-        for (int j = 0; j < vocodec::ActionNil; ++j)
-        {
-            vocodec::buttonActionsSFX[i][j] = false;
-            vocodec::buttonActionsUI[i][j] = false;
-        }
-    
-    switch (processor.presetNumber) {
-        case 1:
-            vocodec::SFXVocoderFree();
-            break;
-        case 2:
-            vocodec::SFXVocoderChFree();
-            break;
-        case 3:
-            vocodec::SFXPitchShiftFree();
-            break;
-        case 4:
-            vocodec::SFXNeartuneFree();
-            break;
-        case 5:
-            vocodec::SFXAutotuneFree();
-            break;
-        case 6:
-            vocodec::SFXSamplerBPFree();
-            break;
-        case 7:
-            vocodec::SFXSamplerKFree();
-            break;
-        case 8:
-            vocodec::SFXSamplerAutoFree();
-            break;
-        case 9:
-            vocodec::SFXDistortionFree();
-            break;
-        case 10:
-            vocodec::SFXWaveFolderFree();
-            break;
-        case 11:
-            vocodec::SFXBitcrusherFree();
-            break;
-        case 12:
-            vocodec::SFXDelayFree();
-            break;
-        case 13:
-            vocodec::SFXReverbFree();
-            break;
-        case 14:
-            vocodec::SFXReverb2Free();
-            break;
-        case 15:
-            vocodec::SFXLivingStringFree();
-            break;
-        case 16:
-            vocodec::SFXLivingStringSynthFree();
-            break;
-        case 17:
-            vocodec::SFXClassicSynthFree();
-            break;
-        case 18:
-            vocodec::SFXRhodesFree();
-            break;
-        default:
-            break;
-    }
+    processor.prevPresetNumber = processor.presetNumber;
     
     processor.presetNumber = menu.getSelectedId();
-    
-    switch (processor.presetNumber) {
-         case 1:
-                 vocodec::SFXVocoderAlloc();
-             break;
-             
-         case 2:
-             vocodec::SFXVocoderChAlloc();
-             break;
-         case 3:
-             vocodec::SFXPitchShiftAlloc();
-             break;
-         case 4:
-             vocodec::SFXNeartuneAlloc();
-             break;
-         case 5:
-             vocodec::SFXAutotuneAlloc();
-             break;
-         case 6:
-             vocodec::SFXSamplerBPAlloc();
-             break;
-         case 7:
-             vocodec::SFXSamplerKAlloc();
-             break;
-         case 8:
-             vocodec::SFXSamplerAutoAlloc();
-             break;
-         case 9:
-             vocodec::SFXDistortionAlloc();
-             break;
-         case 10:
-             vocodec::SFXWaveFolderAlloc();
-             break;
-         case 11:
-             vocodec::SFXBitcrusherAlloc();
-             break;
-         case 12:
-             vocodec::SFXDelayAlloc();
-             break;
-         case 13:
-             vocodec::SFXReverbAlloc();
-             break;
-         case 14:
-             vocodec::SFXReverb2Alloc();
-             break;
-         case 15:
-             vocodec::SFXLivingStringAlloc();
-             break;
-         case 16:
-             vocodec::SFXLivingStringSynthAlloc();
-             break;
-         case 17:
-             vocodec::SFXClassicSynthAlloc();
-             break;
-         case 18:
-             vocodec::SFXRhodesAlloc();
-             break;
-         default:
-             break;
-     
-     }
-	processor.loading = false;
-    
-    
 }

@@ -67,8 +67,9 @@ public:
 private:
 
 	String paramName = String("THIS IS A TEST");
-	Image baseline;
-	Array<DrawableImage*> knobs;
+    Image baseline;
+//    Array<DrawableImage*> knobs;
+    
 	OtherLookAndFeel knobOne;
 	OtherLookAndFeel knobTwo;
 	OtherLookAndFeel knobThree;
@@ -77,12 +78,13 @@ private:
 	OtherLookAndFeel knobSix;
 	OtherLookAndFeel knobSeven;
 
-	Array<DrawableImage*> lights;
+//    Array<DrawableImage*> lights;
 
 	Array<Slider*> dials;
-
-	Array<ImageButton*> buttons;
-
+    
+    Array<TextButton*> buttons;
+    
+    
 	ComboBox menu;
 
 
