@@ -42,11 +42,15 @@ class OtherLookAndFeel : public LookAndFeel_V4
 			auto pointerThickness = 2.0f;
 			p.addRectangle(-pointerThickness * 0.5f, -radius, pointerThickness, pointerLength);
 			p.applyTransform(AffineTransform::rotation(angle).translated(centreX, centreY));
+			g.setColour(Colours::grey);
+			g.fillEllipse(rx, ry, rw, rw);
 			g.setColour(Colours::black);
 			g.fillPath(p);
+
 	}
 
 };
+
 class VocodecAudioProcessorEditor : public AudioProcessorEditor, public Slider::Listener, public Button::Listener, public Timer
 {
 public:
@@ -82,7 +86,7 @@ private:
 
 	Array<Slider*> dials;
     
-    Array<TextButton*> buttons;
+    Array<ShapeButton*> buttons;
     
     
 	ComboBox menu;

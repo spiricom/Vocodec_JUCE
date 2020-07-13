@@ -43,10 +43,13 @@ VocodecAudioProcessorEditor::VocodecAudioProcessorEditor (VocodecAudioProcessor&
 //        addAndMakeVisible(lights[i]);
 //    }
 
+	Path path;
+	path.addEllipse(0, 0, 30, 30);
+
+
 	for (int i = 0; i < NUM_BUTTONS; i++) {
-        buttons.add(new TextButton());
-        buttons[i]->setButtonText(String(i));
-        buttons[i]->setAlpha(0.2f);
+        buttons.add(new ShapeButton("", Colours::ivory, Colours::lightgrey, Colours::grey));
+		buttons[i]->setShape(path, true, true, true);
 		addAndMakeVisible(buttons[i]);
 		buttons[i]->addListener(this);
 	}
@@ -101,7 +104,7 @@ VocodecAudioProcessorEditor::VocodecAudioProcessorEditor (VocodecAudioProcessor&
 //    buttons[vocodec::ButtonLeft]->setImages(false, false, true, upLeft, 1, Colours::transparentBlack, upLeft, 1, Colours::transparentBlack, blank, 1, Colours::transparentBlack, 0.5);
 //    buttons[vocodec::ButtonRight]->setImages(false, false, true, upRight, 1, Colours::transparentBlack, upRight, 1, Colours::transparentBlack, blank, 1, Colours::transparentBlack, 0.5);
 
-    setSize(baseline.getWidth(), baseline.getHeight());
+    setSize(600, 712);
 
 	addAndMakeVisible(menu);
 	menu.addItem("Vocoder", 1);
@@ -144,7 +147,7 @@ VocodecAudioProcessorEditor::~VocodecAudioProcessorEditor()
 void VocodecAudioProcessorEditor::paint (Graphics& g)
 {
     // (Our component is opaque, so we must completely fill the background with a solid colour)
-    g.fillAll (getLookAndFeel().findColour (ResizableWindow::backgroundColourId));
+    g.fillAll (Colours::black);
 
     g.setFont (15.0f);
 //    g.drawImageAt(baseline, 0, 0);
@@ -154,38 +157,89 @@ void VocodecAudioProcessorEditor::paint (Graphics& g)
 	g.setColour(Colours::blue);
 	g.drawFittedText(paramName, Rectangle<int>(175,80,150,50), Justification::centred, 1);
 //    knobs[0]->setBounds(0, 3, getWidth(), getHeight());
+	// USB
+	g.setColour(juce::Colours::green);
+	g.fillEllipse(493, 252, 22, 22);
+	// 1
+	if (lightStates[8]) {
+		g.setColour(juce::Colours::red);
+	}
+	else {
+		g.setColour(Colours::darkgrey);
+	}
+	g.fillEllipse(502, 296, 22, 22);
+	// 2
+	if (lightStates[9]) {
+		g.setColour(juce::Colours::green);
+	}
+	else {
+		g.setColour(Colours::darkgrey);
+	}
+	g.fillEllipse(539, 296, 22, 22);
+	// A
+	if (lightStates[0]) {
+		g.setColour(juce::Colours::yellow);
+	}
+	else {
+		g.setColour(Colours::darkgrey);
+	}
+	g.fillEllipse(510, 357, 22, 22);
+	// B
+	if (lightStates[1]) {
+		g.setColour(juce::Colours::green);
+	}
+	else {
+		g.setColour(Colours::darkgrey);
+	}
+	g.fillEllipse(510, 414, 22, 22);
+	// C
+	if (lightStates[3]) {
+		g.setColour(juce::Colours::green);
+	}
+	else {
+		g.setColour(Colours::darkgrey);
+	}
+	g.fillEllipse(303, 493, 22, 22);
+	// EDIT
+	g.setColour(juce::Colours::green);
+	g.fillEllipse(421, 50, 22, 22);
 }
 
 void VocodecAudioProcessorEditor::resized()
 {
-	for (int i = 1; i < NUM_KNOBS; i++) {
-//        knobs[i]->setBounds(0, 1, getWidth(), getHeight());
-	}
-	for (int i = 0; i < NUM_LIGHTS; i++) {
-//        lights[i]->setBounds(0, 1, getWidth(), getHeight());
-	}
+
+//	for (int i = 1; i < NUM_KNOBS; i++) {
+////        knobs[i]->setBounds(0, 1, getWidth(), getHeight());
+//	}
+//	for (int i = 0; i < NUM_LIGHTS; i++) {
+////        lights[i]->setBounds(0, 1, getWidth(), getHeight());
+//	}
+
+
     Rectangle<int> area = getBounds();
     area.removeFromRight(area.getWidth() * 0.5);
     float h = area.getHeight() * 0.1f;
-	for (int i = 0; i < NUM_BUTTONS; i++) {
-        
-		buttons[i]->setBounds(area.removeFromTop(h));
-	}
-    
+	buttons[vocodec::ButtonA]->setBounds(Rectangle<int>(540, 353, 30, 30));
+	buttons[vocodec::ButtonB]->setBounds(Rectangle<int>(540, 412, 30, 30));
+	buttons[vocodec::ButtonC]->setBounds(Rectangle<int>(300, 523, 30, 30));
+	buttons[vocodec::ButtonD]->setBounds(Rectangle<int>(181, 618, 30, 30));
+	buttons[vocodec::ButtonE]->setBounds(Rectangle<int>(238, 618, 30, 30));
+	buttons[vocodec::ButtonEdit]->setBounds(Rectangle<int>(419, 88, 30, 30));
+
     
 
-	dials[0]->setBounds(110, 18, 52, 61);
+	dials[0]->setBounds(90, 60, 57, 57);
 	
-	dials[1]->setBounds(160, 106, 52, 68);
-	dials[2]->setBounds(316, 113, 52, 66);
+	dials[1]->setBounds(175, 205, 57, 57);
+	dials[2]->setBounds(385, 205, 57, 57);
 
-	dials[3]->setBounds(210, 210, 54, 68);
+	dials[3]->setBounds(250, 345, 57, 57);
 
-	dials[4]->setBounds(363, 210, 54, 68);
+	dials[4]->setBounds(445, 345, 57, 57);
 
-	dials[5]->setBounds(155, 325, 57, 68);
+	dials[5]->setBounds(175, 500, 57, 57);
 
-	dials[6]->setBounds(318, 326, 57, 68);
+	dials[6]->setBounds(380, 500, 57, 57);
 
 	menu.setBounds(175, 50, 150, 50);
 
@@ -206,7 +260,7 @@ void VocodecAudioProcessorEditor::sliderValueChanged(Slider* slider) {
 	if (slider == dials[1]) {
 		vocodec::presetKnobValues[vocodec::currentPreset][(vocodec::knobPage * 5 + 0)] = slider->getValue();
 		paramName = String(vocodec::knobParamNames[menu.getSelectedId()-1][(vocodec::knobPage * 5 + 0)]);
-		paramName += String(vocodec::displayValues[vocodec::knobPage * 5 + 0]);
+		paramName += " " + String(vocodec::displayValues[vocodec::knobPage * 5 + 0]);
 		if (sliderOpacity[1] == 0) {
 			sliderOpacity[1] = 1;
 //            knobs[1]->setOpacity(sliderOpacity[1]);
