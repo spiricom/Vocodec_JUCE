@@ -247,97 +247,41 @@ void VocodecAudioProcessorEditor::resized()
 
 void VocodecAudioProcessorEditor::sliderValueChanged(Slider* slider) {
 	if (slider == dials[0]) {
-		if (sliderOpacity[0] == 0) {
-			sliderOpacity[0] = 1;
-//            knobs[0]->setOpacity(sliderOpacity[0]);
-		}
-		else
-		{
-			sliderOpacity[0] = 0;
-//            knobs[0]->setOpacity(sliderOpacity[0]);
-		}
+
 	}
 	if (slider == dials[1]) {
 		vocodec::presetKnobValues[vocodec::currentPreset][(vocodec::knobPage * 5 + 0)] = slider->getValue();
 		paramName = String(vocodec::knobParamNames[menu.getSelectedId()-1][(vocodec::knobPage * 5 + 0)]);
 		paramName += " " + String(vocodec::displayValues[vocodec::knobPage * 5 + 0]);
-		if (sliderOpacity[1] == 0) {
-			sliderOpacity[1] = 1;
-//            knobs[1]->setOpacity(sliderOpacity[1]);
-		}
-		else
-		{
-			sliderOpacity[1] = 0;
-//            knobs[1]->setOpacity(sliderOpacity[1]);
-		}
+
 		
 	}
 	if (slider == dials[2]) {
 		vocodec::presetKnobValues[vocodec::currentPreset][(vocodec::knobPage * 5 + 1)] = slider->getValue();
 		paramName = String(vocodec::knobParamNames[menu.getSelectedId() - 1][(vocodec::knobPage * 5 + 1)]);
 		paramName += String(vocodec::displayValues[vocodec::knobPage * 5 + 1]);
-		if (sliderOpacity[2] == 0) {
-			sliderOpacity[2] = 1;
-//            knobs[2]->setOpacity(sliderOpacity[2]);
-		}
-		else
-		{
-			sliderOpacity[2] = 0;
-//            knobs[2]->setOpacity(sliderOpacity[2]);
-		}
+
 	}
 	if (slider == dials[3]) {
 		vocodec::presetKnobValues[vocodec::currentPreset][(vocodec::knobPage * 5 + 2)] = slider->getValue();
 		paramName = String(vocodec::knobParamNames[menu.getSelectedId()-1][(vocodec::knobPage * 5 + 2)]);
 		paramName += String(vocodec::displayValues[vocodec::knobPage * 5 + 2]);
-		if (sliderOpacity[3] == 0) {
-			sliderOpacity[3] = 1;
-//            knobs[3]->setOpacity(sliderOpacity[3]);
-		}
-		else
-		{
-			sliderOpacity[3] = 0;
-//            knobs[3]->setOpacity(sliderOpacity[3]);
-		}
+
 	}
 	if (slider == dials[4]) {
 		vocodec::presetKnobValues[vocodec::currentPreset][(vocodec::knobPage * 5 + 3)] = slider->getValue();
 		paramName = String(vocodec::knobParamNames[menu.getSelectedId() - 1][(vocodec::knobPage * 5 + 3)]);
 		paramName += String(vocodec::displayValues[vocodec::knobPage * 5 + 3]);
-		if (sliderOpacity[4] == 0) {
-			sliderOpacity[4] = 1;
-//            knobs[4]->setOpacity(sliderOpacity[4]);
-		}
-		else
-		{
-			sliderOpacity[4] = 0;
-//            knobs[4]->setOpacity(sliderOpacity[4]);
-		}
+
 	}
 	if (slider == dials[5]) {
 		vocodec::presetKnobValues[vocodec::currentPreset][(vocodec::knobPage * 5 + 4)] = slider->getValue();
 		paramName = String(vocodec::knobParamNames[menu.getSelectedId()-1][(vocodec::knobPage * 5 + 4)]);
 		paramName += String(vocodec::displayValues[vocodec::knobPage * 5 + 4]);
-		if (sliderOpacity[5] == 0) {
-			sliderOpacity[5] = 1;
-//            knobs[5]->setOpacity(sliderOpacity[5]);
-		}
-		else
-		{
-			sliderOpacity[5] = 0;
-//            knobs[5]->setOpacity(sliderOpacity[5]);
-		}
+
 	}
 	if (slider == dials[6]) {
-		if (sliderOpacity[6] == 0) {
-			sliderOpacity[6] = 1;
-//            knobs[6]->setOpacity(sliderOpacity[6]);
-		}
-		else
-		{
-			sliderOpacity[6] = 0;
-//            knobs[6]->setOpacity(sliderOpacity[6]);
-		}
+		processor.interpVal = slider->getValue();
 	}
 		//for (int i = 0; i < NUM_LIGHTS; i++) {
 		//	lights[i]->setAlpha(slider->getValue() / 10.0f);

@@ -103,7 +103,6 @@ void VocodecAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBloc
     tMempool_init(&vocodec::smallPool, vocodec::small_memory, 80328);
     tMempool_init(&vocodec::largePool, vocodec::large_memory, 33554432);
     vocodec::initGlobalSFXObjects();
-    
     if (presetNumber == 0)
     {
         presetNumber = 1;
@@ -426,9 +425,10 @@ void VocodecAudioProcessor::processBlock (AudioBuffer<float>& buffer, MidiBuffer
                     break;
             }
         
-        
+		audio[0] = LEAF_interpolation_linear(leftChannel[i], audio[0], interpVal);
         buffer.setSample(0, i, audio[0]);
         if(buffer.getNumChannels() > 1){
+			audio[1] = LEAF_interpolation_linear(rightChannel[i], audio[1], interpVal);
             buffer.setSample(1, i, audio[1]);
         }
     }

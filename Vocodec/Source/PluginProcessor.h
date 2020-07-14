@@ -66,6 +66,7 @@ public:
     int presetNumber;
     int prevPresetNumber;
 	bool loading;
+	float interpVal = 0;
     
 private:
 	bool isAddingFromMidiInput = false;
