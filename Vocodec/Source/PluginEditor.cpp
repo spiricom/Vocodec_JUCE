@@ -146,6 +146,9 @@ VocodecAudioProcessorEditor::~VocodecAudioProcessorEditor()
 //==============================================================================
 void VocodecAudioProcessorEditor::paint (Graphics& g)
 {
+    
+    
+    
     // (Our component is opaque, so we must completely fill the background with a solid colour)
     g.fillAll (Colours::black);
 
@@ -157,7 +160,24 @@ void VocodecAudioProcessorEditor::paint (Graphics& g)
 	g.setColour(Colours::blue);
 	g.drawFittedText(paramName, Rectangle<int>(175,80,150,50), Justification::centred, 1);
 //    knobs[0]->setBounds(0, 3, getWidth(), getHeight());
-	// USB
+    
+    juce::Font mainComponentFont(juce::Font::italic);
+    g.setColour(Colours::gold);
+    g.drawFittedText("MIC GAIN", Rectangle<int>(54, 135, 36, 30), Justification::left, 2);
+    g.drawFittedText("EDIT", Rectangle<int>(455, 70, 40, 15), Justification::left, 1);
+    g.drawFittedText("USB", Rectangle<int>(557, 217, 30, 15), Justification::left, 1);
+    g.drawFittedText("WET/DRY", Rectangle<int>(380, 590, 75, 15), Justification::left, 1);
+    g.drawFittedText("1", Rectangle<int>(205, 310, 10, 20), Justification::left, 1);
+    g.drawFittedText("2", Rectangle<int>(405, 310, 10, 20), Justification::left, 1);
+    g.drawFittedText("3", Rectangle<int>(270, 420, 10, 20), Justification::left, 1);
+    g.drawFittedText("4", Rectangle<int>(470, 420, 10, 20), Justification::left, 1);
+    g.drawFittedText("5", Rectangle<int>(200, 590, 10, 20), Justification::left, 1);
+    g.drawFittedText("A", Rectangle<int>(573, 360, 10, 20), Justification::left, 1);
+    g.drawFittedText("B", Rectangle<int>(573, 420, 10, 20), Justification::left, 1);
+    g.drawFittedText("C", Rectangle<int>(306, 557, 10, 20), Justification::left, 1);
+    g.drawFittedText("D", Rectangle<int>(190, 650, 10, 20), Justification::left, 1);
+    g.drawFittedText("E", Rectangle<int>(250, 650, 10, 20), Justification::left, 1);
+    // USB
 	g.setColour(juce::Colours::green);
 	g.fillEllipse(493, 252, 22, 22);
 	// 1

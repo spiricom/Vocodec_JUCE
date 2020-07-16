@@ -451,13 +451,228 @@ AudioProcessorEditor* VocodecAudioProcessor::createEditor()
 void VocodecAudioProcessor::getStateInformation (MemoryBlock& destData)
 {
     std::unique_ptr<XmlElement> xml(new XmlElement("Vocodec"));
+    xml->removeAllAttributes();
+    switch (presetNumber) {
+        case 1:
+            xml->setAttribute("Volume", vocodec::presetKnobValues[vocodec::currentPreset][0]);
+            xml->setAttribute("Warp", vocodec::presetKnobValues[vocodec::currentPreset][1]);
+            xml->setAttribute("Quality", vocodec::presetKnobValues[vocodec::currentPreset][2]);
+            xml->setAttribute("SawToPulse", vocodec::presetKnobValues[vocodec::currentPreset][3]);
+            xml->setAttribute("NoiseThreshold", vocodec::presetKnobValues[vocodec::currentPreset][4]);
+            xml->setAttribute("Breath", vocodec::presetKnobValues[vocodec::currentPreset][5]);
+            xml->setAttribute("Tilt", vocodec::presetKnobValues[vocodec::currentPreset][6]);
+            xml->setAttribute("PulseWidth", vocodec::presetKnobValues[vocodec::currentPreset][7]);
+            xml->setAttribute("PulseShape", vocodec::presetKnobValues[vocodec::currentPreset][8]);
+            xml->setAttribute("", vocodec::presetKnobValues[vocodec::currentPreset][9]);
+            break;
+        case 2:
+            xml->setAttribute("Volume", vocodec::presetKnobValues[vocodec::currentPreset][0]);
+            xml->setAttribute("Warp", vocodec::presetKnobValues[vocodec::currentPreset][1]);
+            xml->setAttribute("Quality", vocodec::presetKnobValues[vocodec::currentPreset][2]);
+            xml->setAttribute("NoiseThreshold", vocodec::presetKnobValues[vocodec::currentPreset][3]);
+            xml->setAttribute("SawToPulse", vocodec::presetKnobValues[vocodec::currentPreset][4]);
+            xml->setAttribute("PulseWidth", vocodec::presetKnobValues[vocodec::currentPreset][5]);
+            xml->setAttribute("PulseShape", vocodec::presetKnobValues[vocodec::currentPreset][6]);
+            xml->setAttribute("Breath", vocodec::presetKnobValues[vocodec::currentPreset][7]);
+            xml->setAttribute("Speed", vocodec::presetKnobValues[vocodec::currentPreset][8]);
+            xml->setAttribute("BandSquish", vocodec::presetKnobValues[vocodec::currentPreset][9]);
+            xml->setAttribute("BandOff", vocodec::presetKnobValues[vocodec::currentPreset][10]);
+            xml->setAttribute("Tilt", vocodec::presetKnobValues[vocodec::currentPreset][11]);
+            xml->setAttribute("Stereo", vocodec::presetKnobValues[vocodec::currentPreset][12]);
+            xml->setAttribute("BarkPull", vocodec::presetKnobValues[vocodec::currentPreset][13]);
+            break;
+        case 3:
+            xml->setAttribute("Shift", vocodec::presetKnobValues[vocodec::currentPreset][0]);
+            xml->setAttribute("Fine", vocodec::presetKnobValues[vocodec::currentPreset][1]);
+            xml->setAttribute("F AMT", vocodec::presetKnobValues[vocodec::currentPreset][2]);
+            xml->setAttribute("Formant", vocodec::presetKnobValues[vocodec::currentPreset][3]);
+            xml->setAttribute("Range", vocodec::presetKnobValues[vocodec::currentPreset][4]);
+            xml->setAttribute("Offset", vocodec::presetKnobValues[vocodec::currentPreset][5]);
+            xml->setAttribute("", vocodec::presetKnobValues[vocodec::currentPreset][6]);
+            xml->setAttribute("", vocodec::presetKnobValues[vocodec::currentPreset][7]);
+            xml->setAttribute("", vocodec::presetKnobValues[vocodec::currentPreset][8]);
+            xml->setAttribute("", vocodec::presetKnobValues[vocodec::currentPreset][9]);
+            break;
+        case 4:
+            xml->setAttribute("Pickiness", vocodec::presetKnobValues[vocodec::currentPreset][0]);
+            xml->setAttribute("Amount", vocodec::presetKnobValues[vocodec::currentPreset][1]);
+            xml->setAttribute("Speed", vocodec::presetKnobValues[vocodec::currentPreset][2]);
+            xml->setAttribute("Leapallow", vocodec::presetKnobValues[vocodec::currentPreset][3]);
+            xml->setAttribute("Hysteresis", vocodec::presetKnobValues[vocodec::currentPreset][4]);
+            break;
+        case 5:
+            xml->setAttribute("Pickiness", vocodec::presetKnobValues[vocodec::currentPreset][0]);
+            xml->setAttribute("", vocodec::presetKnobValues[vocodec::currentPreset][1]);
+            xml->setAttribute("", vocodec::presetKnobValues[vocodec::currentPreset][2]);
+            xml->setAttribute("", vocodec::presetKnobValues[vocodec::currentPreset][3]);
+            xml->setAttribute("", vocodec::presetKnobValues[vocodec::currentPreset][4]);
+            break;
+        case 6:
+            xml->setAttribute("Start", vocodec::presetKnobValues[vocodec::currentPreset][0]);
+            xml->setAttribute("Length", vocodec::presetKnobValues[vocodec::currentPreset][1]);
+            xml->setAttribute("Speed", vocodec::presetKnobValues[vocodec::currentPreset][2]);
+            xml->setAttribute("SpeedMult", vocodec::presetKnobValues[vocodec::currentPreset][3]);
+            xml->setAttribute("CrossFade", vocodec::presetKnobValues[vocodec::currentPreset][4]);
+            break;
+        case 7:
+            xml->setAttribute("Start", vocodec::presetKnobValues[vocodec::currentPreset][0]);
+            xml->setAttribute("Length", vocodec::presetKnobValues[vocodec::currentPreset][1]);
+            xml->setAttribute("Speed", vocodec::presetKnobValues[vocodec::currentPreset][2]);
+            xml->setAttribute("SpeedMult", vocodec::presetKnobValues[vocodec::currentPreset][3]);
+            xml->setAttribute("LoopOn", vocodec::presetKnobValues[vocodec::currentPreset][4]);
+            xml->setAttribute("CrossFade", vocodec::presetKnobValues[vocodec::currentPreset][5]);
+            xml->setAttribute("Velo Sens", vocodec::presetKnobValues[vocodec::currentPreset][6]);
+            xml->setAttribute("", vocodec::presetKnobValues[vocodec::currentPreset][7]);
+            xml->setAttribute("", vocodec::presetKnobValues[vocodec::currentPreset][8]);
+            xml->setAttribute("", vocodec::presetKnobValues[vocodec::currentPreset][9]);
+            break;
+        case 8:
+            xml->setAttribute("Threshold", vocodec::presetKnobValues[vocodec::currentPreset][0]);
+            xml->setAttribute("Window", vocodec::presetKnobValues[vocodec::currentPreset][1]);
+            xml->setAttribute("Speed", vocodec::presetKnobValues[vocodec::currentPreset][2]);
+            xml->setAttribute("CrossFade", vocodec::presetKnobValues[vocodec::currentPreset][3]);
+            xml->setAttribute("", vocodec::presetKnobValues[vocodec::currentPreset][4]);
+            xml->setAttribute("LenRand", vocodec::presetKnobValues[vocodec::currentPreset][5]);
+            xml->setAttribute("SpdRand", vocodec::presetKnobValues[vocodec::currentPreset][6]);
+            xml->setAttribute("", vocodec::presetKnobValues[vocodec::currentPreset][7]);
+            xml->setAttribute("", vocodec::presetKnobValues[vocodec::currentPreset][8]);
+            xml->setAttribute("", vocodec::presetKnobValues[vocodec::currentPreset][9]);
+            break;
+        case 9:
+            xml->setAttribute("PreGain", vocodec::presetKnobValues[vocodec::currentPreset][0]);
+            xml->setAttribute("Tilt", vocodec::presetKnobValues[vocodec::currentPreset][1]);
+            xml->setAttribute("MidGain", vocodec::presetKnobValues[vocodec::currentPreset][2]);
+            xml->setAttribute("MidFreq", vocodec::presetKnobValues[vocodec::currentPreset][3]);
+            xml->setAttribute("PostGain", vocodec::presetKnobValues[vocodec::currentPreset][4]);
+            break;
+        case 10:
+            xml->setAttribute("Gain", vocodec::presetKnobValues[vocodec::currentPreset][0]);
+            xml->setAttribute("Offset1", vocodec::presetKnobValues[vocodec::currentPreset][1]);
+            xml->setAttribute("Offset2", vocodec::presetKnobValues[vocodec::currentPreset][2]);
+            xml->setAttribute("PostGain", vocodec::presetKnobValues[vocodec::currentPreset][3]);
+            xml->setAttribute("", vocodec::presetKnobValues[vocodec::currentPreset][4]);
+            break;
+        case 11:
+            xml->setAttribute("Quality", vocodec::presetKnobValues[vocodec::currentPreset][0]);
+            xml->setAttribute("SampRatio", vocodec::presetKnobValues[vocodec::currentPreset][1]);
+            xml->setAttribute("Rounding", vocodec::presetKnobValues[vocodec::currentPreset][2]);
+            xml->setAttribute("Operation", vocodec::presetKnobValues[vocodec::currentPreset][3]);
+            xml->setAttribute("PostGain", vocodec::presetKnobValues[vocodec::currentPreset][4]);
+            xml->setAttribute("preGain", vocodec::presetKnobValues[vocodec::currentPreset][5]);
+            xml->setAttribute("", vocodec::presetKnobValues[vocodec::currentPreset][6]);
+            xml->setAttribute("", vocodec::presetKnobValues[vocodec::currentPreset][7]);
+            xml->setAttribute("", vocodec::presetKnobValues[vocodec::currentPreset][8]);
+            xml->setAttribute("", vocodec::presetKnobValues[vocodec::currentPreset][9]);
+            break;
+        case 12:
+            xml->setAttribute("DelayL", vocodec::presetKnobValues[vocodec::currentPreset][0]);
+            xml->setAttribute("DelayR", vocodec::presetKnobValues[vocodec::currentPreset][1]);
+            xml->setAttribute("HighPass", vocodec::presetKnobValues[vocodec::currentPreset][2]);
+            xml->setAttribute("LowPass", vocodec::presetKnobValues[vocodec::currentPreset][3]);
+            xml->setAttribute("Feedback", vocodec::presetKnobValues[vocodec::currentPreset][4]);
+            xml->setAttribute("PostGain", vocodec::presetKnobValues[vocodec::currentPreset][5]);
+            xml->setAttribute("PostGain", vocodec::presetKnobValues[vocodec::currentPreset][6]);
+            xml->setAttribute("PostGain", vocodec::presetKnobValues[vocodec::currentPreset][7]);
+            xml->setAttribute("PostGain", vocodec::presetKnobValues[vocodec::currentPreset][8]);
+            xml->setAttribute("", vocodec::presetKnobValues[vocodec::currentPreset][9]);
+            break;
+        case 13:
+            xml->setAttribute("Size", vocodec::presetKnobValues[vocodec::currentPreset][0]);
+            xml->setAttribute("FBLowPass", vocodec::presetKnobValues[vocodec::currentPreset][1]);
+            xml->setAttribute("InHighPass", vocodec::presetKnobValues[vocodec::currentPreset][2]);
+            xml->setAttribute("InLowPass", vocodec::presetKnobValues[vocodec::currentPreset][3]);
+            xml->setAttribute("FBGain", vocodec::presetKnobValues[vocodec::currentPreset][4]);
+            break;
+        case 14:
+            xml->setAttribute("Size", vocodec::presetKnobValues[vocodec::currentPreset][0]);
+            xml->setAttribute("LowPass", vocodec::presetKnobValues[vocodec::currentPreset][1]);
+            xml->setAttribute("HighPass", vocodec::presetKnobValues[vocodec::currentPreset][2]);
+            xml->setAttribute("PeakFreq", vocodec::presetKnobValues[vocodec::currentPreset][3]);
+            xml->setAttribute("PeakGain", vocodec::presetKnobValues[vocodec::currentPreset][4]);
+            break;
+        case 15:
+            xml->setAttribute("Freq1", vocodec::presetKnobValues[vocodec::currentPreset][0]);
+            xml->setAttribute("Detune", vocodec::presetKnobValues[vocodec::currentPreset][1]);
+            xml->setAttribute("Decay", vocodec::presetKnobValues[vocodec::currentPreset][2]);
+            xml->setAttribute("Damping", vocodec::presetKnobValues[vocodec::currentPreset][3]);
+            xml->setAttribute("PickPos", vocodec::presetKnobValues[vocodec::currentPreset][4]);
+            xml->setAttribute("PrepPos", vocodec::presetKnobValues[vocodec::currentPreset][5]);
+            xml->setAttribute("PrepForce", vocodec::presetKnobValues[vocodec::currentPreset][6]);
+            xml->setAttribute("LetRing", vocodec::presetKnobValues[vocodec::currentPreset][7]);
+            xml->setAttribute("", vocodec::presetKnobValues[vocodec::currentPreset][8]);
+            xml->setAttribute("", vocodec::presetKnobValues[vocodec::currentPreset][9]);
+            xml->setAttribute("Freq2", vocodec::presetKnobValues[vocodec::currentPreset][10]);
+            xml->setAttribute("Freq3", vocodec::presetKnobValues[vocodec::currentPreset][11]);
+            xml->setAttribute("Freq4", vocodec::presetKnobValues[vocodec::currentPreset][12]);
+            xml->setAttribute("Freq5", vocodec::presetKnobValues[vocodec::currentPreset][13]);
+            xml->setAttribute("Freq6", vocodec::presetKnobValues[vocodec::currentPreset][14]);
+            break;
+        case 16:
+            xml->setAttribute("PluckVol", vocodec::presetKnobValues[vocodec::currentPreset][0]);
+            xml->setAttribute("PluckTone", vocodec::presetKnobValues[vocodec::currentPreset][1]);
+            xml->setAttribute("Decay", vocodec::presetKnobValues[vocodec::currentPreset][2]);
+            xml->setAttribute("Damping", vocodec::presetKnobValues[vocodec::currentPreset][3]);
+            xml->setAttribute("PickPos", vocodec::presetKnobValues[vocodec::currentPreset][4]);
+            xml->setAttribute("PrepPos", vocodec::presetKnobValues[vocodec::currentPreset][5]);
+            xml->setAttribute("PrepForce", vocodec::presetKnobValues[vocodec::currentPreset][6]);
+            xml->setAttribute("LetRing", vocodec::presetKnobValues[vocodec::currentPreset][7]);
+            xml->setAttribute("FBLevel", vocodec::presetKnobValues[vocodec::currentPreset][8]);
+            xml->setAttribute("Release", vocodec::presetKnobValues[vocodec::currentPreset][9]);
+            break;
+        case 17:
+            xml->setAttribute("Volume", vocodec::presetKnobValues[vocodec::currentPreset][0]);
+            xml->setAttribute("LowPass", vocodec::presetKnobValues[vocodec::currentPreset][1]);
+            xml->setAttribute("KeyFollow", vocodec::presetKnobValues[vocodec::currentPreset][2]);
+            xml->setAttribute("Detune", vocodec::presetKnobValues[vocodec::currentPreset][3]);
+            xml->setAttribute("FilterQ", vocodec::presetKnobValues[vocodec::currentPreset][4]);
+            xml->setAttribute("Attack", vocodec::presetKnobValues[vocodec::currentPreset][5]);
+            xml->setAttribute("Decay", vocodec::presetKnobValues[vocodec::currentPreset][6]);
+            xml->setAttribute("Sustain", vocodec::presetKnobValues[vocodec::currentPreset][7]);
+            xml->setAttribute("Release", vocodec::presetKnobValues[vocodec::currentPreset][8]);
+            xml->setAttribute("Leak", vocodec::presetKnobValues[vocodec::currentPreset][9]);
+            xml->setAttribute("FAttack", vocodec::presetKnobValues[vocodec::currentPreset][10]);
+            xml->setAttribute("FDecay", vocodec::presetKnobValues[vocodec::currentPreset][11]);
+            xml->setAttribute("FSustain", vocodec::presetKnobValues[vocodec::currentPreset][12]);
+            xml->setAttribute("FRelease", vocodec::presetKnobValues[vocodec::currentPreset][13]);
+            xml->setAttribute("FLeak", vocodec::presetKnobValues[vocodec::currentPreset][14]);
+            xml->setAttribute("FAmount", vocodec::presetKnobValues[vocodec::currentPreset][15]);
+            xml->setAttribute("Saw/Pulse", vocodec::presetKnobValues[vocodec::currentPreset][16]);
+            xml->setAttribute("", vocodec::presetKnobValues[vocodec::currentPreset][17]);
+            xml->setAttribute("", vocodec::presetKnobValues[vocodec::currentPreset][18]);
+            xml->setAttribute("", vocodec::presetKnobValues[vocodec::currentPreset][19]);
+            break;
+        case 18:
+            xml->setAttribute("Brightness", vocodec::presetKnobValues[vocodec::currentPreset][0]);
+            xml->setAttribute("TremDepth", vocodec::presetKnobValues[vocodec::currentPreset][1]);
+            xml->setAttribute("TremRate", vocodec::presetKnobValues[vocodec::currentPreset][2]);
+            xml->setAttribute("Drive", vocodec::presetKnobValues[vocodec::currentPreset][3]);
+            xml->setAttribute("PanSpread", vocodec::presetKnobValues[vocodec::currentPreset][4]);
+            xml->setAttribute("Attack", vocodec::presetKnobValues[vocodec::currentPreset][5]);
+            xml->setAttribute("Decay", vocodec::presetKnobValues[vocodec::currentPreset][6]);
+            xml->setAttribute("Sustain", vocodec::presetKnobValues[vocodec::currentPreset][7]);
+            xml->setAttribute("Release", vocodec::presetKnobValues[vocodec::currentPreset][8]);
+            xml->setAttribute("Leak", vocodec::presetKnobValues[vocodec::currentPreset][9]);
+            xml->setAttribute("Index1", vocodec::presetKnobValues[vocodec::currentPreset][10]);
+            xml->setAttribute("Index2", vocodec::presetKnobValues[vocodec::currentPreset][11]);
+            xml->setAttribute("Index3", vocodec::presetKnobValues[vocodec::currentPreset][12]);
+            xml->setAttribute("Index4", vocodec::presetKnobValues[vocodec::currentPreset][13]);
+            xml->setAttribute("Index5", vocodec::presetKnobValues[vocodec::currentPreset][14]);
+            xml->setAttribute("Ratio1", vocodec::presetKnobValues[vocodec::currentPreset][15]);
+            xml->setAttribute("Ratio2", vocodec::presetKnobValues[vocodec::currentPreset][16]);
+            xml->setAttribute("Ratio3", vocodec::presetKnobValues[vocodec::currentPreset][17]);
+            xml->setAttribute("Ratio4", vocodec::presetKnobValues[vocodec::currentPreset][18]);
+            xml->setAttribute("Ratio5", vocodec::presetKnobValues[vocodec::currentPreset][19]);
+            xml->setAttribute("Ratio6", vocodec::presetKnobValues[vocodec::currentPreset][20]);
+            xml->setAttribute("Feedback", vocodec::presetKnobValues[vocodec::currentPreset][21]);
+            xml->setAttribute("TuneSnap", vocodec::presetKnobValues[vocodec::currentPreset][22]);
+            xml->setAttribute("RandDecay", vocodec::presetKnobValues[vocodec::currentPreset][23]);
+            xml->setAttribute("RandSust", vocodec::presetKnobValues[vocodec::currentPreset][24]);
+            break;
+        default:
+            break;
+    }
     
-    xml->setAttribute("Knob1", vocodec::presetKnobValues[vocodec::currentPreset][(vocodec::knobPage * 5 + 0)]);
-    xml->setAttribute("Knob2", vocodec::presetKnobValues[vocodec::currentPreset][(vocodec::knobPage * 5 + 1)]);
-    xml->setAttribute("Knob3", vocodec::presetKnobValues[vocodec::currentPreset][(vocodec::knobPage * 5 + 2)]);
-    xml->setAttribute("Knob4", vocodec::presetKnobValues[vocodec::currentPreset][(vocodec::knobPage * 5 + 3)]);
-    xml->setAttribute("Knob5", vocodec::presetKnobValues[vocodec::currentPreset][(vocodec::knobPage * 5 + 4)]);
-    //missig dryWet knob
+    xml->setAttribute("DryWet", interpVal);
     xml->setAttribute("ButtonEdit", vocodec::buttonActionsSFX[0][vocodec::ActionPress]);
     xml->setAttribute("ButtonLeft", vocodec::buttonActionsSFX[1][vocodec::ActionPress]);
     xml->setAttribute("ButtonRight", vocodec::buttonActionsSFX[2][vocodec::ActionPress]);
@@ -478,13 +693,227 @@ void VocodecAudioProcessor::setStateInformation (const void* data, int sizeInByt
     
     if(xml.get() != nullptr && xml->hasTagName("Vocodec"))
     {
-        vocodec::presetKnobValues[vocodec::currentPreset][(vocodec::knobPage * 5 + 0)] = xml->getDoubleAttribute("Knob1");
-        vocodec::presetKnobValues[vocodec::currentPreset][(vocodec::knobPage * 5 + 1)] = xml->getDoubleAttribute("Knob2");
-        vocodec::presetKnobValues[vocodec::currentPreset][(vocodec::knobPage * 5 + 2)] = xml->getDoubleAttribute("Knob3");
-        vocodec::presetKnobValues[vocodec::currentPreset][(vocodec::knobPage * 5 + 3)] = xml->getDoubleAttribute("Knob4");
-        vocodec::presetKnobValues[vocodec::currentPreset][(vocodec::knobPage * 5 + 4)] = xml->getDoubleAttribute("Knob5");
-        //missing dryWet knob
-        
+        switch (presetNumber) {
+               case 1:
+                   vocodec::presetKnobValues[vocodec::currentPreset][0] = xml->getDoubleAttribute("Volume");
+                   vocodec::presetKnobValues[vocodec::currentPreset][1] = xml->getDoubleAttribute("Warp");
+                   vocodec::presetKnobValues[vocodec::currentPreset][2] = xml->getDoubleAttribute("Quality");
+                   vocodec::presetKnobValues[vocodec::currentPreset][3] = xml->getDoubleAttribute("SawToPulse");
+                   vocodec::presetKnobValues[vocodec::currentPreset][4] = xml->getDoubleAttribute("NoiseThreshold");
+                   vocodec::presetKnobValues[vocodec::currentPreset][5] = xml->getDoubleAttribute("Breath");
+                   vocodec::presetKnobValues[vocodec::currentPreset][6] = xml->getDoubleAttribute("Tilt");
+                   vocodec::presetKnobValues[vocodec::currentPreset][7] = xml->getDoubleAttribute("PulseWidth");
+                   vocodec::presetKnobValues[vocodec::currentPreset][8] = xml->getDoubleAttribute("PulseShape");
+                   vocodec::presetKnobValues[vocodec::currentPreset][9] = xml->getDoubleAttribute("");
+                   break;
+               case 2:
+                   vocodec::presetKnobValues[vocodec::currentPreset][0] = xml->getDoubleAttribute("Volume");
+                   vocodec::presetKnobValues[vocodec::currentPreset][1] = xml->getDoubleAttribute("Warp");
+                   vocodec::presetKnobValues[vocodec::currentPreset][2] = xml->getDoubleAttribute("Quality");
+                   vocodec::presetKnobValues[vocodec::currentPreset][3] = xml->getDoubleAttribute("NoiseThreshold");
+                   vocodec::presetKnobValues[vocodec::currentPreset][4] = xml->getDoubleAttribute("SawToPulse");
+                   vocodec::presetKnobValues[vocodec::currentPreset][5] = xml->getDoubleAttribute("PulseWidth");
+                   vocodec::presetKnobValues[vocodec::currentPreset][6] = xml->getDoubleAttribute("PulseShape");
+                   vocodec::presetKnobValues[vocodec::currentPreset][7] = xml->getDoubleAttribute("Breath");
+                   vocodec::presetKnobValues[vocodec::currentPreset][8] = xml->getDoubleAttribute("Speed");
+                   vocodec::presetKnobValues[vocodec::currentPreset][9] = xml->getDoubleAttribute("BandSquish");
+                   vocodec::presetKnobValues[vocodec::currentPreset][10] = xml->getDoubleAttribute("BandOff");
+                   vocodec::presetKnobValues[vocodec::currentPreset][11] = xml->getDoubleAttribute("Tilt");
+                   vocodec::presetKnobValues[vocodec::currentPreset][12] = xml->getDoubleAttribute("Stereo");
+                   vocodec::presetKnobValues[vocodec::currentPreset][13] = xml->getDoubleAttribute("BarkPull");
+                   break;
+               case 3:
+                   vocodec::presetKnobValues[vocodec::currentPreset][0] = xml->getDoubleAttribute("Shift");
+                   vocodec::presetKnobValues[vocodec::currentPreset][1] = xml->getDoubleAttribute("Fine");
+                   vocodec::presetKnobValues[vocodec::currentPreset][2] = xml->getDoubleAttribute("F AMT");
+                   vocodec::presetKnobValues[vocodec::currentPreset][3] = xml->getDoubleAttribute("Formant");
+                   vocodec::presetKnobValues[vocodec::currentPreset][4] = xml->getDoubleAttribute("Range");
+                   vocodec::presetKnobValues[vocodec::currentPreset][5] = xml->getDoubleAttribute("Offset");
+                   vocodec::presetKnobValues[vocodec::currentPreset][6] = xml->getDoubleAttribute("");
+                   vocodec::presetKnobValues[vocodec::currentPreset][7] = xml->getDoubleAttribute("");
+                   vocodec::presetKnobValues[vocodec::currentPreset][8] = xml->getDoubleAttribute("");
+                   vocodec::presetKnobValues[vocodec::currentPreset][9] = xml->getDoubleAttribute("");
+                   break;
+               case 4:
+                   vocodec::presetKnobValues[vocodec::currentPreset][0] = xml->getDoubleAttribute("Pickiness");
+                   vocodec::presetKnobValues[vocodec::currentPreset][1] = xml->getDoubleAttribute("Amount");
+                   vocodec::presetKnobValues[vocodec::currentPreset][2] = xml->getDoubleAttribute("Speed");
+                   vocodec::presetKnobValues[vocodec::currentPreset][3] = xml->getDoubleAttribute("Leapallow");
+                   vocodec::presetKnobValues[vocodec::currentPreset][4] = xml->getDoubleAttribute("Hysteresis");
+                   break;
+               case 5:
+                   vocodec::presetKnobValues[vocodec::currentPreset][0] = xml->getDoubleAttribute("Pickiness");
+                   vocodec::presetKnobValues[vocodec::currentPreset][1] = xml->getDoubleAttribute("");
+                   vocodec::presetKnobValues[vocodec::currentPreset][2] = xml->getDoubleAttribute("");
+                   vocodec::presetKnobValues[vocodec::currentPreset][3] = xml->getDoubleAttribute("");
+                   vocodec::presetKnobValues[vocodec::currentPreset][4] = xml->getDoubleAttribute("");
+                   break;
+               case 6:
+                   vocodec::presetKnobValues[vocodec::currentPreset][0] = xml->getDoubleAttribute("Start");
+                   vocodec::presetKnobValues[vocodec::currentPreset][1] = xml->getDoubleAttribute("Length");
+                   vocodec::presetKnobValues[vocodec::currentPreset][2] = xml->getDoubleAttribute("Speed");
+                   vocodec::presetKnobValues[vocodec::currentPreset][3] = xml->getDoubleAttribute("SpeedMult");
+                   vocodec::presetKnobValues[vocodec::currentPreset][4] = xml->getDoubleAttribute("CrossFade");
+                   break;
+               case 7:
+                   vocodec::presetKnobValues[vocodec::currentPreset][0] = xml->getDoubleAttribute("Start");
+                   vocodec::presetKnobValues[vocodec::currentPreset][1] = xml->getDoubleAttribute("Length");
+                   vocodec::presetKnobValues[vocodec::currentPreset][2] = xml->getDoubleAttribute("Speed");
+                   vocodec::presetKnobValues[vocodec::currentPreset][3] = xml->getDoubleAttribute("SpeedMult");
+                   vocodec::presetKnobValues[vocodec::currentPreset][4] = xml->getDoubleAttribute("LoopOn");
+                   vocodec::presetKnobValues[vocodec::currentPreset][5] = xml->getDoubleAttribute("CrossFade");
+                   vocodec::presetKnobValues[vocodec::currentPreset][6] = xml->getDoubleAttribute("Velo Sens");
+                   vocodec::presetKnobValues[vocodec::currentPreset][7] = xml->getDoubleAttribute("");
+                   vocodec::presetKnobValues[vocodec::currentPreset][8] = xml->getDoubleAttribute("");
+                   vocodec::presetKnobValues[vocodec::currentPreset][9] = xml->getDoubleAttribute("");
+                   break;
+               case 8:
+                   vocodec::presetKnobValues[vocodec::currentPreset][0] = xml->getDoubleAttribute("Threshold");
+                   vocodec::presetKnobValues[vocodec::currentPreset][1] = xml->getDoubleAttribute("Window");
+                   vocodec::presetKnobValues[vocodec::currentPreset][2] = xml->getDoubleAttribute("Speed");
+                   vocodec::presetKnobValues[vocodec::currentPreset][3] = xml->getDoubleAttribute("CrossFade");
+                   vocodec::presetKnobValues[vocodec::currentPreset][4] = xml->getDoubleAttribute("");
+                   vocodec::presetKnobValues[vocodec::currentPreset][5] = xml->getDoubleAttribute("LenRand");
+                   vocodec::presetKnobValues[vocodec::currentPreset][6] = xml->getDoubleAttribute("SpdRand");
+                   vocodec::presetKnobValues[vocodec::currentPreset][7] = xml->getDoubleAttribute("");
+                   vocodec::presetKnobValues[vocodec::currentPreset][8] = xml->getDoubleAttribute("");
+                   vocodec::presetKnobValues[vocodec::currentPreset][9] = xml->getDoubleAttribute("");
+                   break;
+               case 9:
+                   vocodec::presetKnobValues[vocodec::currentPreset][0] = xml->getDoubleAttribute("PreGain");
+                   vocodec::presetKnobValues[vocodec::currentPreset][1] = xml->getDoubleAttribute("Tilt");
+                   vocodec::presetKnobValues[vocodec::currentPreset][2] = xml->getDoubleAttribute("MidGain");
+                   vocodec::presetKnobValues[vocodec::currentPreset][3] = xml->getDoubleAttribute("MidFreq");
+                   vocodec::presetKnobValues[vocodec::currentPreset][4] = xml->getDoubleAttribute("PostGain");
+                   break;
+               case 10:
+                   vocodec::presetKnobValues[vocodec::currentPreset][0] = xml->getDoubleAttribute("Gain");
+                   vocodec::presetKnobValues[vocodec::currentPreset][1] = xml->getDoubleAttribute("Offset1");
+                   vocodec::presetKnobValues[vocodec::currentPreset][2] = xml->getDoubleAttribute("Offset2");
+                   vocodec::presetKnobValues[vocodec::currentPreset][3] = xml->getDoubleAttribute("PostGain");
+                   vocodec::presetKnobValues[vocodec::currentPreset][4] = xml->getDoubleAttribute("");
+                   break;
+               case 11:
+                   vocodec::presetKnobValues[vocodec::currentPreset][0] = xml->getDoubleAttribute("Quality");
+                   vocodec::presetKnobValues[vocodec::currentPreset][1] = xml->getDoubleAttribute("SampRatio");
+                   vocodec::presetKnobValues[vocodec::currentPreset][2] = xml->getDoubleAttribute("Rounding");
+                   vocodec::presetKnobValues[vocodec::currentPreset][3] = xml->getDoubleAttribute("Operation");
+                   vocodec::presetKnobValues[vocodec::currentPreset][4] = xml->getDoubleAttribute("PostGain");
+                   vocodec::presetKnobValues[vocodec::currentPreset][5] = xml->getDoubleAttribute("preGain");
+                   vocodec::presetKnobValues[vocodec::currentPreset][6] = xml->getDoubleAttribute("");
+                   vocodec::presetKnobValues[vocodec::currentPreset][7] = xml->getDoubleAttribute("");
+                   vocodec::presetKnobValues[vocodec::currentPreset][8] = xml->getDoubleAttribute("");
+                   vocodec::presetKnobValues[vocodec::currentPreset][9] = xml->getDoubleAttribute("");
+                   break;
+               case 12:
+                   vocodec::presetKnobValues[vocodec::currentPreset][0] = xml->getDoubleAttribute("DelayL");
+                   vocodec::presetKnobValues[vocodec::currentPreset][1] = xml->getDoubleAttribute("DelayR");
+                   vocodec::presetKnobValues[vocodec::currentPreset][2] = xml->getDoubleAttribute("HighPass");
+                   vocodec::presetKnobValues[vocodec::currentPreset][3] = xml->getDoubleAttribute("LowPass");
+                   vocodec::presetKnobValues[vocodec::currentPreset][4] = xml->getDoubleAttribute("Feedback");
+                   vocodec::presetKnobValues[vocodec::currentPreset][5] = xml->getDoubleAttribute("PostGain");
+                   vocodec::presetKnobValues[vocodec::currentPreset][6] = xml->getDoubleAttribute("PostGain");
+                   vocodec::presetKnobValues[vocodec::currentPreset][7] = xml->getDoubleAttribute("PostGain");
+                   vocodec::presetKnobValues[vocodec::currentPreset][8] = xml->getDoubleAttribute("PostGain");
+                   vocodec::presetKnobValues[vocodec::currentPreset][9] = xml->getDoubleAttribute("");
+                   break;
+               case 13:
+                   vocodec::presetKnobValues[vocodec::currentPreset][0] = xml->getDoubleAttribute("Size");
+                   vocodec::presetKnobValues[vocodec::currentPreset][1] = xml->getDoubleAttribute("FBLowPass");
+                   vocodec::presetKnobValues[vocodec::currentPreset][2] = xml->getDoubleAttribute("InHighPass");
+                   vocodec::presetKnobValues[vocodec::currentPreset][3] = xml->getDoubleAttribute("InLowPass");
+                   vocodec::presetKnobValues[vocodec::currentPreset][4] = xml->getDoubleAttribute("FBGain");
+                   break;
+               case 14:
+                   vocodec::presetKnobValues[vocodec::currentPreset][0] = xml->getDoubleAttribute("Size");
+                   vocodec::presetKnobValues[vocodec::currentPreset][1] = xml->getDoubleAttribute("LowPass");
+                   vocodec::presetKnobValues[vocodec::currentPreset][2] = xml->getDoubleAttribute("HighPass");
+                   vocodec::presetKnobValues[vocodec::currentPreset][3] = xml->getDoubleAttribute("PeakFreq");
+                   vocodec::presetKnobValues[vocodec::currentPreset][4] = xml->getDoubleAttribute("PeakGain");
+                   break;
+               case 15:
+                   vocodec::presetKnobValues[vocodec::currentPreset][0] = xml->getDoubleAttribute("Freq1");
+                   vocodec::presetKnobValues[vocodec::currentPreset][1] = xml->getDoubleAttribute("Detune");
+                   vocodec::presetKnobValues[vocodec::currentPreset][2] = xml->getDoubleAttribute("Decay");
+                   vocodec::presetKnobValues[vocodec::currentPreset][3] = xml->getDoubleAttribute("Damping");
+                   vocodec::presetKnobValues[vocodec::currentPreset][4] = xml->getDoubleAttribute("PickPos");
+                   vocodec::presetKnobValues[vocodec::currentPreset][5] = xml->getDoubleAttribute("PrepPos");
+                   vocodec::presetKnobValues[vocodec::currentPreset][6] = xml->getDoubleAttribute("PrepForce");
+                   vocodec::presetKnobValues[vocodec::currentPreset][7] = xml->getDoubleAttribute("LetRing");
+                   vocodec::presetKnobValues[vocodec::currentPreset][8] = xml->getDoubleAttribute("");
+                   vocodec::presetKnobValues[vocodec::currentPreset][9] = xml->getDoubleAttribute("");
+                   vocodec::presetKnobValues[vocodec::currentPreset][10] = xml->getDoubleAttribute("Freq2");
+                   vocodec::presetKnobValues[vocodec::currentPreset][11] = xml->getDoubleAttribute("Freq3");
+                   vocodec::presetKnobValues[vocodec::currentPreset][12] = xml->getDoubleAttribute("Freq4");
+                   vocodec::presetKnobValues[vocodec::currentPreset][13] = xml->getDoubleAttribute("Freq5");
+                   vocodec::presetKnobValues[vocodec::currentPreset][14] = xml->getDoubleAttribute("Freq6");
+                   break;
+               case 16:
+                   vocodec::presetKnobValues[vocodec::currentPreset][0] = xml->getDoubleAttribute("PluckVol");
+                   vocodec::presetKnobValues[vocodec::currentPreset][1] = xml->getDoubleAttribute("PluckTone");
+                   vocodec::presetKnobValues[vocodec::currentPreset][2] = xml->getDoubleAttribute("Decay");
+                   vocodec::presetKnobValues[vocodec::currentPreset][3] = xml->getDoubleAttribute("Damping");
+                   vocodec::presetKnobValues[vocodec::currentPreset][4] = xml->getDoubleAttribute("PickPos");
+                   vocodec::presetKnobValues[vocodec::currentPreset][5] = xml->getDoubleAttribute("PrepPos");
+                   vocodec::presetKnobValues[vocodec::currentPreset][6] = xml->getDoubleAttribute("PrepForce");
+                   vocodec::presetKnobValues[vocodec::currentPreset][7] = xml->getDoubleAttribute("LetRing");
+                   vocodec::presetKnobValues[vocodec::currentPreset][8] = xml->getDoubleAttribute("FBLevel");
+                   vocodec::presetKnobValues[vocodec::currentPreset][9] = xml->getDoubleAttribute("Release");
+                   break;
+               case 17:
+                   vocodec::presetKnobValues[vocodec::currentPreset][0] = xml->getDoubleAttribute("Volume");
+                   vocodec::presetKnobValues[vocodec::currentPreset][1] = xml->getDoubleAttribute("LowPass");
+                   vocodec::presetKnobValues[vocodec::currentPreset][2] = xml->getDoubleAttribute("KeyFollow");
+                   vocodec::presetKnobValues[vocodec::currentPreset][3] = xml->getDoubleAttribute("Detune");
+                   vocodec::presetKnobValues[vocodec::currentPreset][4] = xml->getDoubleAttribute("FilterQ");
+                   vocodec::presetKnobValues[vocodec::currentPreset][5] = xml->getDoubleAttribute("Attack");
+                   vocodec::presetKnobValues[vocodec::currentPreset][6] = xml->getDoubleAttribute("Decay");
+                   vocodec::presetKnobValues[vocodec::currentPreset][7] = xml->getDoubleAttribute("Sustain");
+                   vocodec::presetKnobValues[vocodec::currentPreset][8] = xml->getDoubleAttribute("Release");
+                   vocodec::presetKnobValues[vocodec::currentPreset][9] = xml->getDoubleAttribute("Leak");
+                   vocodec::presetKnobValues[vocodec::currentPreset][10] = xml->getDoubleAttribute("FAttack");
+                   vocodec::presetKnobValues[vocodec::currentPreset][11] = xml->getDoubleAttribute("FDecay");
+                   vocodec::presetKnobValues[vocodec::currentPreset][12] = xml->getDoubleAttribute("FSustain");
+                   vocodec::presetKnobValues[vocodec::currentPreset][13] = xml->getDoubleAttribute("FRelease");
+                   vocodec::presetKnobValues[vocodec::currentPreset][14] = xml->getDoubleAttribute("FLeak");
+                   vocodec::presetKnobValues[vocodec::currentPreset][15] = xml->getDoubleAttribute("FAmount");
+                   vocodec::presetKnobValues[vocodec::currentPreset][16] = xml->getDoubleAttribute("Saw/Pulse");
+                   vocodec::presetKnobValues[vocodec::currentPreset][17] = xml->getDoubleAttribute("");
+                   vocodec::presetKnobValues[vocodec::currentPreset][18] = xml->getDoubleAttribute("");
+                   vocodec::presetKnobValues[vocodec::currentPreset][19] = xml->getDoubleAttribute("");
+                   break;
+               case 18:
+                   vocodec::presetKnobValues[vocodec::currentPreset][0] = xml->getDoubleAttribute("Brightness");
+                   vocodec::presetKnobValues[vocodec::currentPreset][1] = xml->getDoubleAttribute("TremDepth");
+                   vocodec::presetKnobValues[vocodec::currentPreset][2] = xml->getDoubleAttribute("TremRate");
+                   vocodec::presetKnobValues[vocodec::currentPreset][3] = xml->getDoubleAttribute("Drive");
+                   vocodec::presetKnobValues[vocodec::currentPreset][4] = xml->getDoubleAttribute("PanSpread");
+                   vocodec::presetKnobValues[vocodec::currentPreset][5] = xml->getDoubleAttribute("Attack");
+                   vocodec::presetKnobValues[vocodec::currentPreset][6] = xml->getDoubleAttribute("Decay");
+                   vocodec::presetKnobValues[vocodec::currentPreset][7] = xml->getDoubleAttribute("Sustain");
+                   vocodec::presetKnobValues[vocodec::currentPreset][8] = xml->getDoubleAttribute("Release");
+                   vocodec::presetKnobValues[vocodec::currentPreset][9] = xml->getDoubleAttribute("Leak");
+                   vocodec::presetKnobValues[vocodec::currentPreset][10] = xml->getDoubleAttribute("Index1");
+                   vocodec::presetKnobValues[vocodec::currentPreset][11] = xml->getDoubleAttribute("Index2");
+                   vocodec::presetKnobValues[vocodec::currentPreset][12] = xml->getDoubleAttribute("Index3");
+                   vocodec::presetKnobValues[vocodec::currentPreset][13] = xml->getDoubleAttribute("Index4");
+                   vocodec::presetKnobValues[vocodec::currentPreset][14] = xml->getDoubleAttribute("Index5");
+                   vocodec::presetKnobValues[vocodec::currentPreset][15] = xml->getDoubleAttribute("Ratio1");
+                   vocodec::presetKnobValues[vocodec::currentPreset][16] = xml->getDoubleAttribute("Ratio2");
+                   vocodec::presetKnobValues[vocodec::currentPreset][17] = xml->getDoubleAttribute("Ratio3");
+                   vocodec::presetKnobValues[vocodec::currentPreset][18] = xml->getDoubleAttribute("Ratio4");
+                   vocodec::presetKnobValues[vocodec::currentPreset][19] = xml->getDoubleAttribute("Ratio5");
+                   vocodec::presetKnobValues[vocodec::currentPreset][20] = xml->getDoubleAttribute("Ratio6");
+                   vocodec::presetKnobValues[vocodec::currentPreset][21] = xml->getDoubleAttribute("Feedback");
+                   vocodec::presetKnobValues[vocodec::currentPreset][22] = xml->getDoubleAttribute("TuneSnap");
+                   vocodec::presetKnobValues[vocodec::currentPreset][23] = xml->getDoubleAttribute("RandDecay");
+                   vocodec::presetKnobValues[vocodec::currentPreset][24] = xml->getDoubleAttribute("RandSust");
+                   break;
+               default:
+                   break;
+           }
+     
+        interpVal = xml->getDoubleAttribute("DryWet");
         vocodec::buttonActionsSFX[0][vocodec::ActionPress] = xml->getDoubleAttribute("ButtonEdit");
         vocodec::buttonActionsSFX[1][vocodec::ActionPress] = xml->getDoubleAttribute("ButtonLeft");
         vocodec::buttonActionsSFX[2][vocodec::ActionPress] = xml->getDoubleAttribute("ButtonRight");
