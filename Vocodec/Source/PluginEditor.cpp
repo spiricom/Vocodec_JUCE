@@ -127,7 +127,7 @@ VocodecAudioProcessorEditor::VocodecAudioProcessorEditor (VocodecAudioProcessor&
 	menu.addItem("Rhodes", 18);
 	Colour translucent(0.0f, 0.0f, 0.0f, 0.65f);
 	menu.setColour(ComboBox::ColourIds::backgroundColourId, translucent);
-	menu.setColour(ComboBox::ColourIds::textColourId, Colours::blue);
+	menu.setColour(ComboBox::ColourIds::textColourId, Colours::white);
 	menu.setColour(ComboBox::ColourIds::buttonColourId, Colours::black);
 	menu.setColour(ComboBox::ColourIds::outlineColourId, Colours::transparentWhite);
 	menu.setJustificationType(Justification::centred);
@@ -157,7 +157,7 @@ void VocodecAudioProcessorEditor::paint (Graphics& g)
 	Colour translucent(0.0f, 0.0f, 0.0f, 0.50f);
 	g.setColour(translucent);
 	g.fillRect(Rectangle<int>(175, 80, 150, 35));
-	g.setColour(Colours::blue);
+	g.setColour(Colours::white);
 	g.drawFittedText(paramName, Rectangle<int>(175,80,150,50), Justification::centred, 1);
 //    knobs[0]->setBounds(0, 3, getWidth(), getHeight());
     
@@ -166,7 +166,7 @@ void VocodecAudioProcessorEditor::paint (Graphics& g)
     g.drawFittedText("MIC GAIN", Rectangle<int>(54, 135, 36, 30), Justification::left, 2);
     g.drawFittedText("EDIT", Rectangle<int>(455, 70, 40, 15), Justification::left, 1);
     g.drawFittedText("USB", Rectangle<int>(557, 217, 30, 15), Justification::left, 1);
-    g.drawFittedText("WET/DRY", Rectangle<int>(380, 590, 75, 15), Justification::left, 1);
+    g.drawFittedText("Dry/Wet", Rectangle<int>(380, 590, 75, 15), Justification::left, 1);
     g.drawFittedText("1", Rectangle<int>(205, 310, 10, 20), Justification::left, 1);
     g.drawFittedText("2", Rectangle<int>(405, 310, 10, 20), Justification::left, 1);
     g.drawFittedText("3", Rectangle<int>(270, 420, 10, 20), Justification::left, 1);
@@ -270,32 +270,35 @@ void VocodecAudioProcessorEditor::sliderValueChanged(Slider* slider) {
 
 	}
 	if (slider == dials[1]) {
-		vocodec::presetKnobValues[vocodec::currentPreset][(vocodec::knobPage * 5 + 0)] = slider->getValue();
+        float sliderValue;
+        sliderValue = slider ->getValue();
+        vocodec::presetKnobValues[processor.presetNumber - 1][(vocodec::knobPage * 5 + 0)] = sliderValue;
 		paramName = String(vocodec::knobParamNames[menu.getSelectedId()-1][(vocodec::knobPage * 5 + 0)]);
-		paramName += " " + String(vocodec::displayValues[vocodec::knobPage * 5 + 0]);
+        paramName += " ";
+		paramName += String(vocodec::displayValues[vocodec::knobPage * 5 + 0]);
 
 		
 	}
 	if (slider == dials[2]) {
-		vocodec::presetKnobValues[vocodec::currentPreset][(vocodec::knobPage * 5 + 1)] = slider->getValue();
+		vocodec::presetKnobValues[processor.presetNumber - 1][(vocodec::knobPage * 5 + 1)] = slider->getValue();
 		paramName = String(vocodec::knobParamNames[menu.getSelectedId() - 1][(vocodec::knobPage * 5 + 1)]);
 		paramName += String(vocodec::displayValues[vocodec::knobPage * 5 + 1]);
 
 	}
 	if (slider == dials[3]) {
-		vocodec::presetKnobValues[vocodec::currentPreset][(vocodec::knobPage * 5 + 2)] = slider->getValue();
+		vocodec::presetKnobValues[processor.presetNumber - 1][(vocodec::knobPage * 5 + 2)] = slider->getValue();
 		paramName = String(vocodec::knobParamNames[menu.getSelectedId()-1][(vocodec::knobPage * 5 + 2)]);
 		paramName += String(vocodec::displayValues[vocodec::knobPage * 5 + 2]);
 
 	}
 	if (slider == dials[4]) {
-		vocodec::presetKnobValues[vocodec::currentPreset][(vocodec::knobPage * 5 + 3)] = slider->getValue();
+		vocodec::presetKnobValues[processor.presetNumber - 1][(vocodec::knobPage * 5 + 3)] = slider->getValue();
 		paramName = String(vocodec::knobParamNames[menu.getSelectedId() - 1][(vocodec::knobPage * 5 + 3)]);
 		paramName += String(vocodec::displayValues[vocodec::knobPage * 5 + 3]);
 
 	}
 	if (slider == dials[5]) {
-		vocodec::presetKnobValues[vocodec::currentPreset][(vocodec::knobPage * 5 + 4)] = slider->getValue();
+		vocodec::presetKnobValues[processor.presetNumber - 1][(vocodec::knobPage * 5 + 4)] = slider->getValue();
 		paramName = String(vocodec::knobParamNames[menu.getSelectedId()-1][(vocodec::knobPage * 5 + 4)]);
 		paramName += String(vocodec::displayValues[vocodec::knobPage * 5 + 4]);
 
