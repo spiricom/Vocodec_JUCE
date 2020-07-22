@@ -27,6 +27,158 @@ VocodecAudioProcessor::VocodecAudioProcessor()
 {
     presetNumber = 0;
     prevPresetNumber = 0;
+    addParameter(vocoder_volume = new juce::AudioParameterFloat("Volume", "Volume", 0.0f, 1.0f, 0.5f));
+    addParameter(vocoder_warp = new juce::AudioParameterFloat("Warp", "Warp", 0.0f, 1.0f, 0.5f));
+    addParameter(vocoder_quality = new juce::AudioParameterFloat("Quality", "Quality", 0.0f, 1.0f, 0.5f));
+    addParameter(vocoder_sawToPulse = new juce::AudioParameterFloat("SawToPulse", "SawToPulse", 0.0f, 1.0f, 0.5f));
+    addParameter(vocoder_noiseThreshol = new juce::AudioParameterFloat("NoiseThreshold", "NoiseThreshold", 0.0f, 1.0f, 0.5f));
+    addParameter(vocoder_breath = new juce::AudioParameterFloat("Breath", "Breath", 0.0f, 1.0f, 0.5f));
+    addParameter(vocoder_tilt = new juce::AudioParameterFloat("Tilt", "Tilt", 0.0f, 1.0f, 0.5f));
+    addParameter(vocoder_pulsewidth = new juce::AudioParameterFloat("Pulsewidth", "Pulsewidth", 0.0f, 1.0f, 0.5f));
+    addParameter(vocoder_pulseShape = new juce::AudioParameterFloat("PulseShape", "PulseShape", 0.0f, 1.0f, 0.5f));
+    addParameter(vocoderCh_volume = new juce::AudioParameterFloat("Volume", "Volume", 0.0f, 1.0f, 0.5f));
+    addParameter(vocoderCh_warp = new juce::AudioParameterFloat("Warp", "Warp", 0.0f, 1.0f, 0.5f));
+    addParameter(vocoderCh_quality = new juce::AudioParameterFloat("Quality", "Quality", 0.0f, 1.0f, 0.5f));
+    addParameter(vocoderCh_noiseThreshold = new juce::AudioParameterFloat("NoiseThreshold", "NoiseThreshold", 0.0f, 1.0f, 0.5f));
+    addParameter(vocoderCh_sawToPulse = new juce::AudioParameterFloat("SawToPulse", "SawToPulse", 0.0f, 1.0f, 0.5f));
+    addParameter(vocoderCh_pulseWidth = new juce::AudioParameterFloat("PulseWidth", "PulseWidth", 0.0f, 1.0f, 0.5f));
+    addParameter(vocoderCh_pulseShape = new juce::AudioParameterFloat("PulseShape", "PulseShape", 0.0f, 1.0f, 0.5f));
+    addParameter(vocoderCh_breath = new juce::AudioParameterFloat("Breath", "Breath", 0.0f, 1.0f, 0.5f));
+    addParameter(vocoderCh_speed = new juce::AudioParameterFloat("Speed", "Speed", 0.0f, 1.0f, 0.5f));
+    addParameter(vocoderCh_bandSquish = new juce::AudioParameterFloat("BandSquish", "BandSquish", 0.0f, 1.0f, 0.5f));
+    addParameter(vocoderCh_bandOff = new juce::AudioParameterFloat("BandOff", "BandOff", 0.0f, 1.0f, 0.5f));
+    addParameter(vocoderCh_tilt = new juce::AudioParameterFloat("Tilt", "Tilt", 0.0f, 1.0f, 0.5f));
+    addParameter(vocoderCh_stereo = new juce::AudioParameterFloat("Stereo", "Stereo", 0.0f, 1.0f, 0.5f));
+    addParameter(vocoderCh_barkPull = new juce::AudioParameterFloat("BarkPull", "BarkPull", 0.0f, 1.0f, 0.5f));
+    addParameter(pitchShift_shift = new juce::AudioParameterFloat("Shift", "Shift", 0.0f, 1.0f, 0.5f));
+    addParameter(pitchShift_fine = new juce::AudioParameterFloat("Fine", "Fine", 0.0f, 1.0f, 0.5f));
+    addParameter(pitchShift_f_Amt = new juce::AudioParameterFloat("F AMT", "F AMT", 0.0f, 1.0f, 0.5f));
+    addParameter(pitchShift_formant = new juce::AudioParameterFloat("Formant", "Formant", 0.0f, 1.0f, 0.5f));
+    addParameter(pitchShift_range = new juce::AudioParameterFloat("Range", "Range", 0.0f, 1.0f, 0.5f));
+    addParameter(pitchShift_offset = new juce::AudioParameterFloat("Offset", "Offset", 0.0f, 1.0f, 0.5f));
+    addParameter(autotuneMono_pickiness = new juce::AudioParameterFloat("Pickiness", "Pickiness", 0.0f, 1.0f, 0.5f));
+    addParameter(autotuneMono_amount = new juce::AudioParameterFloat("Amount", "Amount", 0.0f, 1.0f, 0.5f));
+    addParameter(autotuneMono_speed = new juce::AudioParameterFloat("Speed", "Speed", 0.0f, 1.0f, 0.5f));
+    addParameter(autotuneMono_leapallow = new juce::AudioParameterFloat("Leapallow", "Leapallow", 0.0f, 1.0f, 0.5f));
+    addParameter(autotuneMono_hysteresis = new juce::AudioParameterFloat("Hysteresis", "Hysteresis", 0.0f, 1.0f, 0.5f));
+    addParameter(autotunePoly_pickiness = new juce::AudioParameterFloat("Pickiness", "Pickiness", 0.0f, 1.0f, 0.5f));
+    addParameter(samplerButtonPress_start = new juce::AudioParameterFloat("Start", "Start", 0.0f, 1.0f, 0.5f));
+    addParameter(samplerButtonPress_length = new juce::AudioParameterFloat("Length", "Length", 0.0f, 1.0f, 0.5f));
+    addParameter(samplerButtonPress_speed = new juce::AudioParameterFloat("Speed", "Speed", 0.0f, 1.0f, 0.5f));
+    addParameter(samplerButtonPress_speedMult = new juce::AudioParameterFloat("SpeedMult", "SpeedMult", 0.0f, 1.0f, 0.5f));
+    addParameter(samplerButtonPress_crossfade = new juce::AudioParameterFloat("Crossfade", "Crossfade", 0.0f, 1.0f, 0.5f));
+    addParameter(samplerKeyboard_start = new juce::AudioParameterFloat("Start", "Start", 0.0f, 1.0f, 0.5f));
+    addParameter(samplerKeyboard_length = new juce::AudioParameterFloat("Length", "Length", 0.0f, 1.0f, 0.5f));
+    addParameter(samplerKeyboard_speed = new juce::AudioParameterFloat("Speed", "Speed", 0.0f, 1.0f, 0.5f));
+    addParameter(samplerKeyboard_speedMult = new juce::AudioParameterFloat("SpeedMult", "SpeedMult", 0.0f, 1.0f, 0.5f));
+    addParameter(samplerKeyboard_loopOn = new juce::AudioParameterFloat("LoopOn", "LoopOn", 0.0f, 1.0f, 0.5f));
+    addParameter(samplerKeyboard_crossFade = new juce::AudioParameterFloat("CrossFade", "CrossFade", 0.0f, 1.0f, 0.5f));
+    addParameter(samplerKeyboard_velo_Sens = new juce::AudioParameterFloat("Velo Sens", "Velo Sens", 0.0f, 1.0f, 0.5f));
+    addParameter(samplerAutoGrab_threshold = new juce::AudioParameterFloat("Threshold", "Threshold", 0.0f, 1.0f, 0.5f));
+    addParameter(samplerAutoGrab_window = new juce::AudioParameterFloat("Window", "Window", 0.0f, 1.0f, 0.5f));
+    addParameter(samplerAutoGrab_speed = new juce::AudioParameterFloat("Speed", "Speed", 0.0f, 1.0f, 0.5f));
+    addParameter(samplerAutoGrab_crossFade = new juce::AudioParameterFloat("CrossFade", "CrossFade", 0.0f, 1.0f, 0.5f));
+    addParameter(samplerAutoGrab_lenRand = new juce::AudioParameterFloat("LenRand", "LenRand", 0.0f, 1.0f, 0.5f));
+    addParameter(samplerAutoGrab_spdRand = new juce::AudioParameterFloat("SpdRand", "SpdRand", 0.0f, 1.0f, 0.5f));
+    addParameter(distortion_preGain = new juce::AudioParameterFloat("PreGain", "PreGain", 0.0f, 1.0f, 0.5f));
+    addParameter(distortion_tilt = new juce::AudioParameterFloat("Tilt", "Tilt", 0.0f, 1.0f, 0.5f));
+    addParameter(distortion_midGain = new juce::AudioParameterFloat("MidGain", "MidGain", 0.0f, 1.0f, 0.5f));
+    addParameter(distortion_midFreq = new juce::AudioParameterFloat("MidFreq", "MidFreq", 0.0f, 1.0f, 0.5f));
+    addParameter(distortion_postGain = new juce::AudioParameterFloat("PostGain", "PostGain", 0.0f, 1.0f, 0.5f));
+    addParameter(wavefolder_gain = new juce::AudioParameterFloat("Gain", "Gain", 0.0f, 1.0f, 0.5f));
+    addParameter(wavefolder_offset1 = new juce::AudioParameterFloat("Offset1", "Offset1", 0.0f, 1.0f, 0.5f));
+    addParameter(wavefolder_offset2 = new juce::AudioParameterFloat("Offset2", "Offset2", 0.0f, 1.0f, 0.5f));
+    addParameter(wavefolder_postGain = new juce::AudioParameterFloat("PostGain", "PostGain", 0.0f, 1.0f, 0.5f));
+    addParameter(bitCrusher_quality = new juce::AudioParameterFloat("Quality", "Quality", 0.0f, 1.0f, 0.5f));
+    addParameter(bitCrusher_sampRatio = new juce::AudioParameterFloat("SampRatio", "SampRatio", 0.0f, 1.0f, 0.5f));
+    addParameter(bitCrusher_rounding = new juce::AudioParameterFloat("Rounding", "Rounding", 0.0f, 1.0f, 0.5f));
+    addParameter(bitCrusher_operation = new juce::AudioParameterFloat("Operation", "Operation", 0.0f, 1.0f, 0.5f));
+    addParameter(bitCrusher_postGain = new juce::AudioParameterFloat("PostGain", "PostGain", 0.0f, 1.0f, 0.5f));
+    addParameter(bitCrusher_preGain = new juce::AudioParameterFloat("PreGain", "PreGain", 0.0f, 1.0f, 0.5f));
+    addParameter(delay_delayL = new juce::AudioParameterFloat("DelayL", "DelayL", 0.0f, 1.0f, 0.5f));
+    addParameter(delay_delayR = new juce::AudioParameterFloat("DelayR", "DelayR", 0.0f, 1.0f, 0.5f));
+    addParameter(delay_highPass = new juce::AudioParameterFloat("HighPass", "HighPass", 0.0f, 1.0f, 0.5f));
+    addParameter(delay_lowPass = new juce::AudioParameterFloat("LowPass", "LowPass", 0.0f, 1.0f, 0.5f));
+    addParameter(delay_feedback = new juce::AudioParameterFloat("Feedback", "Feedback", 0.0f, 1.0f, 0.5f));
+    addParameter(delay_postGain = new juce::AudioParameterFloat("PostGain", "PostGain", 0.0f, 1.0f, 0.5f));
+    addParameter(delay_postGain1 = new juce::AudioParameterFloat("PostGain", "PostGain", 0.0f, 1.0f, 0.5f));
+    addParameter(delay_postGain2 = new juce::AudioParameterFloat("PostGain", "PostGain", 0.0f, 1.0f, 0.5f));
+    addParameter(delay_postGain3 = new juce::AudioParameterFloat("PostGain", "PostGain", 0.0f, 1.0f, 0.5f));
+    addParameter(reverb_size = new juce::AudioParameterFloat("Size", "Size", 0.0f, 1.0f, 0.5f));
+    addParameter(reverb_fBLowPass = new juce::AudioParameterFloat("FBLowPass", "FBLowPass", 0.0f, 1.0f, 0.5f));
+    addParameter(reverb_inHighPass = new juce::AudioParameterFloat("InHighPass", "InHighPass", 0.0f, 1.0f, 0.5f));
+    addParameter(reverb_inLowPass = new juce::AudioParameterFloat("InLowPass", "InLowPass", 0.0f, 1.0f, 0.5f));
+    addParameter(reverb_fBGain = new juce::AudioParameterFloat("FBGain", "FBGain", 0.0f, 1.0f, 0.5f));
+    addParameter(reverb2_size = new juce::AudioParameterFloat("Size", "Size", 0.0f, 1.0f, 0.5f));
+    addParameter(reverb2_lowPass = new juce::AudioParameterFloat("LowPass", "LowPass", 0.0f, 1.0f, 0.5f));
+    addParameter(reverb2_highPass = new juce::AudioParameterFloat("HighPass", "HighPass", 0.0f, 1.0f, 0.5f));
+    addParameter(reverb2_peakFreq = new juce::AudioParameterFloat("PeakFreq", "PeakFreq", 0.0f, 1.0f, 0.5f));
+    addParameter(reverb2_peakGain = new juce::AudioParameterFloat("PeakGain", "PeakGain", 0.0f, 1.0f, 0.5f));
+    addParameter(livingString_freq1 = new juce::AudioParameterFloat("Freq1", "Freq1", 0.0f, 1.0f, 0.5f));
+    addParameter(livingString_detune = new juce::AudioParameterFloat("Detune", "Detune", 0.0f, 1.0f, 0.5f));
+    addParameter(livingString_decay = new juce::AudioParameterFloat("Decay", "Decay", 0.0f, 1.0f, 0.5f));
+    addParameter(livingString_damping = new juce::AudioParameterFloat("Damping", "Damping", 0.0f, 1.0f, 0.5f));
+    addParameter(livingString_pickPos = new juce::AudioParameterFloat("PickPos", "PickPos", 0.0f, 1.0f, 0.5f));
+    addParameter(livingString_prepPos = new juce::AudioParameterFloat("PrepPos", "PrepPos", 0.0f, 1.0f, 0.5f));
+    addParameter(livingString_prepForce = new juce::AudioParameterFloat("PrepForce", "PrepForce", 0.0f, 1.0f, 0.5f));
+    addParameter(livingString_letRing = new juce::AudioParameterFloat("LetRing", "LetRing", 0.0f, 1.0f, 0.5f));
+    addParameter(livingString_freq2 = new juce::AudioParameterFloat("Freq2", "Freq2", 0.0f, 1.0f, 0.5f));
+    addParameter(livingString_freq3 = new juce::AudioParameterFloat("Freq3", "Freq3", 0.0f, 1.0f, 0.5f));
+    addParameter(livingString_freq4 = new juce::AudioParameterFloat("Freq4", "Freq4", 0.0f, 1.0f, 0.5f));
+    addParameter(livingString_freq5 = new juce::AudioParameterFloat("Freq5", "Freq5", 0.0f, 1.0f, 0.5f));
+    addParameter(livingString_freq6 = new juce::AudioParameterFloat("Freq6", "Freq6", 0.0f, 1.0f, 0.5f));
+    addParameter(livingStringSynth_pluckVol = new juce::AudioParameterFloat("PluckVol", "PluckVol", 0.0f, 1.0f, 0.5f));
+    addParameter(livingStringSynth_pluckTone = new juce::AudioParameterFloat("PluckTone", "PluckTone", 0.0f, 1.0f, 0.5f));
+    addParameter(livingStringSynth_decay = new juce::AudioParameterFloat("Decay", "Decay", 0.0f, 1.0f, 0.5f));
+    addParameter(livingStringSynth_damping = new juce::AudioParameterFloat("Damping", "Damping", 0.0f, 1.0f, 0.5f));
+    addParameter(livingStringSynth_pickPos = new juce::AudioParameterFloat("PickPos", "PickPos", 0.0f, 1.0f, 0.5f));
+    addParameter(livingStringSynth_prepPos = new juce::AudioParameterFloat("PrepPos", "PrepPos", 0.0f, 1.0f, 0.5f));
+    addParameter(livingStringSynth_prepForce = new juce::AudioParameterFloat("PrepForce", "PrepForce", 0.0f, 1.0f, 0.5f));
+    addParameter(livingStringSynth_letRing = new juce::AudioParameterFloat("LetRing", "LetRing", 0.0f, 1.0f, 0.5f));
+    addParameter(livingStringSynth_fBLevel = new juce::AudioParameterFloat("FBLevel", "FBLevel", 0.0f, 1.0f, 0.5f));
+    addParameter(livingStringSynth_release = new juce::AudioParameterFloat("Release", "Release", 0.0f, 1.0f, 0.5f));
+    addParameter(classicSynth_volume = new juce::AudioParameterFloat("Volume", "Volume", 0.0f, 1.0f, 0.5f));
+    addParameter(classicSynth_lowPass = new juce::AudioParameterFloat("LowPass", "LowPass", 0.0f, 1.0f, 0.5f));
+    addParameter(classicSynth_keyFollow = new juce::AudioParameterFloat("KeyFollow", "KeyFollow", 0.0f, 1.0f, 0.5f));
+    addParameter(classicSynth_detune = new juce::AudioParameterFloat("Detune", "Detune", 0.0f, 1.0f, 0.5f));
+    addParameter(classicSynth_filterQ = new juce::AudioParameterFloat("FilterQ", "FilterQ", 0.0f, 1.0f, 0.5f));
+    addParameter(classicSynth_attack = new juce::AudioParameterFloat("Attack", "Attack", 0.0f, 1.0f, 0.5f));
+    addParameter(classicSynth_decay = new juce::AudioParameterFloat("Decay", "Decay", 0.0f, 1.0f, 0.5f));
+    addParameter(classicSynth_sustain = new juce::AudioParameterFloat("Sustain", "Sustain", 0.0f, 1.0f, 0.5f));
+    addParameter(classicSynth_release = new juce::AudioParameterFloat("Release", "Release", 0.0f, 1.0f, 0.5f));
+    addParameter(classicSynth_leak = new juce::AudioParameterFloat("Leak", "Leak", 0.0f, 1.0f, 0.5f));
+    addParameter(classicSynth_fAttack = new juce::AudioParameterFloat("FAttack", "FAttack", 0.0f, 1.0f, 0.5f));
+    addParameter(classicSynth_fDecay = new juce::AudioParameterFloat("FDecay", "FDecay", 0.0f, 1.0f, 0.5f));
+    addParameter(classicSynth_fSustain = new juce::AudioParameterFloat("FSustain", "FSustain", 0.0f, 1.0f, 0.5f));
+    addParameter(classicSynth_fRelease = new juce::AudioParameterFloat("FRelease", "FRelease", 0.0f, 1.0f, 0.5f));
+    addParameter(classicSynth_fLeak = new juce::AudioParameterFloat("FLeak", "FLeak", 0.0f, 1.0f, 0.5f));
+    addParameter(classicSynth_fAmount = new juce::AudioParameterFloat("FAmount", "FAmount", 0.0f, 1.0f, 0.5f));
+    addParameter(classicSynth_sawPulse = new juce::AudioParameterFloat("Saw/Pulse", "Saw/Pulse", 0.0f, 1.0f, 0.5f));
+    addParameter(rhodes_brightness = new juce::AudioParameterFloat("Brightness", "Brightness", 0.0f, 1.0f, 0.5f));
+    addParameter(rhodes_tremDepth = new juce::AudioParameterFloat("TremDepth", "TremDepth", 0.0f, 1.0f, 0.5f));
+    addParameter(rhodes_tremRate = new juce::AudioParameterFloat("TremRate", "TremRate", 0.0f, 1.0f, 0.5f));
+    addParameter(rhodes_drive = new juce::AudioParameterFloat("Drive", "Drive", 0.0f, 1.0f, 0.5f));
+    addParameter(rhodes_panSpread = new juce::AudioParameterFloat("PanSpread", "PanSpread", 0.0f, 1.0f, 0.5f));
+    addParameter(rhodes_attack = new juce::AudioParameterFloat("Attack", "Attack", 0.0f, 1.0f, 0.5f));
+    addParameter(rhodes_decay = new juce::AudioParameterFloat("Decay", "Decay", 0.0f, 1.0f, 0.5f));
+    addParameter(rhodes_sustain = new juce::AudioParameterFloat("Sustain", "Sustain", 0.0f, 1.0f, 0.5f));
+    addParameter(rhodes_release = new juce::AudioParameterFloat("Release", "Release", 0.0f, 1.0f, 0.5f));
+    addParameter(rhodes_leak= new juce::AudioParameterFloat("Leak", "Leak", 0.0f, 1.0f, 0.5f));
+    addParameter(rhodes_index1 = new juce::AudioParameterFloat("Index1", "Index1", 0.0f, 1.0f, 0.5f));
+    addParameter(rhodes_index2 = new juce::AudioParameterFloat("Index2", "Index2", 0.0f, 1.0f, 0.5f));
+    addParameter(rhodes_index3 = new juce::AudioParameterFloat("Index3", "Index3", 0.0f, 1.0f, 0.5f));
+    addParameter(rhodes_index4 = new juce::AudioParameterFloat("Index4", "Index4", 0.0f, 1.0f, 0.5f));
+    addParameter(rhodes_index5 = new juce::AudioParameterFloat("Index5", "Index5", 0.0f, 1.0f, 0.5f));
+    addParameter(rhodes_ratio1 = new juce::AudioParameterFloat("Ratio1", "Ratio1", 0.0f, 1.0f, 0.5f));
+    addParameter(rhodes_ratio2 = new juce::AudioParameterFloat("Ratio2", "Ratio2", 0.0f, 1.0f, 0.5f));
+    addParameter(rhodes_ratio3 = new juce::AudioParameterFloat("Ratio3", "Ratio3", 0.0f, 1.0f, 0.5f));
+    addParameter(rhodes_ratio4 = new juce::AudioParameterFloat("Ratio4", "Ratio4", 0.0f, 1.0f, 0.5f));
+    addParameter(rhodes_ratio5 = new juce::AudioParameterFloat("Ratio5", "Ratio5", 0.0f, 1.0f, 0.5f));
+    addParameter(rhodes_ratio6 = new juce::AudioParameterFloat("Ratio6", "Ratio6", 0.0f, 1.0f, 0.5f));
+    addParameter(rhodes_feedback = new juce::AudioParameterFloat("Feedback", "Feedback", 0.0f, 1.0f, 0.5f));
+    addParameter(rhodes_tuneSnap= new juce::AudioParameterFloat("TuneSnap", "TuneSnap", 0.0f, 1.0f, 0.5f));
+    addParameter(rhodes_randDecay = new juce::AudioParameterFloat("RandDecay", "RandDecay", 0.0f, 1.0f, 0.5f));
+    addParameter(rhodes_randSust= new juce::AudioParameterFloat("RandSust", "RandSust",0.0f,1.0f, 0.5f));
 }
 
 VocodecAudioProcessor::~VocodecAudioProcessor()
@@ -454,7 +606,8 @@ void VocodecAudioProcessor::getStateInformation (MemoryBlock& destData)
     //xml->removeAllAttributes();
     switch (presetNumber) {
         case 1:
-            xml->setAttribute("Volume", vocodec::presetKnobValues[presetNumber - 1][0]);
+            *vocoder_volume = vocodec::presetKnobValues[presetNumber - 1][0];
+            juce::MemoryOutputStream(destData, true).writeFloat(*vocoder_volume);
             xml->setAttribute("Warp", vocodec::presetKnobValues[presetNumber - 1][1]);
             xml->setAttribute("Quality", vocodec::presetKnobValues[presetNumber - 1][2]);
             xml->setAttribute("SawToPulse", vocodec::presetKnobValues[presetNumber - 1][3]);
@@ -690,11 +843,15 @@ void VocodecAudioProcessor::getStateInformation (MemoryBlock& destData)
 void VocodecAudioProcessor::setStateInformation (const void* data, int sizeInBytes)
 {
     std::unique_ptr<XmlElement> xml(getXmlFromBinary(data, sizeInBytes));
-    
+
+
+
     if(xml.get() != nullptr && xml->hasTagName("Vocodec"))
     {
         switch (presetNumber) {
                case 1:
+                   *vocoder_volume = juce::MemoryInputStream(data, static_cast<size_t> (sizeInBytes), false).readFloat();
+                   vocodec::presetKnobValues[presetNumber - 1][0] = *vocoder_volume;
                    vocodec::presetKnobValues[presetNumber - 1][0] = xml->getDoubleAttribute("Volume");
                    vocodec::presetKnobValues[presetNumber - 1][1] = xml->getDoubleAttribute("Warp");
                    vocodec::presetKnobValues[presetNumber - 1][2] = xml->getDoubleAttribute("Quality");
