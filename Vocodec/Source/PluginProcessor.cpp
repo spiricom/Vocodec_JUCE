@@ -27,7 +27,7 @@ VocodecAudioProcessor::VocodecAudioProcessor()
 {
     presetNumber = 0;
     prevPresetNumber = 0;
-    addParameter(vocoder_volume = new juce::AudioParameterFloat("Volume", "Volume", 0.0f, 1.0f, 0.5f));
+    addParameter(vocoder_volume = new juce::AudioParameterFloat("Volume1", "Volume1", 0.0f, 1.0f, 0.5f));
     addParameter(vocoder_warp = new juce::AudioParameterFloat("Warp", "Warp", 0.0f, 1.0f, 0.5f));
     addParameter(vocoder_quality = new juce::AudioParameterFloat("Quality", "Quality", 0.0f, 1.0f, 0.5f));
     addParameter(vocoder_sawToPulse = new juce::AudioParameterFloat("SawToPulse", "SawToPulse", 0.0f, 1.0f, 0.5f));
@@ -513,6 +513,7 @@ void VocodecAudioProcessor::processBlock (AudioBuffer<float>& buffer, MidiBuffer
     
     for (int i = 0; i < buffer.getNumSamples(); i++)
     {
+        vocodec::presetKnobValues[presetNumber - 1][0] = vocoder_volume->get();
         
         float audio [2];
         audio[0] = leftChannel[i];
@@ -850,8 +851,6 @@ void VocodecAudioProcessor::setStateInformation (const void* data, int sizeInByt
     {
         switch (presetNumber) {
                case 1:
-                   *vocoder_volume = juce::MemoryInputStream(data, static_cast<size_t> (sizeInBytes), false).readFloat();
-                   vocodec::presetKnobValues[presetNumber - 1][0] = *vocoder_volume;
                    vocodec::presetKnobValues[presetNumber - 1][0] = xml->getDoubleAttribute("Volume");
                    vocodec::presetKnobValues[presetNumber - 1][1] = xml->getDoubleAttribute("Warp");
                    vocodec::presetKnobValues[presetNumber - 1][2] = xml->getDoubleAttribute("Quality");

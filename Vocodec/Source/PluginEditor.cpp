@@ -519,4 +519,5 @@ void VocodecAudioProcessorEditor::presetChanged(){
     processor.prevPresetNumber = processor.presetNumber;
     
     processor.presetNumber = menu.getSelectedId();
+    vocodec::currentPreset = vocodec::VocodecPresetType(processor.presetNumber - 1);
 }
