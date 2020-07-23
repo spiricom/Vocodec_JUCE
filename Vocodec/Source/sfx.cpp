@@ -2042,7 +2042,7 @@ namespace vocodec
         void SFXDistortionAlloc()
         {
             leaf.clearOnAllocation = 1;
-            tOversampler_initToPool(&oversampler, distOS_ratio, 0, &smallPool);
+            tOversampler_initToPool(&oversampler, distOS_ratio, OFALSE, &smallPool);
             tVZFilter_initToPool(&shelf1, Lowshelf, 80.0f, 6.0f, &smallPool);
             tVZFilter_initToPool(&shelf2, Highshelf, 12000.0f, 6.0f, &smallPool);
             tVZFilter_initToPool(&bell1, Bell, 1000.0f, 1.9f, &smallPool);
@@ -2120,7 +2120,7 @@ namespace vocodec
             tLockhartWavefolder_initToPool(&wavefolder1, &smallPool);
             tLockhartWavefolder_initToPool(&wavefolder2, &smallPool);
             tHighpass_initToPool(&wfHP, 10.0f, &smallPool);
-            tOversampler_initToPool(&oversampler, 2, 0, &smallPool);
+            tOversampler_initToPool(&oversampler, 2, OFALSE, &smallPool);
             setLED_A(foldMode);
             leaf.clearOnAllocation = 0;
         }

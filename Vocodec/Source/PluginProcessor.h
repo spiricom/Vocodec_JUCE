@@ -72,7 +72,7 @@ public:
     AudioParameterFloat* vocoder_warp;
     AudioParameterFloat* vocoder_quality;
     AudioParameterFloat* vocoder_sawToPulse;
-    AudioParameterFloat* vocoder_noiseThreshol;
+    AudioParameterFloat* vocoder_noiseThreshold;
     AudioParameterFloat* vocoder_breath;
     AudioParameterFloat* vocoder_tilt;
     AudioParameterFloat* vocoder_pulsewidth;
@@ -80,6 +80,7 @@ public:
     AudioParameterFloat* vocoderCh_volume;
     AudioParameterFloat* vocoderCh_warp;
     AudioParameterFloat* vocoderCh_quality;
+    AudioParameterFloat* vocoderCh_bandWidth;
     AudioParameterFloat* vocoderCh_noiseThreshold;
     AudioParameterFloat* vocoderCh_sawToPulse;
     AudioParameterFloat* vocoderCh_pulseWidth;

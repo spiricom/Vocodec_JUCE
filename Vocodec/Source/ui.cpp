@@ -696,7 +696,7 @@ namespace vocodec
                     }
                     knobActive[knob] = 0;
                     floatADCUI[knob] = -1.0f;
-                    tExpSmooth_setValAndDest(&adc[knob], values[knob]);
+                    //tExpSmooth_setValAndDest(&adc[knob], values[knob]);
                     
                     smoothedADC[knob] = values[knob];
                 }
@@ -711,7 +711,7 @@ namespace vocodec
                 }
                 knobActive[knob] = 0;
                 floatADCUI[knob] = -1.0f;
-                tExpSmooth_setValAndDest(&adc[knob], value);
+                //tExpSmooth_setValAndDest(&adc[knob], value);
                 smoothedADC[knob] = value;
             }
             

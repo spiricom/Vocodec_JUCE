@@ -245,6 +245,10 @@ void VocodecAudioProcessorEditor::resized()
 	buttons[vocodec::ButtonD]->setBounds(Rectangle<int>(181, 618, 30, 30));
 	buttons[vocodec::ButtonE]->setBounds(Rectangle<int>(238, 618, 30, 30));
 	buttons[vocodec::ButtonEdit]->setBounds(Rectangle<int>(419, 88, 30, 30));
+	buttons[vocodec::ButtonLeft]->setBounds(Rectangle<int>(438, 142, 30, 30));
+	buttons[vocodec::ButtonRight]->setBounds(Rectangle<int>(528, 142, 30, 30));
+	buttons[vocodec::ButtonUp]->setBounds(Rectangle<int>(482, 118, 30, 30));
+	buttons[vocodec::ButtonDown]->setBounds(Rectangle<int>(482, 174, 30, 30));
 
     
 
@@ -324,10 +328,12 @@ void VocodecAudioProcessorEditor::buttonStateChanged(Button *button) {
 			vocodec::buttonActionsSFX[1][vocodec::ActionRelease] = true;
 		if (button == buttons[2])
 			vocodec::buttonActionsSFX[2][vocodec::ActionRelease] = true;
-		if (button == buttons[3])
+		if (button == buttons[3]) {
 			vocodec::buttonActionsSFX[3][vocodec::ActionRelease] = true;
-		if (button == buttons[4])
+		}
+		if (button == buttons[4]) {
 			vocodec::buttonActionsSFX[4][vocodec::ActionRelease] = true;
+		}
 		if (button == buttons[5])
 			vocodec::buttonActionsSFX[5][vocodec::ActionRelease] = true;
 		if (button == buttons[6])
@@ -350,9 +356,12 @@ void VocodecAudioProcessorEditor::buttonStateChanged(Button *button) {
         if (button == buttons[2])
             vocodec::buttonActionsSFX[2][vocodec::ActionPress] = true;
         if (button == buttons[3])
-            vocodec::buttonActionsSFX[3][vocodec::ActionPress] = true;
-        if (button == buttons[4])
-            vocodec::buttonActionsSFX[4][vocodec::ActionPress] = true;
+			vocodec::decrementPage();
+            //vocodec::buttonActionsSFX[3][vocodec::ActionPress] = true;
+		if (button == buttons[4])
+			vocodec::incrementPage();
+            //vocodec::buttonActionsSFX[4][vocodec::ActionPress] = true;
+
         if (button == buttons[5])
             vocodec::buttonActionsSFX[5][vocodec::ActionPress] = true;
         if (button == buttons[6])
