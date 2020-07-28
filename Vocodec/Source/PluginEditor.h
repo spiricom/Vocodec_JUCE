@@ -42,9 +42,11 @@ class OtherLookAndFeel : public LookAndFeel_V4
 			auto pointerThickness = 2.0f;
 			p.addRectangle(-pointerThickness * 0.5f, -radius, pointerThickness, pointerLength);
 			p.applyTransform(AffineTransform::rotation(angle).translated(centreX, centreY));
-			g.setColour(Colours::grey);
-			g.fillEllipse(rx, ry, rw, rw);
 			g.setColour(Colours::black);
+			g.fillEllipse(rx, ry, rw, rw);
+			g.setColour(Colour(0.0f, 0.0f, 0.0f, 0.65f));
+			g.fillEllipse(rx-2, ry-2, rw+4, rw+6);
+			g.setColour(Colours::white);
 			g.fillPath(p);
 
 	}
@@ -61,7 +63,6 @@ public:
     void paint (Graphics&) override;
     void resized() override;
 	void sliderValueChanged(Slider* slider) override;
-	void buttonFunction(int i);
     void presetChanged();
 	void buttonClicked(juce::Button* button) override;
 	void buttonStateChanged(Button *button) override;
@@ -69,6 +70,10 @@ public:
     void timerCallback() override;
 
 private:
+
+	std::unique_ptr<Drawable> logo;
+	std::unique_ptr<Drawable> sideThingy;
+
 
 	String paramName = String("THIS IS A TEST");
     Image baseline;
