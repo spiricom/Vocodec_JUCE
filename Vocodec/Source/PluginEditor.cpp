@@ -42,7 +42,7 @@ VocodecAudioProcessorEditor::VocodecAudioProcessorEditor (VocodecAudioProcessor&
 		dials[i]->addListener(this);
 		dials[i]->setRange(0, 1);
 	}
-    
+	dials[6]->setValue(1);
 //    for (int i = 0; i < NUM_LIGHTS; i++) {
 //        lightStates[i] = false;
 //        lights.add(new DrawableImage());
@@ -370,10 +370,26 @@ void VocodecAudioProcessorEditor::buttonStateChanged(Button *button) {
     else if (button->getState() == Button::ButtonState::buttonDown) {
         if (button == buttons[0])
             vocodec::buttonActionsSFX[0][vocodec::ActionPress] = true;
-        if (button == buttons[1])
-			menu.setSelectedId(processor.presetNumber-1, dontSendNotification);
-		if (button == buttons[2])
-			menu.setSelectedId(processor.presetNumber + 1, dontSendNotification);
+		if (button == buttons[1]) {
+			//vocodec::buttonActionsSFX[1][vocodec::ActionPress] = true;
+			if (processor.presetNumber > 1) {
+				menu.setSelectedId(processor.presetNumber - 1, dontSendNotification);
+			}
+			else {
+				menu.setSelectedId(18, dontSendNotification);
+			}
+			presetChanged();
+		}
+		if (button == buttons[2]) {
+			//vocodec::buttonActionsSFX[2][vocodec::ActionPress] = true;
+			if (processor.presetNumber < 18) {
+				menu.setSelectedId(processor.presetNumber + 1, dontSendNotification);
+			}
+			else {
+				menu.setSelectedId(1, dontSendNotification);
+			}
+			presetChanged();
+		}
 		if (button == buttons[3])
 			vocodec::decrementPage();
             //vocodec::buttonActionsSFX[3][vocodec::ActionPress] = true;
