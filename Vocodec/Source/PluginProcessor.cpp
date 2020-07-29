@@ -511,180 +511,178 @@ void VocodecAudioProcessor::processBlock (AudioBuffer<float>& buffer, MidiBuffer
         rightChannel = buffer.getWritePointer(1);
     }
     
-    
+    vocodec::presetKnobValues[0][0] = vocoder_volume->get();
+    vocodec::presetKnobValues[0][1] = vocoder_warp->get();
+    vocodec::presetKnobValues[0][2] = vocoder_quality->get();
+    vocodec::presetKnobValues[0][3] = vocoder_sawToPulse->get();
+    vocodec::presetKnobValues[0][4] = vocoder_noiseThreshold->get();
+    vocodec::presetKnobValues[0][5] = vocoder_breath->get();
+    vocodec::presetKnobValues[0][6] = vocoder_tilt->get();
+    vocodec::presetKnobValues[0][7] = vocoder_pulsewidth->get();
+    vocodec::presetKnobValues[0][8] = vocoder_pulseShape->get();
+
+    vocodec::presetKnobValues[1][0] = vocoderCh_volume->get();
+    vocodec::presetKnobValues[1][1] = vocoderCh_warp->get();
+    vocodec::presetKnobValues[1][2] = vocoderCh_quality->get();
+    vocodec::presetKnobValues[1][3] = vocoderCh_bandWidth->get();
+    vocodec::presetKnobValues[1][4] = vocoderCh_noiseThreshold->get();
+    vocodec::presetKnobValues[1][5] = vocoderCh_sawToPulse->get();
+    vocodec::presetKnobValues[1][6] = vocoderCh_pulseWidth->get();
+    vocodec::presetKnobValues[1][7] = vocoderCh_pulseShape->get();
+    vocodec::presetKnobValues[1][8] = vocoderCh_breath->get();
+    vocodec::presetKnobValues[1][9] = vocoderCh_speed->get();
+    vocodec::presetKnobValues[1][10] = vocoderCh_bandSquish->get();
+    vocodec::presetKnobValues[1][11] = vocoderCh_bandOff->get();
+    vocodec::presetKnobValues[1][12] = vocoderCh_tilt->get();
+    vocodec::presetKnobValues[1][13] = vocoderCh_stereo->get();
+    vocodec::presetKnobValues[1][14] = vocoderCh_barkPull->get();
+
+    vocodec::presetKnobValues[2][0] = pitchShift_shift->get();
+    vocodec::presetKnobValues[2][1] = pitchShift_fine->get();
+    vocodec::presetKnobValues[2][2] = pitchShift_f_Amt->get();
+    vocodec::presetKnobValues[2][3] = pitchShift_formant->get();
+    vocodec::presetKnobValues[2][4] = pitchShift_range->get();
+    vocodec::presetKnobValues[2][5] = pitchShift_offset->get();
+
+    vocodec::presetKnobValues[3][0] = autotuneMono_pickiness->get();
+    vocodec::presetKnobValues[3][1] = autotuneMono_amount->get();
+    vocodec::presetKnobValues[3][2] = autotuneMono_speed->get();
+    vocodec::presetKnobValues[3][3] = autotuneMono_leapallow->get();
+    vocodec::presetKnobValues[3][4] = autotuneMono_hysteresis->get();
+
+    vocodec::presetKnobValues[4][0] = autotunePoly_pickiness->get();
+
+    vocodec::presetKnobValues[5][0] = samplerButtonPress_start->get();
+    vocodec::presetKnobValues[5][1] = samplerButtonPress_length->get();
+    vocodec::presetKnobValues[5][2] = samplerButtonPress_speed->get();
+    vocodec::presetKnobValues[5][3] = samplerButtonPress_speedMult->get();
+    vocodec::presetKnobValues[5][4] = samplerButtonPress_crossfade->get();
+
+    vocodec::presetKnobValues[6][0] = samplerKeyboard_start->get();
+    vocodec::presetKnobValues[6][1] = samplerKeyboard_length->get();
+    vocodec::presetKnobValues[6][2] = samplerKeyboard_speed->get();
+    vocodec::presetKnobValues[6][3] = samplerKeyboard_speedMult->get();
+    vocodec::presetKnobValues[6][4] = samplerKeyboard_loopOn->get();
+    vocodec::presetKnobValues[6][5] = samplerKeyboard_crossFade->get();
+    vocodec::presetKnobValues[6][6] = samplerKeyboard_velo_Sens->get();
+
+    vocodec::presetKnobValues[7][0] = samplerAutoGrab_threshold->get();
+    vocodec::presetKnobValues[7][1] = samplerAutoGrab_window->get();
+    vocodec::presetKnobValues[7][2] = samplerAutoGrab_speed->get();
+    vocodec::presetKnobValues[7][3] = samplerAutoGrab_crossFade->get();
+    vocodec::presetKnobValues[7][5] = samplerAutoGrab_lenRand->get();
+    vocodec::presetKnobValues[7][6] = samplerAutoGrab_spdRand->get();
+
+    vocodec::presetKnobValues[8][0] = distortion_preGain->get();
+    vocodec::presetKnobValues[8][1] = distortion_tilt->get();
+    vocodec::presetKnobValues[8][2] = distortion_midGain->get();
+    vocodec::presetKnobValues[8][3] = distortion_midFreq->get();
+    vocodec::presetKnobValues[8][4] = distortion_postGain->get();
+
+    vocodec::presetKnobValues[9][0] = wavefolder_gain->get();
+    vocodec::presetKnobValues[9][1] = wavefolder_offset1->get();
+    vocodec::presetKnobValues[9][2] = wavefolder_offset2->get();
+    vocodec::presetKnobValues[9][3] = wavefolder_postGain->get();
+
+    vocodec::presetKnobValues[10][0] = bitCrusher_quality->get();
+    vocodec::presetKnobValues[10][1] = bitCrusher_sampRatio->get();
+    vocodec::presetKnobValues[10][2] = bitCrusher_rounding->get();
+    vocodec::presetKnobValues[10][3] = bitCrusher_operation->get();
+    vocodec::presetKnobValues[10][4] = bitCrusher_postGain->get();
+    vocodec::presetKnobValues[10][5] = bitCrusher_preGain->get();
+
+    vocodec::presetKnobValues[11][0] = delay_delayL->get();
+    vocodec::presetKnobValues[11][1] = delay_delayR->get();
+    vocodec::presetKnobValues[11][2] = delay_highPass->get();
+    vocodec::presetKnobValues[11][3] = delay_lowPass->get();
+    vocodec::presetKnobValues[11][4] = delay_feedback->get();
+    vocodec::presetKnobValues[11][5] = delay_postGain->get();
+    vocodec::presetKnobValues[11][6] = delay_postGain1->get();
+    vocodec::presetKnobValues[11][7] = delay_postGain2->get();
+    vocodec::presetKnobValues[11][8] = delay_postGain3->get();
+
+    vocodec::presetKnobValues[12][0] = reverb_size->get();
+    vocodec::presetKnobValues[12][1] = reverb_fBLowPass->get();
+    vocodec::presetKnobValues[12][2] = reverb_inHighPass->get();
+    vocodec::presetKnobValues[12][3] = reverb_inLowPass->get();
+    vocodec::presetKnobValues[12][4] = reverb_fBGain->get();
+
+    vocodec::presetKnobValues[13][0] = reverb2_size->get();
+    vocodec::presetKnobValues[13][1] = reverb2_lowPass->get();
+    vocodec::presetKnobValues[13][2] = reverb2_highPass->get();
+    vocodec::presetKnobValues[13][3] = reverb2_peakFreq->get();
+    vocodec::presetKnobValues[13][4] = reverb2_peakGain->get();
+
+    vocodec::presetKnobValues[14][0] = livingString_freq1->get();
+    vocodec::presetKnobValues[14][1] = livingString_detune->get();
+    vocodec::presetKnobValues[14][2] = livingString_decay->get();
+    vocodec::presetKnobValues[14][3] = livingString_damping->get();
+    vocodec::presetKnobValues[14][4] = livingString_pickPos->get();
+    vocodec::presetKnobValues[14][5] = livingString_prepPos->get();
+    vocodec::presetKnobValues[14][6] = livingString_prepForce->get();
+    vocodec::presetKnobValues[14][7] = livingString_letRing->get();
+    vocodec::presetKnobValues[14][10] = livingString_freq2->get();
+    vocodec::presetKnobValues[14][11] = livingString_freq3->get();
+    vocodec::presetKnobValues[14][12] = livingString_freq4->get();
+    vocodec::presetKnobValues[14][13] = livingString_freq5->get();
+    vocodec::presetKnobValues[14][14] = livingString_freq6->get();
+
+    vocodec::presetKnobValues[15][0] = livingStringSynth_pluckVol->get();
+    vocodec::presetKnobValues[15][1] = livingStringSynth_pluckTone->get();
+    vocodec::presetKnobValues[15][2] = livingStringSynth_decay->get();
+    vocodec::presetKnobValues[15][3] = livingStringSynth_damping->get();
+    vocodec::presetKnobValues[15][4] = livingStringSynth_pickPos->get();
+    vocodec::presetKnobValues[15][5] = livingStringSynth_prepPos->get();
+    vocodec::presetKnobValues[15][6] = livingStringSynth_prepForce->get();
+    vocodec::presetKnobValues[15][7] = livingStringSynth_letRing->get();
+    vocodec::presetKnobValues[15][8] = livingStringSynth_fBLevel->get();
+    vocodec::presetKnobValues[15][9] = livingStringSynth_release->get();
+
+    vocodec::presetKnobValues[16][0] = classicSynth_volume->get();
+    vocodec::presetKnobValues[16][1] = classicSynth_lowPass->get();
+    vocodec::presetKnobValues[16][2] = classicSynth_keyFollow->get();
+    vocodec::presetKnobValues[16][3] = classicSynth_detune->get();
+    vocodec::presetKnobValues[16][4] = classicSynth_filterQ->get();
+    vocodec::presetKnobValues[16][5] = classicSynth_attack->get();
+    vocodec::presetKnobValues[16][6] = classicSynth_decay->get();
+    vocodec::presetKnobValues[16][7] = classicSynth_sustain->get();
+    vocodec::presetKnobValues[16][8] = classicSynth_release->get();
+    vocodec::presetKnobValues[16][9] = classicSynth_leak->get();
+    vocodec::presetKnobValues[16][10] = classicSynth_fAttack->get();
+    vocodec::presetKnobValues[16][11] = classicSynth_fDecay->get();
+    vocodec::presetKnobValues[16][12] = classicSynth_fSustain->get();
+    vocodec::presetKnobValues[16][13] = classicSynth_fRelease->get();
+    vocodec::presetKnobValues[16][14] = classicSynth_fLeak->get();
+    vocodec::presetKnobValues[16][15] = classicSynth_fAmount->get();
+    vocodec::presetKnobValues[16][16] = classicSynth_sawPulse->get();
+
+    vocodec::presetKnobValues[17][0] = rhodes_brightness->get();
+    vocodec::presetKnobValues[17][1] = rhodes_tremDepth->get();
+    vocodec::presetKnobValues[17][2] = rhodes_tremRate->get();
+    vocodec::presetKnobValues[17][3] = rhodes_drive->get();
+    vocodec::presetKnobValues[17][4] = rhodes_panSpread->get();
+    vocodec::presetKnobValues[17][5] = rhodes_attack->get();
+    vocodec::presetKnobValues[17][6] = rhodes_decay->get();
+    vocodec::presetKnobValues[17][7] = rhodes_sustain->get();
+    vocodec::presetKnobValues[17][8] = rhodes_release->get();
+    vocodec::presetKnobValues[17][9] = rhodes_leak->get();
+    vocodec::presetKnobValues[17][10] = rhodes_index1->get();
+    vocodec::presetKnobValues[17][11] = rhodes_index2->get();
+    vocodec::presetKnobValues[17][12] = rhodes_index3->get();
+    vocodec::presetKnobValues[17][13] = rhodes_index4->get();
+    vocodec::presetKnobValues[17][14] = rhodes_index5->get();
+    vocodec::presetKnobValues[17][15] = rhodes_ratio1->get();
+    vocodec::presetKnobValues[17][16] = rhodes_ratio2->get();
+    vocodec::presetKnobValues[17][17] = rhodes_ratio3->get();
+    vocodec::presetKnobValues[17][18] = rhodes_ratio4->get();
+    vocodec::presetKnobValues[17][19] = rhodes_ratio5->get();
+    vocodec::presetKnobValues[17][20] = rhodes_ratio6->get();
+    vocodec::presetKnobValues[17][21] = rhodes_feedback->get();
+    vocodec::presetKnobValues[17][22] = rhodes_tuneSnap->get();
+    vocodec::presetKnobValues[17][23] = rhodes_randDecay->get();
+    vocodec::presetKnobValues[17][24] = rhodes_randSust->get();
     for (int i = 0; i < buffer.getNumSamples(); i++)
-    {
-        vocodec::presetKnobValues[0][0] = vocoder_volume->get();
-        vocodec::presetKnobValues[0][1] = vocoder_warp->get();
-        vocodec::presetKnobValues[0][2] = vocoder_quality->get();
-        vocodec::presetKnobValues[0][3] = vocoder_sawToPulse->get();
-        vocodec::presetKnobValues[0][4] = vocoder_noiseThreshold->get();
-        vocodec::presetKnobValues[0][5] = vocoder_breath->get();
-        vocodec::presetKnobValues[0][6] = vocoder_tilt->get();
-        vocodec::presetKnobValues[0][7] = vocoder_pulsewidth->get();
-        vocodec::presetKnobValues[0][8] = vocoder_pulseShape->get();
-
-        vocodec::presetKnobValues[1][0] = vocoderCh_volume->get();
-        vocodec::presetKnobValues[1][1] = vocoderCh_warp->get();
-        vocodec::presetKnobValues[1][2] = vocoderCh_quality->get();
-        vocodec::presetKnobValues[1][3] = vocoderCh_bandWidth->get();
-        vocodec::presetKnobValues[1][4] = vocoderCh_noiseThreshold->get();
-        vocodec::presetKnobValues[1][5] = vocoderCh_sawToPulse->get();
-        vocodec::presetKnobValues[1][6] = vocoderCh_pulseWidth->get();
-        vocodec::presetKnobValues[1][7] = vocoderCh_pulseShape->get();
-        vocodec::presetKnobValues[1][8] = vocoderCh_breath->get();
-        vocodec::presetKnobValues[1][9] = vocoderCh_speed->get();
-        vocodec::presetKnobValues[1][10] = vocoderCh_bandSquish->get();
-        vocodec::presetKnobValues[1][11] = vocoderCh_bandOff->get();
-        vocodec::presetKnobValues[1][12] = vocoderCh_tilt->get();
-        vocodec::presetKnobValues[1][13] = vocoderCh_stereo->get();
-        vocodec::presetKnobValues[1][14] = vocoderCh_barkPull->get();
-
-        vocodec::presetKnobValues[2][0] = pitchShift_shift->get();
-        vocodec::presetKnobValues[2][1] = pitchShift_fine->get();
-        vocodec::presetKnobValues[2][2] = pitchShift_f_Amt->get();
-        vocodec::presetKnobValues[2][3] = pitchShift_formant->get();
-        vocodec::presetKnobValues[2][4] = pitchShift_range->get();
-        vocodec::presetKnobValues[2][5] = pitchShift_offset->get();
-
-        vocodec::presetKnobValues[3][0] = autotuneMono_pickiness->get();
-        vocodec::presetKnobValues[3][1] = autotuneMono_amount->get();
-        vocodec::presetKnobValues[3][2] = autotuneMono_speed->get();
-        vocodec::presetKnobValues[3][3] = autotuneMono_leapallow->get();
-        vocodec::presetKnobValues[3][4] = autotuneMono_hysteresis->get();
-
-        vocodec::presetKnobValues[4][0] = autotunePoly_pickiness->get();
-
-        vocodec::presetKnobValues[5][0] = samplerButtonPress_start->get();
-        vocodec::presetKnobValues[5][1] = samplerButtonPress_length->get();
-        vocodec::presetKnobValues[5][2] = samplerButtonPress_speed->get();
-        vocodec::presetKnobValues[5][3] = samplerButtonPress_speedMult->get();
-        vocodec::presetKnobValues[5][4] = samplerButtonPress_crossfade->get();
-
-        vocodec::presetKnobValues[6][0] = samplerKeyboard_start->get();
-        vocodec::presetKnobValues[6][1] = samplerKeyboard_length->get();
-        vocodec::presetKnobValues[6][2] = samplerKeyboard_speed->get();
-        vocodec::presetKnobValues[6][3] = samplerKeyboard_speedMult->get();
-        vocodec::presetKnobValues[6][4] = samplerKeyboard_loopOn->get();
-        vocodec::presetKnobValues[6][5] = samplerKeyboard_crossFade->get();
-        vocodec::presetKnobValues[6][0] = samplerKeyboard_velo_Sens->get();
-
-        vocodec::presetKnobValues[7][0] = samplerAutoGrab_threshold->get();
-        vocodec::presetKnobValues[7][1] = samplerAutoGrab_window->get();
-        vocodec::presetKnobValues[7][2] = samplerAutoGrab_speed->get();
-        vocodec::presetKnobValues[7][3] = samplerAutoGrab_crossFade->get();
-        vocodec::presetKnobValues[7][5] = samplerAutoGrab_lenRand->get();
-        vocodec::presetKnobValues[7][6] = samplerAutoGrab_spdRand->get();
-
-        vocodec::presetKnobValues[8][0] = distortion_preGain->get();
-        vocodec::presetKnobValues[8][1] = distortion_tilt->get();
-        vocodec::presetKnobValues[8][2] = distortion_midGain->get();
-        vocodec::presetKnobValues[8][0] = distortion_midFreq->get();
-        vocodec::presetKnobValues[8][0] = distortion_postGain->get();
-
-        vocodec::presetKnobValues[9][0] = wavefolder_gain->get();
-        vocodec::presetKnobValues[9][1] = wavefolder_offset1->get();
-        vocodec::presetKnobValues[9][2] = wavefolder_offset2->get();
-        vocodec::presetKnobValues[9][3] = wavefolder_postGain->get();
-
-        vocodec::presetKnobValues[10][0] = bitCrusher_quality->get();
-        vocodec::presetKnobValues[10][1] = bitCrusher_sampRatio->get();
-        vocodec::presetKnobValues[10][2] = bitCrusher_rounding->get();
-        vocodec::presetKnobValues[10][3] = bitCrusher_operation->get();
-        vocodec::presetKnobValues[10][4] = bitCrusher_postGain->get();
-        vocodec::presetKnobValues[10][5] = bitCrusher_preGain->get();
-
-        vocodec::presetKnobValues[11][0] = delay_delayL->get();
-        vocodec::presetKnobValues[11][1] = delay_delayR->get();
-        vocodec::presetKnobValues[11][2] = delay_highPass->get();
-        vocodec::presetKnobValues[11][3] = delay_lowPass->get();
-        vocodec::presetKnobValues[11][4] = delay_feedback->get();
-        vocodec::presetKnobValues[11][5] = delay_postGain->get();
-        vocodec::presetKnobValues[11][6] = delay_postGain1->get();
-        vocodec::presetKnobValues[11][7] = delay_postGain2->get();
-        vocodec::presetKnobValues[11][8] = delay_postGain3->get();
-
-        vocodec::presetKnobValues[12][0] = reverb_size->get();
-        vocodec::presetKnobValues[12][1] = reverb_fBLowPass->get();
-        vocodec::presetKnobValues[12][2] = reverb_inHighPass->get();
-        vocodec::presetKnobValues[12][3] = reverb_inLowPass->get();
-        vocodec::presetKnobValues[12][4] = reverb_fBGain->get();
-
-        vocodec::presetKnobValues[13][0] = reverb2_size->get();
-        vocodec::presetKnobValues[13][1] = reverb2_lowPass->get();
-        vocodec::presetKnobValues[13][2] = reverb2_highPass->get();
-        vocodec::presetKnobValues[13][3] = reverb2_peakFreq->get();
-        vocodec::presetKnobValues[13][4] = reverb2_peakGain->get();
-
-        vocodec::presetKnobValues[14][0] = livingString_freq1->get();
-        vocodec::presetKnobValues[14][1] = livingString_detune->get();
-        vocodec::presetKnobValues[14][2] = livingString_decay->get();
-        vocodec::presetKnobValues[14][3] = livingString_damping->get();
-        vocodec::presetKnobValues[14][4] = livingString_pickPos->get();
-        vocodec::presetKnobValues[14][5] = livingString_prepPos->get();
-        vocodec::presetKnobValues[14][6] = livingString_prepForce->get();
-        vocodec::presetKnobValues[14][7] = livingString_letRing->get();
-        vocodec::presetKnobValues[14][10] = livingString_freq2->get();
-        vocodec::presetKnobValues[14][11] = livingString_freq3->get();
-        vocodec::presetKnobValues[14][12] = livingString_freq4->get();
-        vocodec::presetKnobValues[14][13] = livingString_freq5->get();
-        vocodec::presetKnobValues[14][14] = livingString_freq6->get();
-
-        vocodec::presetKnobValues[15][0] = livingStringSynth_pluckVol->get();
-        vocodec::presetKnobValues[15][1] = livingStringSynth_pluckTone->get();
-        vocodec::presetKnobValues[15][2] = livingStringSynth_decay->get();
-        vocodec::presetKnobValues[15][3] = livingStringSynth_damping->get();
-        vocodec::presetKnobValues[15][4] = livingStringSynth_pickPos->get();
-        vocodec::presetKnobValues[15][5] = livingStringSynth_prepPos->get();
-        vocodec::presetKnobValues[15][6] = livingStringSynth_prepForce->get();
-        vocodec::presetKnobValues[15][7] = livingStringSynth_letRing->get();
-        vocodec::presetKnobValues[15][8] = livingStringSynth_fBLevel->get();
-        vocodec::presetKnobValues[15][9] = livingStringSynth_release->get();
-
-        vocodec::presetKnobValues[16][0] = classicSynth_volume->get();
-        vocodec::presetKnobValues[16][1] = classicSynth_lowPass->get();
-        vocodec::presetKnobValues[16][2] = classicSynth_keyFollow->get();
-        vocodec::presetKnobValues[16][3] = classicSynth_detune->get();
-        vocodec::presetKnobValues[16][4] = classicSynth_filterQ->get();
-        vocodec::presetKnobValues[16][5] = classicSynth_attack->get();
-        vocodec::presetKnobValues[16][6] = classicSynth_decay->get();
-        vocodec::presetKnobValues[16][7] = classicSynth_sustain->get();
-        vocodec::presetKnobValues[16][8] = classicSynth_release->get();
-        vocodec::presetKnobValues[16][9] = classicSynth_leak->get();
-        vocodec::presetKnobValues[16][10] = classicSynth_fAttack->get();
-        vocodec::presetKnobValues[16][11] = classicSynth_fDecay->get();
-        vocodec::presetKnobValues[16][12] = classicSynth_fSustain->get();
-        vocodec::presetKnobValues[16][13] = classicSynth_fRelease->get();
-        vocodec::presetKnobValues[16][14] = classicSynth_fLeak->get();
-        vocodec::presetKnobValues[16][15] = classicSynth_fAmount->get();
-        vocodec::presetKnobValues[16][16] = classicSynth_sawPulse->get();
-
-        vocodec::presetKnobValues[17][0] = rhodes_brightness->get();
-        vocodec::presetKnobValues[17][1] = rhodes_tremDepth->get();
-        vocodec::presetKnobValues[17][2] = rhodes_tremRate->get();
-        vocodec::presetKnobValues[17][3] = rhodes_drive->get();
-        vocodec::presetKnobValues[17][4] = rhodes_panSpread->get();
-        vocodec::presetKnobValues[17][5] = rhodes_attack->get();
-        vocodec::presetKnobValues[17][6] = rhodes_decay->get();
-        vocodec::presetKnobValues[17][7] = rhodes_sustain->get();
-        vocodec::presetKnobValues[17][8] = rhodes_release->get();
-        vocodec::presetKnobValues[17][9] = rhodes_leak->get();
-        vocodec::presetKnobValues[17][10] = rhodes_index1->get();
-        vocodec::presetKnobValues[17][11] = rhodes_index2->get();
-        vocodec::presetKnobValues[17][12] = rhodes_index3->get();
-        vocodec::presetKnobValues[17][13] = rhodes_index4->get();
-        vocodec::presetKnobValues[17][14] = rhodes_index5->get();
-        vocodec::presetKnobValues[17][15] = rhodes_ratio1->get();
-        vocodec::presetKnobValues[17][16] = rhodes_ratio2->get();
-        vocodec::presetKnobValues[17][17] = rhodes_ratio3->get();
-        vocodec::presetKnobValues[17][18] = rhodes_ratio4->get();
-        vocodec::presetKnobValues[17][19] = rhodes_ratio5->get();
-        vocodec::presetKnobValues[17][20] = rhodes_ratio6->get();
-        vocodec::presetKnobValues[17][21] = rhodes_feedback->get();
-        vocodec::presetKnobValues[17][22] = rhodes_tuneSnap->get();
-        vocodec::presetKnobValues[17][23] = rhodes_randDecay->get();
-        vocodec::presetKnobValues[17][24] = rhodes_randSust->get();
-        
+    {   
         float audio [2];
         audio[0] = leftChannel[i];
         audio[1] = rightChannel[i];

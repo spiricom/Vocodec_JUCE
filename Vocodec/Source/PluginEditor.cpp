@@ -205,7 +205,7 @@ void VocodecAudioProcessorEditor::paint (Graphics& g)
 	g.fillEllipse(502, 296, 22, 22);
 	if (lightStates[8]) {
 		g.setGradientFill(ColourGradient(Colours::pink, juce::Point<float>(513, 307), Colours::transparentWhite, juce::Point<float>(502, 296), true));
-		g.fillEllipse(485, 292, 30, 30);
+		g.fillEllipse(497, 292, 30, 30);
 	}
 	// 2
 
@@ -289,44 +289,229 @@ void VocodecAudioProcessorEditor::resized()
 }
 
 void VocodecAudioProcessorEditor::sliderValueChanged(Slider* slider) {
+	float sliderValue;
+	sliderValue = slider->getValue();
+
 	if (slider == dials[0]) {
 
 	}
-	if (slider == dials[1]) {
-        float sliderValue;
-        sliderValue = slider ->getValue();
+	else if (slider == dials[1]) {
         vocodec::presetKnobValues[processor.presetNumber - 1][(vocodec::knobPage * 5 + 0)] = sliderValue;
 		paramName = String(vocodec::knobParamNames[menu.getSelectedId()-1][(vocodec::knobPage * 5 + 0)]);
         paramName += " ";
 		paramName += String(vocodec::displayValues[vocodec::knobPage * 5 + 0]);
-		*processor.vocoder_volume = sliderValue;
-		
+		switch (vocodec::knobPage) {
+			case 0:
+				*processor.vocoder_volume = sliderValue;
+				*processor.vocoderCh_volume = sliderValue;
+				*processor.pitchShift_shift = sliderValue;
+				*processor.autotuneMono_pickiness = sliderValue;
+				*processor.autotunePoly_pickiness = sliderValue;
+				*processor.samplerButtonPress_start = sliderValue;
+				*processor.samplerKeyboard_start = sliderValue;
+				*processor.samplerAutoGrab_threshold = sliderValue;
+				*processor.distortion_preGain = sliderValue;
+				*processor.wavefolder_gain = sliderValue;
+				*processor.bitCrusher_quality = sliderValue;
+				*processor.delay_delayL = sliderValue;
+				*processor.reverb_size = sliderValue;
+				*processor.reverb2_size = sliderValue;
+				*processor.livingString_freq1 = sliderValue;
+				*processor.livingStringSynth_pluckVol = sliderValue;
+				*processor.classicSynth_volume = sliderValue;
+				*processor.rhodes_brightness = sliderValue;
+			case 1:
+				*processor.vocoder_breath = sliderValue;
+				*processor.vocoderCh_sawToPulse = sliderValue;
+				*processor.pitchShift_offset = sliderValue;
+				*processor.autotuneMono_hysteresis = sliderValue;
+				*processor.samplerKeyboard_crossFade = sliderValue;
+				*processor.samplerAutoGrab_lenRand = sliderValue;
+				*processor.bitCrusher_preGain = sliderValue;
+				*processor.delay_postGain = sliderValue;
+				*processor.livingString_prepPos = sliderValue;
+				*processor.livingStringSynth_prepPos = sliderValue;
+				*processor.classicSynth_attack = sliderValue;
+				*processor.rhodes_attack = sliderValue;
+			case 3:
+				*processor.vocoderCh_bandSquish = sliderValue;
+				*processor.livingString_freq2 = sliderValue;
+				*processor.classicSynth_fAttack = sliderValue;
+				*processor.rhodes_index1 = sliderValue;
+			case 4:
+				*processor.classicSynth_fAmount = sliderValue;
+				*processor.rhodes_ratio1 = sliderValue;
+			case 5:
+				*processor.rhodes_ratio6 = sliderValue;
+		}
 	}
-	if (slider == dials[2]) {
+	else if (slider == dials[2]) {
 		vocodec::presetKnobValues[processor.presetNumber - 1][(vocodec::knobPage * 5 + 1)] = slider->getValue();
 		paramName = String(vocodec::knobParamNames[menu.getSelectedId() - 1][(vocodec::knobPage * 5 + 1)]);
 		paramName += String(vocodec::displayValues[vocodec::knobPage * 5 + 1]);
+		switch (vocodec::knobPage) {
+		case 0:
+			*processor.vocoder_warp = sliderValue;
+			*processor.vocoderCh_warp = sliderValue;
+			*processor.pitchShift_fine = sliderValue;
+			*processor.autotuneMono_amount = sliderValue;
+			*processor.samplerButtonPress_length = sliderValue;
+			*processor.samplerKeyboard_length = sliderValue;
+			*processor.samplerAutoGrab_window = sliderValue;
+			*processor.distortion_tilt = sliderValue;
+			*processor.wavefolder_offset1 = sliderValue;
+			*processor.bitCrusher_sampRatio = sliderValue;
+			*processor.delay_delayR = sliderValue;
+			*processor.reverb_fBLowPass = sliderValue;
+			*processor.reverb2_lowPass = sliderValue;
+			*processor.livingString_detune = sliderValue;
+			*processor.livingStringSynth_pluckTone = sliderValue;
+			*processor.classicSynth_lowPass = sliderValue;
+			*processor.rhodes_tremDepth = sliderValue;
+		case 1:
+			*processor.vocoder_tilt = sliderValue;
+			*processor.vocoderCh_pulseWidth = sliderValue;
+			*processor.samplerKeyboard_velo_Sens = sliderValue;
+			*processor.samplerAutoGrab_spdRand = sliderValue;
+			*processor.delay_postGain1 = sliderValue;
+			*processor.livingString_prepForce = sliderValue;
+			*processor.livingStringSynth_prepForce = sliderValue;
+			*processor.classicSynth_decay = sliderValue;
+			*processor.rhodes_decay = sliderValue;
+		case 3:
+			*processor.vocoderCh_bandOff = sliderValue;
+			*processor.livingString_freq3 = sliderValue;
+			*processor.classicSynth_fDecay = sliderValue;
+			*processor.rhodes_index2 = sliderValue;
+		case 4:
+			*processor.classicSynth_sawPulse = sliderValue;
+			*processor.rhodes_ratio2 = sliderValue;
+		case 5:
+			*processor.rhodes_feedback = sliderValue;
+		}
 
 	}
-	if (slider == dials[3]) {
+	else if (slider == dials[3]) {
 		vocodec::presetKnobValues[processor.presetNumber - 1][(vocodec::knobPage * 5 + 2)] = slider->getValue();
 		paramName = String(vocodec::knobParamNames[menu.getSelectedId()-1][(vocodec::knobPage * 5 + 2)]);
 		paramName += String(vocodec::displayValues[vocodec::knobPage * 5 + 2]);
-
+		switch (vocodec::knobPage) {
+		case 0:
+			*processor.vocoder_quality = sliderValue;
+			*processor.vocoderCh_quality = sliderValue;
+			*processor.pitchShift_f_Amt = sliderValue;
+			*processor.autotuneMono_speed = sliderValue;
+			*processor.samplerButtonPress_speed = sliderValue;
+			*processor.samplerKeyboard_speed = sliderValue;
+			*processor.samplerAutoGrab_speed = sliderValue;
+			*processor.distortion_midGain = sliderValue;
+			*processor.wavefolder_offset2 = sliderValue;
+			*processor.bitCrusher_rounding = sliderValue;
+			*processor.delay_highPass = sliderValue;
+			*processor.reverb_inHighPass = sliderValue;
+			*processor.reverb2_highPass = sliderValue;
+			*processor.livingString_decay = sliderValue;
+			*processor.livingStringSynth_decay = sliderValue;
+			*processor.classicSynth_keyFollow = sliderValue;
+			*processor.rhodes_tremRate = sliderValue;
+		case 1:
+			*processor.vocoder_pulsewidth = sliderValue;
+			*processor.vocoderCh_pulseShape = sliderValue;
+			*processor.delay_postGain2 = sliderValue;
+			*processor.livingString_letRing = sliderValue;
+			*processor.livingStringSynth_letRing = sliderValue;
+			*processor.classicSynth_sustain = sliderValue;
+			*processor.rhodes_sustain = sliderValue;
+		case 3:
+			*processor.vocoderCh_tilt = sliderValue;
+			*processor.livingString_freq4 = sliderValue;
+			*processor.classicSynth_fSustain = sliderValue;
+			*processor.rhodes_index3 = sliderValue;
+		case 4:
+			*processor.rhodes_ratio3 = sliderValue;
+		case 5:
+			*processor.rhodes_tuneSnap = sliderValue;
+		}
 	}
-	if (slider == dials[4]) {
+	else if (slider == dials[4]) {
 		vocodec::presetKnobValues[processor.presetNumber - 1][(vocodec::knobPage * 5 + 3)] = slider->getValue();
 		paramName = String(vocodec::knobParamNames[menu.getSelectedId() - 1][(vocodec::knobPage * 5 + 3)]);
 		paramName += String(vocodec::displayValues[vocodec::knobPage * 5 + 3]);
-
+		switch (vocodec::knobPage) {
+		case 0:
+			*processor.vocoder_sawToPulse = sliderValue;
+			*processor.vocoderCh_bandWidth = sliderValue;
+			*processor.pitchShift_formant = sliderValue;
+			*processor.autotuneMono_leapallow = sliderValue;
+			*processor.samplerButtonPress_speedMult = sliderValue;
+			*processor.samplerKeyboard_speedMult = sliderValue;
+			*processor.samplerAutoGrab_crossFade = sliderValue;
+			*processor.distortion_midFreq = sliderValue;
+			*processor.wavefolder_postGain = sliderValue;
+			*processor.bitCrusher_operation = sliderValue;
+			*processor.delay_lowPass = sliderValue;
+			*processor.reverb_inLowPass = sliderValue;
+			*processor.reverb2_peakFreq = sliderValue;
+			*processor.livingString_damping = sliderValue;
+			*processor.livingStringSynth_damping = sliderValue;
+			*processor.classicSynth_detune = sliderValue;
+			*processor.rhodes_drive = sliderValue;
+		case 1:
+			*processor.vocoder_pulseShape = sliderValue;
+			*processor.vocoderCh_breath = sliderValue;
+			*processor.delay_postGain3 = sliderValue;
+			*processor.livingStringSynth_fBLevel = sliderValue;
+			*processor.classicSynth_release = sliderValue;
+			*processor.rhodes_release = sliderValue;
+		case 3:
+			*processor.vocoderCh_stereo = sliderValue;
+			*processor.livingString_freq5 = sliderValue;
+			*processor.classicSynth_fRelease = sliderValue;
+			*processor.rhodes_index4 = sliderValue;
+		case 4:
+			*processor.rhodes_ratio4 = sliderValue;
+		case 5:
+			*processor.rhodes_randDecay = sliderValue;
+		}
 	}
-	if (slider == dials[5]) {
+	else if (slider == dials[5]) {
 		vocodec::presetKnobValues[processor.presetNumber - 1][(vocodec::knobPage * 5 + 4)] = slider->getValue();
 		paramName = String(vocodec::knobParamNames[menu.getSelectedId()-1][(vocodec::knobPage * 5 + 4)]);
 		paramName += String(vocodec::displayValues[vocodec::knobPage * 5 + 4]);
-
+		switch (vocodec::knobPage) {
+		case 0:
+			*processor.vocoder_noiseThreshold = sliderValue;
+			*processor.vocoderCh_noiseThreshold = sliderValue;
+			*processor.pitchShift_range = sliderValue;
+			*processor.autotuneMono_hysteresis = sliderValue;
+			*processor.samplerButtonPress_crossfade = sliderValue;
+			*processor.samplerKeyboard_loopOn = sliderValue;
+			*processor.distortion_postGain = sliderValue;
+			*processor.bitCrusher_postGain = sliderValue;
+			*processor.delay_feedback = sliderValue;
+			*processor.reverb_fBGain = sliderValue;
+			*processor.reverb2_peakGain = sliderValue;
+			*processor.livingString_pickPos = sliderValue;
+			*processor.livingStringSynth_pickPos = sliderValue;
+			*processor.classicSynth_filterQ = sliderValue;
+			*processor.rhodes_panSpread = sliderValue;
+		case 1:
+			*processor.vocoderCh_speed = sliderValue;
+			*processor.livingStringSynth_fBLevel = sliderValue;
+			*processor.classicSynth_leak = sliderValue;
+			*processor.rhodes_leak = sliderValue;
+		case 3:
+			*processor.vocoderCh_barkPull = sliderValue;
+			*processor.livingString_freq6 = sliderValue;
+			*processor.classicSynth_fLeak = sliderValue;
+			*processor.rhodes_index5 = sliderValue;
+		case 4:
+			*processor.rhodes_ratio5 = sliderValue;
+		case 5:
+			*processor.rhodes_randSust = sliderValue;
+		}
 	}
-	if (slider == dials[6]) {
+	else if (slider == dials[6]) {
 		processor.interpVal = slider->getValue();
 	}
 		//for (int i = 0; i < NUM_LIGHTS; i++) {
