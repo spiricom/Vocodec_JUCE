@@ -9,13 +9,16 @@
 namespace BinaryData
 {
     extern const char*   logo_large_svg;
-    const int            logo_large_svgSize = 3773;
+    const int            logo_large_svgSize = 5256;
+
+    extern const char*   panel_svg;
+    const int            panel_svgSize = 51239;
 
     extern const char*   snyderphonicswhitelogo_svg;
-    const int            snyderphonicswhitelogo_svgSize = 3773;
+    const int            snyderphonicswhitelogo_svgSize = 9291;
 
     // Number of elements in the namedResourceList and originalFileNames arrays.
-    const int namedResourceListSize = 2;
+    const int namedResourceListSize = 3;
 
     // Points to the start of a list of resource names.
     extern const char* namedResourceList[];

@@ -6,6 +6,7 @@
     <GROUP id="{B405E64B-4792-254D-5BDE-97BC1F91F9E6}" name="Source">
       <GROUP id="{F62A9309-7BE1-5B65-A806-641EB05C4C88}" name="Resources-Vocoder">
         <FILE id="gg3oYc" name="logo_large.svg" compile="0" resource="1" file="Source/Resources-Vocoder/logo_large.svg"/>
+        <FILE id="MinlXu" name="panel.svg" compile="0" resource="1" file="Source/Resources-Vocoder/panel.svg"/>
         <FILE id="dxrfkP" name="snyderphonics-whitelogo.svg" compile="0" resource="1"
               file="Source/Resources-Vocoder/snyderphonics-whitelogo.svg"/>
       </GROUP>

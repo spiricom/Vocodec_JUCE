@@ -22,11 +22,12 @@ VocodecAudioProcessorEditor::VocodecAudioProcessorEditor (VocodecAudioProcessor&
     // editor's size to whatever you need it to be.
 
 
-	logo = Drawable::createFromImageData(BinaryData::snyderphonicswhitelogo_svg, BinaryData::snyderphonicswhitelogo_svgSize);
-	sideThingy = Drawable::createFromImageData(BinaryData::logo_large_svg, BinaryData::logo_large_svgSize);
-	addAndMakeVisible(*logo);
-	addAndMakeVisible(*sideThingy);
-
+	//logo = Drawable::createFromImageData(BinaryData::snyderphonicswhitelogo_svg, BinaryData::snyderphonicswhitelogo_svgSize);
+	//sideThingy = Drawable::createFromImageData(BinaryData::logo_large_svg, BinaryData::logo_large_svgSize);
+	panel = Drawable::createFromImageData(BinaryData::panel_svg, BinaryData::panel_svgSize);
+	//addAndMakeVisible(*logo);
+	//addAndMakeVisible(*sideThingy);
+	addAndMakeVisible(*panel);
 
 	vocodec::initModeNames();
 
@@ -36,7 +37,7 @@ VocodecAudioProcessorEditor::VocodecAudioProcessorEditor (VocodecAudioProcessor&
 		addAndMakeVisible(dials[i]);
 //        addAndMakeVisible(knobs[i]);
 		dials[i]->setLookAndFeel(&knobOne);
-		dials[i]->setSliderStyle(Slider::Rotary);
+		dials[i]->setSliderStyle(Slider::RotaryVerticalDrag);
         dials[i]->setTextBoxStyle(Slider::NoTextBox, false, 0, 0);
 		addAndMakeVisible(dials[i]);
 		dials[i]->addListener(this);
@@ -54,7 +55,7 @@ VocodecAudioProcessorEditor::VocodecAudioProcessorEditor (VocodecAudioProcessor&
 
 
 	for (int i = 0; i < NUM_BUTTONS; i++) {
-        buttons.add(new ShapeButton("", Colours::dimgrey, Colours::grey, Colours::darkgrey));
+        buttons.add(new ShapeButton("", Colours::lightgrey, Colours::grey, Colours::darkgrey));
 		buttons[i]->setShape(path, true, true, true);
 		addAndMakeVisible(buttons[i]);
 		buttons[i]->addListener(this);
@@ -132,16 +133,17 @@ VocodecAudioProcessorEditor::VocodecAudioProcessorEditor (VocodecAudioProcessor&
 	menu.addItem("ClassicSynth", 17);
 	menu.addItem("Rhodes", 18);
 	menu.setColour(ComboBox::ColourIds::backgroundColourId, Colours::transparentWhite);
-	menu.setColour(ComboBox::ColourIds::textColourId, Colours::black);
+	menu.setColour(ComboBox::ColourIds::textColourId, Colours::white);
 	menu.setColour(ComboBox::ColourIds::buttonColourId, Colours::black);
-	menu.setColour(ComboBox::ColourIds::arrowColourId, Colours::black);
+	menu.setColour(ComboBox::ColourIds::arrowColourId, Colours::white);
 	menu.setColour(ComboBox::ColourIds::outlineColourId, Colours::transparentWhite);
 	menu.setJustificationType(Justification::centred);
     menu.setSelectedId(1, dontSendNotification);
     menu.onChange = [this] { presetChanged(); };
-	logo->setBounds(Rectangle<int>(110, 10, 75, 75));
-	sideThingy->setSize(1000, 700);
-	sideThingy->setBounds(Rectangle<int>(-230, 230, 700, 1000));
+	//logo->setBounds(Rectangle<int>(110, 10, 75, 75));
+	//sideThingy->setSize(1000, 700);
+	//sideThingy->setBounds(Rectangle<int>(-230, 230, 700, 1000));
+	panel->setBounds(Rectangle<int>(5, 10, 1000, 1000));
     startTimerHz(10);
 }
 
@@ -155,24 +157,23 @@ VocodecAudioProcessorEditor::~VocodecAudioProcessorEditor()
 void VocodecAudioProcessorEditor::paint (Graphics& g)
 {
     
-    
+
     
     // (Our component is opaque, so we must completely fill the background with a solid colour)
-    g.setGradientFill(ColourGradient(Colours::white, juce::Point<float>(0,0), Colours::lightgrey, juce::Point<float>(0, 712), false));
+    g.setGradientFill(ColourGradient(Colour(30, 30, 30), juce::Point<float>(0,0), Colour(10, 10, 10), juce::Point<float>(0, 712), false));
 
 	g.fillRect(0, 0, 600, 712);
 
     g.setFont (15.0f);
 //    g.drawImageAt(baseline, 0, 0);
 
-	g.setColour(Colours::black);
+	g.setColour(Colours::white);
 	g.drawFittedText(paramName, Rectangle<int>(175,80,150,50), Justification::centred, 1);
 //    knobs[0]->setBounds(0, 3, getWidth(), getHeight());
     
 	juce::Font mainComponentFont(Font::getDefaultSansSerifFontName(), 20.0f, juce::Font::bold | juce::Font::italic);
-    g.setColour(Colours::black);
-    g.drawFittedText("MIC GAIN", Rectangle<int>(54, 135, 36, 30), Justification::left, 2);
-    g.drawFittedText("EDIT", Rectangle<int>(455, 70, 40, 15), Justification::left, 1);
+    g.setColour(Colours::gold);
+    /*g.drawFittedText("EDIT", Rectangle<int>(455, 70, 40, 15), Justification::left, 1);
     g.drawFittedText("USB", Rectangle<int>(557, 217, 30, 15), Justification::left, 1);
     g.drawFittedText("Dry/Wet", Rectangle<int>(380, 590, 75, 15), Justification::left, 1);
 	g.drawFittedText("1", Rectangle<int>(190, 290, 10, 20), Justification::left, 1);
@@ -184,15 +185,16 @@ void VocodecAudioProcessorEditor::paint (Graphics& g)
     g.drawFittedText("B", Rectangle<int>(573, 420, 10, 20), Justification::left, 1);
     g.drawFittedText("C", Rectangle<int>(306, 557, 10, 20), Justification::left, 1);
     g.drawFittedText("D", Rectangle<int>(190, 650, 10, 20), Justification::left, 1);
-    g.drawFittedText("E", Rectangle<int>(250, 650, 10, 20), Justification::left, 1);
+    g.drawFittedText("E", Rectangle<int>(250, 650, 10, 20), Justification::left, 1);*/
 
-	g.drawLine(Line<float>(Point<float>(400, 722), Point<float>(612, 687)), 5);
-	g.drawLine(Line<float>(Point<float>(550, 722), Point<float>(610, 662)), 5);
+
+	//g.drawLine(Line<float>(Point<float>(400, 722), Point<float>(612, 687)), 5);
+	//g.drawLine(Line<float>(Point<float>(550, 722), Point<float>(610, 662)), 5);
 
 	g.setFont(60.0f);
-	g.setColour(Colours::darkgrey);
-	g.drawFittedText("V O C O", Rectangle<int>(0, 400, 75, 300), Justification::left, 7);
-	g.drawFittedText("D E C", Rectangle<int>(0, 640, 350, 100), Justification::left, 1);
+	g.setColour(Colours::gold);
+	//g.drawFittedText("V O C O", Rectangle<int>(0, 400, 75, 300), Justification::left, 7);
+	//g.drawFittedText("D E C", Rectangle<int>(0, 640, 350, 100), Justification::left, 1);
 
     // USB
 	g.setColour(juce::Colours::darkgreen);
@@ -240,7 +242,7 @@ void VocodecAudioProcessorEditor::paint (Graphics& g)
 		g.fillEllipse(299, 489, 30, 30);
 	}
 	// EDIT
-	g.setColour(juce::Colours::darkgreen);
+	g.setColour(juce::Colours::darkred);
 	g.fillEllipse(421, 50, 22, 22);
 }
 
@@ -270,8 +272,6 @@ void VocodecAudioProcessorEditor::resized()
 	buttons[vocodec::ButtonDown]->setBounds(Rectangle<int>(482, 174, 30, 30));
 
     
-
-	dials[0]->setBounds(90, 60, 57, 57);
 	
 	dials[1]->setBounds(175, 205, 57, 57);
 	dials[2]->setBounds(385, 205, 57, 57);
@@ -292,10 +292,7 @@ void VocodecAudioProcessorEditor::sliderValueChanged(Slider* slider) {
 	float sliderValue;
 	sliderValue = slider->getValue();
 
-	if (slider == dials[0]) {
-
-	}
-	else if (slider == dials[1]) {
+	if (slider == dials[1]) {
         vocodec::presetKnobValues[processor.presetNumber - 1][(vocodec::knobPage * 5 + 0)] = sliderValue;
 		paramName = String(vocodec::knobParamNames[menu.getSelectedId()-1][(vocodec::knobPage * 5 + 0)]);
         paramName += " ";

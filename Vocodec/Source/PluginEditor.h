@@ -42,11 +42,11 @@ class OtherLookAndFeel : public LookAndFeel_V4
 			auto pointerThickness = 2.0f;
 			p.addRectangle(-pointerThickness * 0.5f, -radius, pointerThickness, pointerLength);
 			p.applyTransform(AffineTransform::rotation(angle).translated(centreX, centreY));
-			g.setColour(Colours::black);
-			g.fillEllipse(rx, ry, rw, rw);
-			g.setColour(Colour(0.0f, 0.0f, 0.0f, 0.65f));
-			g.fillEllipse(rx-2, ry-2, rw+4, rw+6);
+			g.setColour(Colours::dimgrey);
+			g.fillEllipse(rx - 2, ry - 2, rw + 4, rw + 6);
 			g.setColour(Colours::white);
+			g.fillEllipse(rx, ry, rw, rw);
+			g.setColour(Colours::black);
 			g.fillPath(p);
 
 	}
@@ -73,6 +73,7 @@ private:
 
 	std::unique_ptr<Drawable> logo;
 	std::unique_ptr<Drawable> sideThingy;
+	std::unique_ptr<Drawable> panel;
 
 
 	String paramName = String("THIS IS A TEST");
