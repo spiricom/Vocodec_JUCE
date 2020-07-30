@@ -175,11 +175,11 @@ void VocodecAudioProcessorEditor::paint (Graphics& g)
     g.drawFittedText("EDIT", Rectangle<int>(455, 70, 40, 15), Justification::left, 1);
     g.drawFittedText("USB", Rectangle<int>(557, 217, 30, 15), Justification::left, 1);
     g.drawFittedText("Dry/Wet", Rectangle<int>(380, 590, 75, 15), Justification::left, 1);
-	g.drawFittedText("1", Rectangle<int>(190, 310, 10, 20), Justification::left, 1);
-    g.drawFittedText("2", Rectangle<int>(405, 310, 10, 20), Justification::left, 1);
+	g.drawFittedText("1", Rectangle<int>(190, 290, 10, 20), Justification::left, 1);
+    g.drawFittedText("2", Rectangle<int>(405, 290, 10, 20), Justification::left, 1);
     g.drawFittedText("3", Rectangle<int>(270, 420, 10, 20), Justification::left, 1);
     g.drawFittedText("4", Rectangle<int>(470, 420, 10, 20), Justification::left, 1);
-    g.drawFittedText("5", Rectangle<int>(200, 590, 10, 20), Justification::left, 1);
+    g.drawFittedText("5", Rectangle<int>(200, 580, 10, 20), Justification::left, 1);
     g.drawFittedText("A", Rectangle<int>(573, 360, 10, 20), Justification::left, 1);
     g.drawFittedText("B", Rectangle<int>(573, 420, 10, 20), Justification::left, 1);
     g.drawFittedText("C", Rectangle<int>(306, 557, 10, 20), Justification::left, 1);
