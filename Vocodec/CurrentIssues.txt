@@ -1,0 +1,10 @@
+we definitely want those LEDs for the inputs and outputs
+the amber ones glow with input and output level (fading in and out to reflect level)
+and the red ones light up when the signal clip (if the input or output value goes above 0.99999 or below -0.99999)
+not sure how to do the fading leds efficiently
+
+>> Jeff related issues...
+sampler button press acts strangely. seems like an issue with catching when you press and let go of the button - I think what this is that the D and E buttons are not working to switch the scale.
+This ties into the edit button...
+
+COME BACK TO CLASSIC SYNTH

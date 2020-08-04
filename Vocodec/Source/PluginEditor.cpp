@@ -10,7 +10,8 @@
 
 #include "PluginProcessor.h"
 #include "PluginEditor.h"
-
+#include <iostream>
+using namespace std;
 //==============================================================================
 
 bool lightStates[NUM_LIGHTS];
@@ -298,92 +299,177 @@ void VocodecAudioProcessorEditor::sliderValueChanged(Slider* slider) {
         paramName += " ";
 		paramName += String(vocodec::displayValues[vocodec::knobPage * 5 + 0]);
 		switch (vocodec::knobPage) {
+		case 0:
+			switch (vocodec::currentPreset) {
 			case 0:
 				*processor.vocoder_volume = sliderValue;
-				*processor.vocoderCh_volume = sliderValue;
-				*processor.pitchShift_shift = sliderValue;
-				*processor.autotuneMono_pickiness = sliderValue;
-				*processor.autotunePoly_pickiness = sliderValue;
-				*processor.samplerButtonPress_start = sliderValue;
-				*processor.samplerKeyboard_start = sliderValue;
-				*processor.samplerAutoGrab_threshold = sliderValue;
-				*processor.distortion_preGain = sliderValue;
-				*processor.wavefolder_gain = sliderValue;
-				*processor.bitCrusher_quality = sliderValue;
-				*processor.delay_delayL = sliderValue;
-				*processor.reverb_size = sliderValue;
-				*processor.reverb2_size = sliderValue;
-				*processor.livingString_freq1 = sliderValue;
-				*processor.livingStringSynth_pluckVol = sliderValue;
-				*processor.classicSynth_volume = sliderValue;
-				*processor.rhodes_brightness = sliderValue;
 			case 1:
-				*processor.vocoder_breath = sliderValue;
-				*processor.vocoderCh_sawToPulse = sliderValue;
-				*processor.pitchShift_offset = sliderValue;
-				*processor.autotuneMono_hysteresis = sliderValue;
-				*processor.samplerKeyboard_crossFade = sliderValue;
-				*processor.samplerAutoGrab_lenRand = sliderValue;
-				*processor.bitCrusher_preGain = sliderValue;
-				*processor.delay_postGain = sliderValue;
-				*processor.livingString_prepPos = sliderValue;
-				*processor.livingStringSynth_prepPos = sliderValue;
-				*processor.classicSynth_attack = sliderValue;
-				*processor.rhodes_attack = sliderValue;
+				*processor.vocoderCh_volume = sliderValue;
+			case 2:
+				*processor.pitchShift_shift = sliderValue;
 			case 3:
-				*processor.vocoderCh_bandSquish = sliderValue;
-				*processor.livingString_freq2 = sliderValue;
-				*processor.classicSynth_fAttack = sliderValue;
-				*processor.rhodes_index1 = sliderValue;
+				*processor.autotuneMono_pickiness = sliderValue;
 			case 4:
-				*processor.classicSynth_fAmount = sliderValue;
-				*processor.rhodes_ratio1 = sliderValue;
+				*processor.autotunePoly_pickiness = sliderValue;
 			case 5:
-				*processor.rhodes_ratio6 = sliderValue;
+				*processor.samplerButtonPress_start = sliderValue;
+			case 6:
+				*processor.samplerKeyboard_start = sliderValue;
+			case 7:
+				*processor.samplerAutoGrab_threshold = sliderValue;
+			case 8:
+				*processor.distortion_preGain = sliderValue;
+			case 9:
+				*processor.wavefolder_gain = sliderValue;
+			case 10:
+				*processor.bitCrusher_quality = sliderValue;
+			case 11:
+				*processor.delay_delayL = sliderValue;
+			case 12:
+				*processor.reverb_size = sliderValue;
+			case 13:
+				*processor.reverb2_size = sliderValue;
+			case 14:
+				*processor.livingString_freq1 = sliderValue;
+			case 15:
+				*processor.livingStringSynth_pluckVol = sliderValue;
+			case 16:
+				// COME BACK TO CLASSIC SYNTH
+				*processor.classicSynth_volume = sliderValue;
+			case 17:
+				*processor.rhodes_brightness = sliderValue;
+			}
+			case 1:
+				switch (vocodec::currentPreset) {
+				case 0:
+					*processor.vocoder_breath = sliderValue;
+				case 1:
+					*processor.vocoderCh_sawToPulse = sliderValue;
+				case 2:
+					*processor.pitchShift_offset = sliderValue;
+				case 3:
+					*processor.autotuneMono_hysteresis = sliderValue;
+				case 6:
+					*processor.samplerKeyboard_crossFade = sliderValue;
+				case 7:
+					*processor.samplerAutoGrab_lenRand = sliderValue;
+				case 10:
+					*processor.bitCrusher_preGain = sliderValue;
+				case 11:
+					*processor.delay_postGain = sliderValue;
+				case 14:
+					*processor.livingString_prepPos = sliderValue;
+				case 15:
+					*processor.livingStringSynth_prepPos = sliderValue;
+				case 16:
+					*processor.classicSynth_attack = sliderValue;
+				case 17:
+					*processor.rhodes_attack = sliderValue;
+				}
+				case 2:
+					switch (vocodec::currentPreset) {
+					case 1:
+						*processor.vocoderCh_bandSquish = sliderValue;
+					case 14:
+						*processor.livingString_freq2 = sliderValue;
+					case 16:
+						*processor.classicSynth_fAttack = sliderValue;
+					case 17:
+						*processor.rhodes_index1 = sliderValue;
+					}
+				case 3:
+					switch (vocodec::currentPreset) {
+					case 16:
+						*processor.classicSynth_fAmount = sliderValue;
+					case 17:
+						*processor.rhodes_ratio1 = sliderValue;
+					}
+				case 4:
+					*processor.rhodes_ratio6 = sliderValue;
+				}
 		}
-	}
 	else if (slider == dials[2]) {
 		vocodec::presetKnobValues[processor.presetNumber - 1][(vocodec::knobPage * 5 + 1)] = slider->getValue();
 		paramName = String(vocodec::knobParamNames[menu.getSelectedId() - 1][(vocodec::knobPage * 5 + 1)]);
 		paramName += String(vocodec::displayValues[vocodec::knobPage * 5 + 1]);
 		switch (vocodec::knobPage) {
 		case 0:
-			*processor.vocoder_warp = sliderValue;
-			*processor.vocoderCh_warp = sliderValue;
-			*processor.pitchShift_fine = sliderValue;
-			*processor.autotuneMono_amount = sliderValue;
-			*processor.samplerButtonPress_length = sliderValue;
-			*processor.samplerKeyboard_length = sliderValue;
-			*processor.samplerAutoGrab_window = sliderValue;
-			*processor.distortion_tilt = sliderValue;
-			*processor.wavefolder_offset1 = sliderValue;
-			*processor.bitCrusher_sampRatio = sliderValue;
-			*processor.delay_delayR = sliderValue;
-			*processor.reverb_fBLowPass = sliderValue;
-			*processor.reverb2_lowPass = sliderValue;
-			*processor.livingString_detune = sliderValue;
-			*processor.livingStringSynth_pluckTone = sliderValue;
-			*processor.classicSynth_lowPass = sliderValue;
-			*processor.rhodes_tremDepth = sliderValue;
+			switch (vocodec::currentPreset) {
+			case 0:
+				*processor.vocoder_warp = sliderValue;
+				case 1:
+				*processor.vocoderCh_warp = sliderValue;
+				case 2:
+				*processor.pitchShift_fine = sliderValue;
+				case 3:
+				*processor.autotuneMono_amount = sliderValue;
+				case 5:
+				*processor.samplerButtonPress_length = sliderValue;
+				case 6:
+				*processor.samplerKeyboard_length = sliderValue;
+				case 7:
+				*processor.samplerAutoGrab_window = sliderValue;
+				case 8:
+				*processor.distortion_tilt = sliderValue;
+				case 9:
+				*processor.wavefolder_offset1 = sliderValue;
+				case 10:
+				*processor.bitCrusher_sampRatio = sliderValue;
+				case 11:
+				*processor.delay_delayR = sliderValue;
+				case 12:
+				*processor.reverb_fBLowPass = sliderValue;
+				case 13:
+				*processor.reverb2_lowPass = sliderValue;
+				case 14:
+				*processor.livingString_detune = sliderValue;
+				case 15:
+				*processor.livingStringSynth_pluckTone = sliderValue;
+				case 16:
+				*processor.classicSynth_lowPass = sliderValue;
+				case 17:
+				*processor.rhodes_tremDepth = sliderValue;
+			}
 		case 1:
-			*processor.vocoder_tilt = sliderValue;
-			*processor.vocoderCh_pulseWidth = sliderValue;
-			*processor.samplerKeyboard_velo_Sens = sliderValue;
-			*processor.samplerAutoGrab_spdRand = sliderValue;
-			*processor.delay_postGain1 = sliderValue;
-			*processor.livingString_prepForce = sliderValue;
-			*processor.livingStringSynth_prepForce = sliderValue;
-			*processor.classicSynth_decay = sliderValue;
-			*processor.rhodes_decay = sliderValue;
+			switch (vocodec::currentPreset) {
+			case 0:
+				*processor.vocoder_tilt = sliderValue;
+			case 1:
+				*processor.vocoderCh_pulseWidth = sliderValue;
+			case 6:
+				*processor.samplerKeyboard_velo_Sens = sliderValue;
+			case 7:
+				*processor.samplerAutoGrab_spdRand = sliderValue;
+			case 11:
+				*processor.delay_postGain1 = sliderValue;
+			case 14:
+				*processor.livingString_prepForce = sliderValue;
+			case 15:
+				*processor.livingStringSynth_prepForce = sliderValue;
+			case 16:
+				*processor.classicSynth_decay = sliderValue;
+			case 17:
+				*processor.rhodes_decay = sliderValue;
+			}
+		case 2:
+			switch (vocodec::currentPreset) {
+			case 1:
+				*processor.vocoderCh_bandOff = sliderValue;
+			case 14:
+				*processor.livingString_freq3 = sliderValue;
+			case 16: 
+				*processor.classicSynth_fDecay = sliderValue;
+			case 17:
+				*processor.rhodes_index2 = sliderValue;
+			}
 		case 3:
-			*processor.vocoderCh_bandOff = sliderValue;
-			*processor.livingString_freq3 = sliderValue;
-			*processor.classicSynth_fDecay = sliderValue;
-			*processor.rhodes_index2 = sliderValue;
+			switch (vocodec::currentPreset) {
+			case 16:
+				*processor.classicSynth_sawPulse = sliderValue;
+			case 17:
+				*processor.rhodes_ratio2 = sliderValue;
+			}
 		case 4:
-			*processor.classicSynth_sawPulse = sliderValue;
-			*processor.rhodes_ratio2 = sliderValue;
-		case 5:
 			*processor.rhodes_feedback = sliderValue;
 		}
 
@@ -394,39 +480,73 @@ void VocodecAudioProcessorEditor::sliderValueChanged(Slider* slider) {
 		paramName += String(vocodec::displayValues[vocodec::knobPage * 5 + 2]);
 		switch (vocodec::knobPage) {
 		case 0:
-			*processor.vocoder_quality = sliderValue;
-			*processor.vocoderCh_quality = sliderValue;
-			*processor.pitchShift_f_Amt = sliderValue;
-			*processor.autotuneMono_speed = sliderValue;
-			*processor.samplerButtonPress_speed = sliderValue;
-			*processor.samplerKeyboard_speed = sliderValue;
-			*processor.samplerAutoGrab_speed = sliderValue;
-			*processor.distortion_midGain = sliderValue;
-			*processor.wavefolder_offset2 = sliderValue;
-			*processor.bitCrusher_rounding = sliderValue;
-			*processor.delay_highPass = sliderValue;
-			*processor.reverb_inHighPass = sliderValue;
-			*processor.reverb2_highPass = sliderValue;
-			*processor.livingString_decay = sliderValue;
-			*processor.livingStringSynth_decay = sliderValue;
-			*processor.classicSynth_keyFollow = sliderValue;
-			*processor.rhodes_tremRate = sliderValue;
+			switch (vocodec::currentPreset) {
+			case 0:
+				*processor.vocoder_quality = sliderValue;
+				case 1:
+				*processor.vocoderCh_quality = sliderValue;
+				case 2:
+				*processor.pitchShift_f_Amt = sliderValue;
+				case 3:
+				*processor.autotuneMono_speed = sliderValue;
+				case 5:
+				*processor.samplerButtonPress_speed = sliderValue;
+				case 6:
+				*processor.samplerKeyboard_speed = sliderValue;
+				case 7:
+				*processor.samplerAutoGrab_speed = sliderValue;
+				case 8:
+				*processor.distortion_midGain = sliderValue;
+				case 9:
+				*processor.wavefolder_offset2 = sliderValue;
+				case 10:
+				*processor.bitCrusher_rounding = sliderValue;
+				case 11:
+				*processor.delay_highPass = sliderValue;
+				case 12:
+				*processor.reverb_inHighPass = sliderValue;
+				case 13:
+				*processor.reverb2_highPass = sliderValue;
+				case 14:
+				*processor.livingString_decay = sliderValue;
+				case 15:
+				*processor.livingStringSynth_decay = sliderValue;
+				case 16:
+				*processor.classicSynth_keyFollow = sliderValue;
+				case 17:
+				*processor.rhodes_tremRate = sliderValue;
+			}
 		case 1:
-			*processor.vocoder_pulsewidth = sliderValue;
-			*processor.vocoderCh_pulseShape = sliderValue;
-			*processor.delay_postGain2 = sliderValue;
-			*processor.livingString_letRing = sliderValue;
-			*processor.livingStringSynth_letRing = sliderValue;
-			*processor.classicSynth_sustain = sliderValue;
-			*processor.rhodes_sustain = sliderValue;
+			switch (vocodec::currentPreset) {
+			case 0:
+				*processor.vocoder_pulsewidth = sliderValue;
+			case 1:
+				*processor.vocoderCh_pulseShape = sliderValue;
+			case 11:
+				*processor.delay_postGain2 = sliderValue;
+			case 14:
+				*processor.livingString_letRing = sliderValue;
+			case 15:
+				*processor.livingStringSynth_letRing = sliderValue;
+			case 16:
+				*processor.classicSynth_sustain = sliderValue;
+			case 17:
+				*processor.rhodes_sustain = sliderValue;
+			}
+		case 2:
+			switch (vocodec::currentPreset) {
+			case 1:
+				*processor.vocoderCh_tilt = sliderValue;
+			case 14:
+				*processor.livingString_freq4 = sliderValue;
+			case 16:
+				*processor.classicSynth_fSustain = sliderValue;
+			case 17:
+				*processor.rhodes_index3 = sliderValue;
+			}
 		case 3:
-			*processor.vocoderCh_tilt = sliderValue;
-			*processor.livingString_freq4 = sliderValue;
-			*processor.classicSynth_fSustain = sliderValue;
-			*processor.rhodes_index3 = sliderValue;
-		case 4:
 			*processor.rhodes_ratio3 = sliderValue;
-		case 5:
+		case 4:
 			*processor.rhodes_tuneSnap = sliderValue;
 		}
 	}
@@ -436,38 +556,71 @@ void VocodecAudioProcessorEditor::sliderValueChanged(Slider* slider) {
 		paramName += String(vocodec::displayValues[vocodec::knobPage * 5 + 3]);
 		switch (vocodec::knobPage) {
 		case 0:
-			*processor.vocoder_sawToPulse = sliderValue;
-			*processor.vocoderCh_bandWidth = sliderValue;
-			*processor.pitchShift_formant = sliderValue;
-			*processor.autotuneMono_leapallow = sliderValue;
-			*processor.samplerButtonPress_speedMult = sliderValue;
-			*processor.samplerKeyboard_speedMult = sliderValue;
-			*processor.samplerAutoGrab_crossFade = sliderValue;
-			*processor.distortion_midFreq = sliderValue;
-			*processor.wavefolder_postGain = sliderValue;
-			*processor.bitCrusher_operation = sliderValue;
-			*processor.delay_lowPass = sliderValue;
-			*processor.reverb_inLowPass = sliderValue;
-			*processor.reverb2_peakFreq = sliderValue;
-			*processor.livingString_damping = sliderValue;
-			*processor.livingStringSynth_damping = sliderValue;
-			*processor.classicSynth_detune = sliderValue;
-			*processor.rhodes_drive = sliderValue;
+			switch (vocodec::currentPreset) {
+			case 0:
+				*processor.vocoder_sawToPulse = sliderValue;
+			case 1:
+				*processor.vocoderCh_bandWidth = sliderValue;
+			case 2:
+				*processor.pitchShift_formant = sliderValue;
+			case 3:
+				*processor.autotuneMono_leapallow = sliderValue;
+			case 5:
+				*processor.samplerButtonPress_speedMult = sliderValue;
+			case 6:
+				*processor.samplerKeyboard_speedMult = sliderValue;
+			case 7:
+				*processor.samplerAutoGrab_crossFade = sliderValue;
+			case 8:
+				*processor.distortion_midFreq = sliderValue;
+			case 9:
+				*processor.wavefolder_postGain = sliderValue;
+			case 10:
+				*processor.bitCrusher_operation = sliderValue;
+			case 11:
+				*processor.delay_lowPass = sliderValue;
+			case 12:
+				*processor.reverb_inLowPass = sliderValue;
+			case 13:
+				*processor.reverb2_peakFreq = sliderValue;
+			case 14:
+				*processor.livingString_damping = sliderValue;
+			case 15:
+				*processor.livingStringSynth_damping = sliderValue;
+			case 16:
+				*processor.classicSynth_detune = sliderValue;
+			case 17:
+				*processor.rhodes_drive = sliderValue;
+			}
 		case 1:
-			*processor.vocoder_pulseShape = sliderValue;
-			*processor.vocoderCh_breath = sliderValue;
-			*processor.delay_postGain3 = sliderValue;
-			*processor.livingStringSynth_fBLevel = sliderValue;
-			*processor.classicSynth_release = sliderValue;
-			*processor.rhodes_release = sliderValue;
+			switch (vocodec::currentPreset) {
+			case 0:
+				*processor.vocoder_pulseShape = sliderValue;
+			case 1:
+				*processor.vocoderCh_breath = sliderValue;
+			case 11:
+				*processor.delay_postGain3 = sliderValue;
+			case 15:
+				*processor.livingStringSynth_fBLevel = sliderValue;
+			case 16:
+				*processor.classicSynth_release = sliderValue;
+			case 17:
+				*processor.rhodes_release = sliderValue;
+			}
+		case 2:
+			switch (vocodec::currentPreset) {
+			case 1:
+				*processor.vocoderCh_stereo = sliderValue;
+			case 14:
+				*processor.livingString_freq5 = sliderValue;
+			case 16:
+				*processor.classicSynth_fRelease = sliderValue;
+			case 17:
+				*processor.rhodes_index4 = sliderValue;
+			}
 		case 3:
-			*processor.vocoderCh_stereo = sliderValue;
-			*processor.livingString_freq5 = sliderValue;
-			*processor.classicSynth_fRelease = sliderValue;
-			*processor.rhodes_index4 = sliderValue;
-		case 4:
 			*processor.rhodes_ratio4 = sliderValue;
-		case 5:
+		case 4:
 			*processor.rhodes_randDecay = sliderValue;
 		}
 	}
@@ -477,31 +630,60 @@ void VocodecAudioProcessorEditor::sliderValueChanged(Slider* slider) {
 		paramName += String(vocodec::displayValues[vocodec::knobPage * 5 + 4]);
 		switch (vocodec::knobPage) {
 		case 0:
-			*processor.vocoder_noiseThreshold = sliderValue;
-			*processor.vocoderCh_noiseThreshold = sliderValue;
-			*processor.pitchShift_range = sliderValue;
-			*processor.autotuneMono_hysteresis = sliderValue;
-			*processor.samplerButtonPress_crossfade = sliderValue;
-			*processor.samplerKeyboard_loopOn = sliderValue;
-			*processor.distortion_postGain = sliderValue;
-			*processor.bitCrusher_postGain = sliderValue;
-			*processor.delay_feedback = sliderValue;
-			*processor.reverb_fBGain = sliderValue;
-			*processor.reverb2_peakGain = sliderValue;
-			*processor.livingString_pickPos = sliderValue;
-			*processor.livingStringSynth_pickPos = sliderValue;
-			*processor.classicSynth_filterQ = sliderValue;
-			*processor.rhodes_panSpread = sliderValue;
+			switch (vocodec::currentPreset) {
+			case 0:
+				*processor.vocoder_noiseThreshold = sliderValue;
+			case 1:
+				*processor.vocoderCh_noiseThreshold = sliderValue;
+			case 2:
+				*processor.pitchShift_range = sliderValue;
+			case 3:
+				*processor.autotuneMono_hysteresis = sliderValue;
+			case 5:
+				*processor.samplerButtonPress_crossfade = sliderValue;
+			case 6:
+				*processor.samplerKeyboard_loopOn = sliderValue;
+			case 8:
+				*processor.distortion_postGain = sliderValue;
+			case 10:
+				*processor.bitCrusher_postGain = sliderValue;
+			case 11:
+				*processor.delay_feedback = sliderValue;
+			case 12:
+				*processor.reverb_fBGain = sliderValue;
+			case 13:
+				*processor.reverb2_peakGain = sliderValue;
+			case 14:
+				*processor.livingString_pickPos = sliderValue;
+			case 15:
+				*processor.livingStringSynth_pickPos = sliderValue;
+			case 16:
+				*processor.classicSynth_filterQ = sliderValue;
+			case 17:
+				*processor.rhodes_panSpread = sliderValue;
+			}
 		case 1:
-			*processor.vocoderCh_speed = sliderValue;
-			*processor.livingStringSynth_fBLevel = sliderValue;
-			*processor.classicSynth_leak = sliderValue;
-			*processor.rhodes_leak = sliderValue;
+			switch (vocodec::currentPreset) {
+			case 1:
+				*processor.vocoderCh_speed = sliderValue;
+			case 15:
+				*processor.livingStringSynth_fBLevel = sliderValue;
+			case 16:
+				*processor.classicSynth_leak = sliderValue;
+			case 17:
+				*processor.rhodes_leak = sliderValue;
+			}
 		case 3:
-			*processor.vocoderCh_barkPull = sliderValue;
-			*processor.livingString_freq6 = sliderValue;
-			*processor.classicSynth_fLeak = sliderValue;
-			*processor.rhodes_index5 = sliderValue;
+			switch (vocodec::currentPreset) {
+			case 1:
+				*processor.vocoderCh_barkPull = sliderValue;
+			case 14:
+				*processor.livingString_freq6 = sliderValue;
+			case 16:
+				*processor.classicSynth_fLeak = sliderValue;
+			case 17:
+				*processor.rhodes_index5 = sliderValue;
+			}
 		case 4:
 			*processor.rhodes_ratio5 = sliderValue;
 		case 5:
