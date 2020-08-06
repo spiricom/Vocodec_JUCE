@@ -245,6 +245,10 @@ void VocodecAudioProcessorEditor::paint (Graphics& g)
 	// EDIT
 	g.setColour(juce::Colours::darkred);
 	g.fillEllipse(421, 50, 22, 22);
+	if (lightStates[6]) {
+		g.setGradientFill(ColourGradient(Colours::pink, juce::Point<float>(432, 61), Colours::transparentWhite, juce::Point<float>(421, 50), true));
+		g.fillEllipse(417, 46, 30, 30);
+	}
 }
 
 void VocodecAudioProcessorEditor::resized()
@@ -729,7 +733,28 @@ void VocodecAudioProcessorEditor::buttonStateChanged(Button *button) {
 			vocodec::buttonActionsSFX[9][vocodec::ActionRelease] = true;
 	}
     else if (button->getState() == Button::ButtonState::buttonOver) {
-        
+		if (button == buttons[0])
+			vocodec::buttonActionsSFX[0][vocodec::ActionRelease] = true;
+		if (button == buttons[1])
+			vocodec::buttonActionsSFX[1][vocodec::ActionRelease] = true;
+		if (button == buttons[2])
+			vocodec::buttonActionsSFX[2][vocodec::ActionRelease] = true;
+		if (button == buttons[3]) {
+			vocodec::buttonActionsSFX[3][vocodec::ActionRelease] = true;
+		}
+		if (button == buttons[4]) {
+			vocodec::buttonActionsSFX[4][vocodec::ActionRelease] = true;
+		}
+		if (button == buttons[5])
+			vocodec::buttonActionsSFX[5][vocodec::ActionRelease] = true;
+		if (button == buttons[6])
+			vocodec::buttonActionsSFX[6][vocodec::ActionRelease] = true;
+		if (button == buttons[7])
+			vocodec::buttonActionsSFX[7][vocodec::ActionRelease] = true;
+		if (button == buttons[8])
+			vocodec::buttonActionsSFX[8][vocodec::ActionRelease] = true;
+		if (button == buttons[9])
+			vocodec::buttonActionsSFX[9][vocodec::ActionRelease] = true;
     }
     else if (button->getState() == Button::ButtonState::buttonDown) {
         if (button == buttons[0])
@@ -811,7 +836,7 @@ void setLED_2(int onOFF)
 
 void setLED_Edit(int onOFF)
 {
-	//lightStates[] = (bool) onOFF;
+	lightStates[6] = (bool) onOFF;
 }
 
 void OLED_process(void)

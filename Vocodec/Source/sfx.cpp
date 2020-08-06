@@ -2964,108 +2964,73 @@ namespace vocodec
             }
             
             float* knobs = presetKnobValues[ClassicSynth];
-            
-            if (writeKnobFlag != -1)
+     
+            displayValues[0] = knobs[0]; //synth volumebreak;
+       
+            displayValues[1] = knobs[1] * 4096.0f; //lowpass cutoff
+      
+            displayValues[2] = knobs[2]; //keyfollow filter cutoff
+      
+            displayValues[3] = knobs[3]; //detune
+            displayValues[4] = (knobs[4] * 2.0f) + 0.4f; //filter Q
+            for (int i = 0; i < numVoices; i++)
             {
-                switch(writeKnobFlag + (knobPage * KNOB_PAGE_SIZE))
-                {
-                    case 0:
-                        displayValues[0] = knobs[0]; //synth volume
-                        break;
-                    case 1:
-                        displayValues[1] = knobs[1] * 4096.0f; //lowpass cutoff
-                        break;
-                    case 2:
-                        displayValues[2] = knobs[2]; //keyfollow filter cutoff
-                        break;
-                    case 3:
-                        displayValues[3] = knobs[3]; //detune
-                        break;
-                    case 4:
-                        displayValues[4] = (knobs[4] * 2.0f) + 0.4f; //filter Q
-                        for (int i = 0; i < numVoices; i++)
-                        {
-                            tEfficientSVF_setQ(&synthLP[i],displayValues[4]);
-                        }
-                        break;
-                    case 5:
-                        displayValues[5] = expBuffer[(int)(knobs[5] * expBufferSizeMinusOne)] * 8192.0f; //att
-                        for (int i = 0; i < numVoices; i++)
-                        {
-                            tADSR4_setAttack(&polyEnvs[i], displayValues[5]);
-                        }
-                        break;
-                    case 6:
-                        displayValues[6] = expBuffer[(int)(knobs[6] * expBufferSizeMinusOne)] * 8192.0f; //dec
-                        for (int i = 0; i < numVoices; i++)
-                        {
-                            tADSR4_setDecay(&polyEnvs[i], displayValues[6]);
-                        }
-                        break;
-                    case 7:
-                        displayValues[7] = knobs[7]; //sus
-                        for (int i = 0; i < numVoices; i++)
-                        {
-                            tADSR4_setSustain(&polyEnvs[i], displayValues[7]);
-                        }
-                        break;
-                    case 8:
-                        displayValues[8] = expBuffer[(int)(knobs[8] * expBufferSizeMinusOne)] * 8192.0f; //rel
-                        for (int i = 0; i < numVoices; i++)
-                        {
-                            tADSR4_setRelease(&polyEnvs[i], displayValues[8]);
-                        }
-                        break;
-                    case 9:
-                        displayValues[9] = knobs[9]; //leak
-                        for (int i = 0; i < numVoices; i++)
-                        {
-                            tADSR4_setLeakFactor(&polyEnvs[i], ((1.0f - displayValues[9]) * 0.00005f) + 0.99995f);
-                        }
-                        break;
-                    case 10:
-                        displayValues[10] = expBuffer[(int)(knobs[10] * expBufferSizeMinusOne)] * 8192.0f; //att
-                        for (int i = 0; i < numVoices; i++)
-                        {
-                            tADSR4_setAttack(&polyFiltEnvs[i], displayValues[10]);
-                        }
-                        break;
-                    case 11:
-                        displayValues[11] = expBuffer[(int)(knobs[11] * expBufferSizeMinusOne)] * 8192.0f; //dec
-                        for (int i = 0; i < numVoices; i++)
-                        {
-                            tADSR4_setDecay(&polyFiltEnvs[i], displayValues[11]);
-                        }
-                        break;
-                    case 12:
-                        displayValues[12] = knobs[12]; //sus
-                        for (int i = 0; i < numVoices; i++)
-                        {
-                            tADSR4_setSustain(&polyFiltEnvs[i], displayValues[12]);
-                        }
-                        break;
-                    case 13:
-                        displayValues[13] = expBuffer[(int)(knobs[13] * expBufferSizeMinusOne)] * 8192.0f; //rel
-                        for (int i = 0; i < numVoices; i++)
-                        {
-                            tADSR4_setRelease(&polyFiltEnvs[i], displayValues[13]);
-                        }
-                        break;
-                    case 14:
-                        displayValues[14] = knobs[14]; //leak
-                        for (int i = 0; i < numVoices; i++)
-                        {
-                            tADSR4_setLeakFactor(&polyFiltEnvs[i], ((1.0f - displayValues[14]) * 0.00005f) + 0.99995f);
-                        }
-                        break;
-                    case 15:
-                        displayValues[15] = knobs[15] * 4095.0f;  // filter envelope amount
-                        break;
-                    case 16:
-                        displayValues[16] = knobs[16];  // fade between sawtooth and glottal pulse
-                        break;
-                }
+                tEfficientSVF_setQ(&synthLP[i],displayValues[4]);
             }
+            displayValues[5] = expBuffer[(int)(knobs[5] * expBufferSizeMinusOne)] * 8192.0f; //att
+            for (int i = 0; i < numVoices; i++)
+            {
+                tADSR4_setAttack(&polyEnvs[i], displayValues[5]);
+            }
+      
+            displayValues[6] = expBuffer[(int)(knobs[6] * expBufferSizeMinusOne)] * 8192.0f; //dec
+            for (int i = 0; i < numVoices; i++)
+            {
+                tADSR4_setDecay(&polyEnvs[i], displayValues[6]);
+            }
+            displayValues[7] = knobs[7]; //sus
+            for (int i = 0; i < numVoices; i++)
+            {
+                tADSR4_setSustain(&polyEnvs[i], displayValues[7]);
+            }
+            displayValues[8] = expBuffer[(int)(knobs[8] * expBufferSizeMinusOne)] * 8192.0f; //rel
+            for (int i = 0; i < numVoices; i++)
+            {
+                tADSR4_setRelease(&polyEnvs[i], displayValues[8]);
+            }
+            displayValues[9] = knobs[9]; //leak
+            for (int i = 0; i < numVoices; i++)
+            {
+                tADSR4_setLeakFactor(&polyEnvs[i], ((1.0f - displayValues[9]) * 0.00005f) + 0.99995f);
+            }
+            displayValues[10] = expBuffer[(int)(knobs[10] * expBufferSizeMinusOne)] * 8192.0f; //att
+            for (int i = 0; i < numVoices; i++)
+            {
+                tADSR4_setAttack(&polyFiltEnvs[i], displayValues[10]);
+            }
+            displayValues[11] = expBuffer[(int)(knobs[11] * expBufferSizeMinusOne)] * 8192.0f; //dec
+            for (int i = 0; i < numVoices; i++)
+            {
+                tADSR4_setDecay(&polyFiltEnvs[i], displayValues[11]);
+            }
+            displayValues[12] = knobs[12]; //sus
+            for (int i = 0; i < numVoices; i++)
+            {
+                tADSR4_setSustain(&polyFiltEnvs[i], displayValues[12]);
+            }
+            displayValues[13] = expBuffer[(int)(knobs[13] * expBufferSizeMinusOne)] * 8192.0f; //rel
+            for (int i = 0; i < numVoices; i++)
+            {
+                tADSR4_setRelease(&polyFiltEnvs[i], displayValues[13]);
+            }
+            displayValues[14] = knobs[14]; //leak
+            for (int i = 0; i < numVoices; i++)
+            {
+                tADSR4_setLeakFactor(&polyFiltEnvs[i], ((1.0f - displayValues[14]) * 0.00005f) + 0.99995f);
+            }
+      
+            displayValues[15] = knobs[15] * 4095.0f;  // filter envelope amount
+            displayValues[16] = knobs[16];  // fade between sawtooth and glottal pulse
             
             
             float tempLFO1 = (tCycle_tick(&pwmLFO1) * 0.25f) + 0.5f; // pulse length
