@@ -586,11 +586,13 @@ namespace vocodec
                     
                     if (fastabsf(floatADC[i] - lastFloatADC[i]) > adcHysteresisThreshold)
                     {
+#ifndef __cplusplus
                         if (buttonActionsUI[ButtonEdit][ActionHoldContinuous])
                         {
                             if (i != 5) cvAddParam[currentPreset] = i + (knobPage * KNOB_PAGE_SIZE);;
                             buttonActionsUI[ButtonEdit][ActionHoldContinuous] = 0;
                         }
+#endif
                         lastFloatADC[i] = floatADC[i];
                         if (i == 5) writeKnobFlag = cvAddParam[currentPreset] - (knobPage * KNOB_PAGE_SIZE);
                         else writeKnobFlag = i;

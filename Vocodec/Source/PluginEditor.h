@@ -90,13 +90,11 @@ private:
 
 //    Array<DrawableImage*> lights;
 
-	Array<Slider*> dials;
+	OwnedArray<Slider> dials;
     
-    Array<ShapeButton*> buttons;
-    
+    OwnedArray<ShapeButton> buttons;
     
 	ComboBox menu;
-
 
 	int sliderOpacity[7];
 

@@ -255,6 +255,12 @@ void VocodecAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBloc
     LEAF_init(sampleRate, samplesPerBlock, vocodec::medium_memory, 519000, []() {return (float)rand() / RAND_MAX; });
     tMempool_init(&vocodec::smallPool, vocodec::small_memory, 80328);
     tMempool_init(&vocodec::largePool, vocodec::large_memory, 33554432);
+    
+    tEnvelopeFollower_init(&inputFollower[0], 0.0001f, 0.9995f);
+    tEnvelopeFollower_init(&inputFollower[1], 0.0001f, 0.9995f);
+    tEnvelopeFollower_init(&outputFollower[0], 0.0001f, 0.9995f);
+    tEnvelopeFollower_init(&outputFollower[1], 0.0001f, 0.9995f);
+    
     vocodec::initGlobalSFXObjects();
 
     if (presetNumber == 0)
@@ -683,7 +689,10 @@ void VocodecAudioProcessor::processBlock (AudioBuffer<float>& buffer, MidiBuffer
     vocodec::presetKnobValues[17][23] = rhodes_randDecay->get();
     vocodec::presetKnobValues[17][24] = rhodes_randSust->get();
     for (int i = 0; i < buffer.getNumSamples(); i++)
-    {   
+    {
+        audioInput[0] = tEnvelopeFollower_tick(&inputFollower[0], leftChannel[i]);
+        audioInput[1] = tEnvelopeFollower_tick(&inputFollower[1], rightChannel[i]);
+        
         float audio [2];
         audio[0] = leftChannel[i];
         audio[1] = rightChannel[i];
@@ -748,11 +757,15 @@ void VocodecAudioProcessor::processBlock (AudioBuffer<float>& buffer, MidiBuffer
             }
         
 		audio[0] = LEAF_interpolation_linear(leftChannel[i], audio[0], interpVal);
+        
         buffer.setSample(0, i, audio[0]);
         if(buffer.getNumChannels() > 1){
 			audio[1] = LEAF_interpolation_linear(rightChannel[i], audio[1], interpVal);
             buffer.setSample(1, i, audio[1]);
         }
+        
+        audioOutput[0] = tEnvelopeFollower_tick(&outputFollower[0], audio[0]);
+        audioOutput[1] = tEnvelopeFollower_tick(&outputFollower[1], audio[1]);
     }
     
     

@@ -249,6 +249,72 @@ void VocodecAudioProcessorEditor::paint (Graphics& g)
 		g.setGradientFill(ColourGradient(Colours::pink, juce::Point<float>(432, 61), Colours::transparentWhite, juce::Point<float>(421, 50), true));
 		g.fillEllipse(417, 46, 30, 30);
 	}
+    
+      // In1Yellow
+    g.setColour(Colours::gold);
+    g.fillEllipse(15, 398, 10, 10);
+    float x;
+    x = atodb(processor.audioInput[0]);
+    x = LEAF_clip(-120.0f, x, 0.0f);
+    x = ( (x + 120.0f) / 120.0f ) * 4.0f;
+    g.setGradientFill(ColourGradient(Colours::yellow, juce::Point<float>(26, 409), Colours::transparentWhite, juce::Point<float>(15 + x, 398 + x), true));
+    g.fillEllipse(11, 394, 20, 20);
+
+    
+    // In1Red
+    g.setColour(Colours::darkred);
+    g.fillEllipse(35, 398, 10, 10);
+    
+    g.setGradientFill(ColourGradient(Colours::pink, juce::Point<float>(550, 307), Colours::transparentWhite, juce::Point<float>(539, 296), true));
+    g.fillEllipse(535, 292, 30, 30);
+  
+    // In2Yellow
+    g.setColour(Colours::gold);
+    g.fillEllipse(539, 296, 22, 22);
+    if (lightStates[9]) {
+        g.setGradientFill(ColourGradient(Colours::yellow, juce::Point<float>(550, 307), Colours::transparentWhite, juce::Point<float>(539, 296), true));
+        g.fillEllipse(535, 292, 30, 30);
+    }
+ 
+     // In2Red
+    g.setColour(Colours::darkred);
+     g.fillEllipse(539, 296, 22, 22);
+     if (lightStates[9]) {
+         g.setGradientFill(ColourGradient(Colours::pink, juce::Point<float>(550, 307), Colours::transparentWhite, juce::Point<float>(539, 296), true));
+         g.fillEllipse(535, 292, 30, 30);
+     }
+
+      // Out1Yellow
+    g.setColour(Colours::gold);
+    g.fillEllipse(539, 296, 22, 22);
+    if (lightStates[9]) {
+        g.setGradientFill(ColourGradient(Colours::yellow, juce::Point<float>(550, 307), Colours::transparentWhite, juce::Point<float>(539, 296), true));
+        g.fillEllipse(535, 292, 30, 30);
+    }
+  
+    // Out1Red
+    g.setColour(Colours::darkred);
+     g.fillEllipse(539, 296, 22, 22);
+     if (lightStates[9]) {
+         g.setGradientFill(ColourGradient(Colours::pink, juce::Point<float>(550, 307), Colours::transparentWhite, juce::Point<float>(539, 296), true));
+         g.fillEllipse(535, 292, 30, 30);
+     }
+     
+       // Out2Yellow
+    g.setColour(Colours::gold);
+    g.fillEllipse(539, 296, 22, 22);
+    if (lightStates[9]) {
+        g.setGradientFill(ColourGradient(Colours::yellow, juce::Point<float>(550, 307), Colours::transparentWhite, juce::Point<float>(539, 296), true));
+        g.fillEllipse(535, 292, 30, 30);
+    }
+ 
+      //Out2Red
+    g.setColour(Colours::darkred);
+     g.fillEllipse(539, 296, 22, 22);
+     if (lightStates[9]) {
+         g.setGradientFill(ColourGradient(Colours::pink, juce::Point<float>(550, 307), Colours::transparentWhite, juce::Point<float>(539, 296), true));
+         g.fillEllipse(535, 292, 30, 30);
+     }
 }
 
 void VocodecAudioProcessorEditor::resized()

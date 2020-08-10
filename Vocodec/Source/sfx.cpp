@@ -340,7 +340,7 @@ namespace vocodec
         
         tTalkboxFloat vocoder;
         tNoise vocoderNoise;
-        tZeroCrossing zerox;
+        tZeroCrossingCounter zerox;
         tSawtooth osc[NUM_VOC_VOICES * NUM_OSC_PER_VOICE];
         tRosenbergGlottalPulse glottal[NUM_VOC_VOICES];
         uint8_t numVoices = NUM_VOC_VOICES;
@@ -357,7 +357,7 @@ namespace vocodec
             tTalkboxFloat_initToPool(&vocoder, 1024,  &smallPool);
             tTalkboxFloat_setWarpOn(&vocoder, 1);
             tNoise_initToPool(&vocoderNoise, WhiteNoise, &smallPool);
-            tZeroCrossing_initToPool(&zerox, 16, &smallPool);
+            tZeroCrossingCounter_initToPool(&zerox, 16, &smallPool);
             tSimplePoly_setNumVoices(&poly, numVoices);
             tExpSmooth_initToPool(&noiseRamp, 0.0f, 0.005f, &smallPool);
             
@@ -454,7 +454,7 @@ namespace vocodec
             }
             else
             {
-                zerocross = tZeroCrossing_tick(&zerox, input[1]);
+                zerocross = tZeroCrossingCounter_tick(&zerox, input[1]);
                 
                 if (!vocChFreeze)
                 {
@@ -496,7 +496,7 @@ namespace vocodec
         {
             tTalkboxFloat_free(&vocoder);
             tNoise_free(&vocoderNoise);
-            tZeroCrossing_free(&zerox);
+            tZeroCrossingCounter_free(&zerox);
             tExpSmooth_free(&noiseRamp);
             
             tNoise_free(&breathNoise);
@@ -635,7 +635,7 @@ namespace vocodec
             }
             tNoise_initToPool(&breathNoise, WhiteNoise, &smallPool);
             tNoise_initToPool(&vocoderNoise, WhiteNoise, &smallPool);
-            tZeroCrossing_initToPool(&zerox, 256, &smallPool);
+            tZeroCrossingCounter_initToPool(&zerox, 256, &smallPool);
             tSimplePoly_setNumVoices(&poly, numVoices);
             tExpSmooth_initToPool(&noiseRamp, 0.0f, 0.05f, &smallPool);
             tHighpass_initToPool(&noiseHP, 5000.0f, &smallPool);
@@ -850,7 +850,7 @@ namespace vocodec
             }
             else
             {
-                float zerocross = tZeroCrossing_tick(&zerox, input[1]);
+                float zerocross = tZeroCrossingCounter_tick(&zerox, input[1]);
                 
                 if (!vocChFreeze)
                 {
@@ -931,7 +931,7 @@ namespace vocodec
             }
             tNoise_free(&breathNoise);
             tNoise_free(&vocoderNoise);
-            tZeroCrossing_free(&zerox);
+            tZeroCrossingCounter_free(&zerox);
             tExpSmooth_free(&noiseRamp);
             tHighpass_free(&noiseHP);
             tVZFilter_free(&vocodec_highshelf);
@@ -2042,7 +2042,7 @@ namespace vocodec
         void SFXDistortionAlloc()
         {
             leaf.clearOnAllocation = 1;
-            tOversampler_initToPool(&oversampler, distOS_ratio, OFALSE, &smallPool);
+            tOversampler_initToPool(&oversampler, distOS_ratio, 0, &smallPool);
             tVZFilter_initToPool(&shelf1, Lowshelf, 80.0f, 6.0f, &smallPool);
             tVZFilter_initToPool(&shelf2, Highshelf, 12000.0f, 6.0f, &smallPool);
             tVZFilter_initToPool(&bell1, Bell, 1000.0f, 1.9f, &smallPool);
@@ -2120,7 +2120,7 @@ namespace vocodec
             tLockhartWavefolder_initToPool(&wavefolder1, &smallPool);
             tLockhartWavefolder_initToPool(&wavefolder2, &smallPool);
             tHighpass_initToPool(&wfHP, 10.0f, &smallPool);
-            tOversampler_initToPool(&oversampler, 2, OFALSE, &smallPool);
+            tOversampler_initToPool(&oversampler, 2, 0, &smallPool);
             setLED_A(foldMode);
             leaf.clearOnAllocation = 0;
         }

@@ -222,6 +222,10 @@ public:
     AudioParameterFloat* rhodes_randDecay;
     AudioParameterFloat* rhodes_randSust;
     
+    float audioInput[2], audioOutput[2];
+    
+    tEnvelopeFollower inputFollower[2], outputFollower[2];
+    
 private:
     
 	bool isAddingFromMidiInput = false;
