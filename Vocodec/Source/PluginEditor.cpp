@@ -265,7 +265,7 @@ void VocodecAudioProcessorEditor::paint (Graphics& g)
     // In1Red
     g.setColour(Colours::darkred);
     g.fillEllipse(35, 398, 10, 10);
-    if(processor.audioInput[0] == 1.0f){
+    if(processor.audioInput[0] >= 0.999f){
     g.setGradientFill(ColourGradient(Colours::pink, juce::Point<float>(41, 404), Colours::transparentWhite, juce::Point<float>(30, 393), true));
     g.fillEllipse(30, 393, 20, 20);
     }
@@ -285,7 +285,7 @@ void VocodecAudioProcessorEditor::paint (Graphics& g)
      // In2Red
     g.setColour(Colours::darkred);
     g.fillEllipse(35, 530, 10, 10);
-    if(processor.audioOutput[0] == 1.0f){
+    if(processor.audioInput[1] >= 0.999f){
     g.setGradientFill(ColourGradient(Colours::pink, juce::Point<float>(41, 536), Colours::transparentWhite, juce::Point<float>(30, 525), true));
     g.fillEllipse(30, 525, 20, 20);
     }
@@ -306,7 +306,7 @@ void VocodecAudioProcessorEditor::paint (Graphics& g)
     // Out1Red
     g.setColour(Colours::darkred);
     g.fillEllipse(570, 632, 10, 10);
-    if(processor.audioOutput[0] == 1.0f){
+    if(processor.audioOutput[0] >= 0.999f){
     g.setGradientFill(ColourGradient(Colours::pink, juce::Point<float>(576, 638), Colours::transparentWhite, juce::Point<float>(565, 627), true));
     g.fillEllipse(565, 627, 20, 20);
     }
@@ -326,7 +326,7 @@ void VocodecAudioProcessorEditor::paint (Graphics& g)
       //Out2Red
     g.setColour(Colours::darkred);
     g.fillEllipse(570, 515, 10, 10);
-    if(processor.audioOutput[1] == 1.0f){
+    if(processor.audioOutput[1] >= 0.999f){
     g.setGradientFill(ColourGradient(Colours::pink, juce::Point<float>(576, 521), Colours::transparentWhite, juce::Point<float>(565, 510), true));
     g.fillEllipse(565, 510, 20, 20);
     }
