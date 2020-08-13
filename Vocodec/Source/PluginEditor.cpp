@@ -242,79 +242,95 @@ void VocodecAudioProcessorEditor::paint (Graphics& g)
 		g.setGradientFill(ColourGradient(Colours::lightgreen, juce::Point<float>(314, 504), Colours::transparentWhite, juce::Point<float>(303, 493), true));
 		g.fillEllipse(299, 489, 30, 30);
 	}
-	// EDIT
-	g.setColour(juce::Colours::darkred);
-	g.fillEllipse(421, 50, 22, 22);
-	if (lightStates[6]) {
-		g.setGradientFill(ColourGradient(Colours::pink, juce::Point<float>(432, 61), Colours::transparentWhite, juce::Point<float>(421, 50), true));
-		g.fillEllipse(417, 46, 30, 30);
-	}
+    
+   // EDIT
+    g.setColour(juce::Colours::darkred);
+    g.fillEllipse(421, 50, 22, 22);
+    if (lightStates[6]) {
+        g.setGradientFill(ColourGradient(Colours::pink, juce::Point<float>(432, 61), Colours::transparentWhite, juce::Point<float>(421, 50), true));
+        g.fillEllipse(417, 46, 30, 30);
+    }
     
       // In1Yellow
     g.setColour(Colours::gold);
     g.fillEllipse(15, 398, 10, 10);
-    float x;
-    x = atodb(processor.audioInput[0]);
-    x = LEAF_clip(-120.0f, x, 0.0f);
-    x = ( (x + 120.0f) / 120.0f ) * 4.0f;
-    g.setGradientFill(ColourGradient(Colours::yellow, juce::Point<float>(26, 409), Colours::transparentWhite, juce::Point<float>(15 + x, 398 + x), true));
-    g.fillEllipse(11, 394, 20, 20);
+    float inOne;
+    inOne = atodb(processor.audioInput[0]);
+    inOne = LEAF_clip(-120.0f, inOne, 0.0f);
+    inOne = ( (inOne + 120.0f) / 120.0f ) * 8.0f;
+    g.setGradientFill(ColourGradient(Colours::yellow, juce::Point<float>(21, 404), Colours::transparentWhite, juce::Point<float>(10 - inOne + 11.0f, 393 - inOne + 11.0f), true));
+    g.fillEllipse(10, 393, 20, 20);
 
     
     // In1Red
     g.setColour(Colours::darkred);
     g.fillEllipse(35, 398, 10, 10);
-    
-    g.setGradientFill(ColourGradient(Colours::pink, juce::Point<float>(550, 307), Colours::transparentWhite, juce::Point<float>(539, 296), true));
-    g.fillEllipse(535, 292, 30, 30);
+    if(processor.audioInput[0] == 1.0f){
+    g.setGradientFill(ColourGradient(Colours::pink, juce::Point<float>(41, 404), Colours::transparentWhite, juce::Point<float>(30, 393), true));
+    g.fillEllipse(30, 393, 20, 20);
+    }
   
+    
     // In2Yellow
     g.setColour(Colours::gold);
-    g.fillEllipse(539, 296, 22, 22);
-    if (lightStates[9]) {
-        g.setGradientFill(ColourGradient(Colours::yellow, juce::Point<float>(550, 307), Colours::transparentWhite, juce::Point<float>(539, 296), true));
-        g.fillEllipse(535, 292, 30, 30);
-    }
+    g.fillEllipse(15, 530, 10, 10);
+    float inTwo;
+    inTwo = atodb(processor.audioInput[1]);
+    inTwo = LEAF_clip(-120.0f, inTwo, 0.0f);
+    inTwo = ( (inTwo + 120.0f) / 120.0f ) * 8.0f;
+    g.setGradientFill(ColourGradient(Colours::yellow, juce::Point<float>(21, 536), Colours::transparentWhite, juce::Point<float>(10 - inTwo + 11.0f, 525 - inTwo + 11.0f), true));
+    g.fillEllipse(10, 525, 20, 20);
+    
  
      // In2Red
     g.setColour(Colours::darkred);
-     g.fillEllipse(539, 296, 22, 22);
-     if (lightStates[9]) {
-         g.setGradientFill(ColourGradient(Colours::pink, juce::Point<float>(550, 307), Colours::transparentWhite, juce::Point<float>(539, 296), true));
-         g.fillEllipse(535, 292, 30, 30);
-     }
-
-      // Out1Yellow
-    g.setColour(Colours::gold);
-    g.fillEllipse(539, 296, 22, 22);
-    if (lightStates[9]) {
-        g.setGradientFill(ColourGradient(Colours::yellow, juce::Point<float>(550, 307), Colours::transparentWhite, juce::Point<float>(539, 296), true));
-        g.fillEllipse(535, 292, 30, 30);
+    g.fillEllipse(35, 530, 10, 10);
+    if(processor.audioOutput[0] == 1.0f){
+    g.setGradientFill(ColourGradient(Colours::pink, juce::Point<float>(41, 536), Colours::transparentWhite, juce::Point<float>(30, 525), true));
+    g.fillEllipse(30, 525, 20, 20);
     }
+
+    
+    
+    // Out1Yellow
+    g.setColour(Colours::gold);
+    g.fillEllipse(550, 632, 10, 10);
+    float outOne;
+    outOne = atodb(processor.audioOutput[0]);
+    outOne = LEAF_clip(-120.0f, outOne, 0.0f);
+    outOne = ( (outOne + 120.0f) / 120.0f ) * 8.0f;
+    g.setGradientFill(ColourGradient(Colours::yellow, juce::Point<float>(556, 641), Colours::transparentWhite, juce::Point<float>(545 - outOne + 11.0f, 630 - outOne + 11.0f), true));
+    g.fillEllipse(545, 627, 20, 20);
+    
   
     // Out1Red
     g.setColour(Colours::darkred);
-     g.fillEllipse(539, 296, 22, 22);
-     if (lightStates[9]) {
-         g.setGradientFill(ColourGradient(Colours::pink, juce::Point<float>(550, 307), Colours::transparentWhite, juce::Point<float>(539, 296), true));
-         g.fillEllipse(535, 292, 30, 30);
-     }
-     
-       // Out2Yellow
-    g.setColour(Colours::gold);
-    g.fillEllipse(539, 296, 22, 22);
-    if (lightStates[9]) {
-        g.setGradientFill(ColourGradient(Colours::yellow, juce::Point<float>(550, 307), Colours::transparentWhite, juce::Point<float>(539, 296), true));
-        g.fillEllipse(535, 292, 30, 30);
+    g.fillEllipse(570, 632, 10, 10);
+    if(processor.audioOutput[0] == 1.0f){
+    g.setGradientFill(ColourGradient(Colours::pink, juce::Point<float>(576, 638), Colours::transparentWhite, juce::Point<float>(565, 627), true));
+    g.fillEllipse(565, 627, 20, 20);
     }
+     
+     
+    // Out2Yellow
+    g.setColour(Colours::gold);
+    g.fillEllipse(550, 515, 10, 10);
+    float outTwo;
+    outTwo = atodb(processor.audioOutput[1]);
+    outTwo = LEAF_clip(-120.0f, outTwo, 0.0f);
+    outTwo = ( (outTwo + 120.0f) / 120.0f ) * 8.0f;
+    g.setGradientFill(ColourGradient(Colours::yellow, juce::Point<float>(556, 521), Colours::transparentWhite, juce::Point<float>(545 - outTwo + 11.0f, 510 - outTwo + 11.0f), true));
+    g.fillEllipse(545, 510, 20, 20);
+
  
       //Out2Red
     g.setColour(Colours::darkred);
-     g.fillEllipse(539, 296, 22, 22);
-     if (lightStates[9]) {
-         g.setGradientFill(ColourGradient(Colours::pink, juce::Point<float>(550, 307), Colours::transparentWhite, juce::Point<float>(539, 296), true));
-         g.fillEllipse(535, 292, 30, 30);
-     }
+    g.fillEllipse(570, 515, 10, 10);
+    if(processor.audioOutput[1] == 1.0f){
+    g.setGradientFill(ColourGradient(Colours::pink, juce::Point<float>(576, 521), Colours::transparentWhite, juce::Point<float>(565, 510), true));
+    g.fillEllipse(565, 510, 20, 20);
+    }
+    
 }
 
 void VocodecAudioProcessorEditor::resized()
@@ -774,95 +790,98 @@ void VocodecAudioProcessorEditor::buttonClicked(Button*button)
 }
 
 void VocodecAudioProcessorEditor::buttonStateChanged(Button *button) {
-    if (button->getState() == Button::ButtonState::buttonNormal) {
-		if (button == buttons[0])
-            vocodec::buttonActionsSFX[0][vocodec::ActionRelease] = true;
-		if (button == buttons[1])
-			vocodec::buttonActionsSFX[1][vocodec::ActionRelease] = true;
-		if (button == buttons[2])
-			vocodec::buttonActionsSFX[2][vocodec::ActionRelease] = true;
-		if (button == buttons[3]) {
-			vocodec::buttonActionsSFX[3][vocodec::ActionRelease] = true;
-		}
-		if (button == buttons[4]) {
-			vocodec::buttonActionsSFX[4][vocodec::ActionRelease] = true;
-		}
-		if (button == buttons[5])
-			vocodec::buttonActionsSFX[5][vocodec::ActionRelease] = true;
-		if (button == buttons[6])
-			vocodec::buttonActionsSFX[6][vocodec::ActionRelease] = true;
-		if (button == buttons[7])
-			vocodec::buttonActionsSFX[7][vocodec::ActionRelease] = true;
-		if (button == buttons[8])
-			vocodec::buttonActionsSFX[8][vocodec::ActionRelease] = true;
-		if (button == buttons[9])
-			vocodec::buttonActionsSFX[9][vocodec::ActionRelease] = true;
-	}
-    else if (button->getState() == Button::ButtonState::buttonOver) {
-		if (button == buttons[0])
-			vocodec::buttonActionsSFX[0][vocodec::ActionRelease] = true;
-		if (button == buttons[1])
-			vocodec::buttonActionsSFX[1][vocodec::ActionRelease] = true;
-		if (button == buttons[2])
-			vocodec::buttonActionsSFX[2][vocodec::ActionRelease] = true;
-		if (button == buttons[3]) {
-			vocodec::buttonActionsSFX[3][vocodec::ActionRelease] = true;
-		}
-		if (button == buttons[4]) {
-			vocodec::buttonActionsSFX[4][vocodec::ActionRelease] = true;
-		}
-		if (button == buttons[5])
-			vocodec::buttonActionsSFX[5][vocodec::ActionRelease] = true;
-		if (button == buttons[6])
-			vocodec::buttonActionsSFX[6][vocodec::ActionRelease] = true;
-		if (button == buttons[7])
-			vocodec::buttonActionsSFX[7][vocodec::ActionRelease] = true;
-		if (button == buttons[8])
-			vocodec::buttonActionsSFX[8][vocodec::ActionRelease] = true;
-		if (button == buttons[9])
-			vocodec::buttonActionsSFX[9][vocodec::ActionRelease] = true;
+if (button->getState() == Button::ButtonState::buttonNormal) {
+    if (button == buttons[1])
+        vocodec::buttonActionsSFX[1][vocodec::ActionRelease] = true;
+    if (button == buttons[2])
+        vocodec::buttonActionsSFX[2][vocodec::ActionRelease] = true;
+    if (button == buttons[3]) {
+        vocodec::buttonActionsSFX[3][vocodec::ActionRelease] = true;
     }
-    else if (button->getState() == Button::ButtonState::buttonDown) {
-        if (button == buttons[0])
-            vocodec::buttonActionsSFX[0][vocodec::ActionPress] = true;
-		if (button == buttons[1]) {
-			//vocodec::buttonActionsSFX[1][vocodec::ActionPress] = true;
-			if (processor.presetNumber > 1) {
-				menu.setSelectedId(processor.presetNumber - 1, dontSendNotification);
-			}
-			else {
-				menu.setSelectedId(18, dontSendNotification);
-			}
-			presetChanged();
-		}
-		if (button == buttons[2]) {
-			//vocodec::buttonActionsSFX[2][vocodec::ActionPress] = true;
-			if (processor.presetNumber < 18) {
-				menu.setSelectedId(processor.presetNumber + 1, dontSendNotification);
-			}
-			else {
-				menu.setSelectedId(1, dontSendNotification);
-			}
-			presetChanged();
-		}
-		if (button == buttons[3])
-			vocodec::decrementPage();
-            //vocodec::buttonActionsSFX[3][vocodec::ActionPress] = true;
-		if (button == buttons[4])
-			vocodec::incrementPage();
-            //vocodec::buttonActionsSFX[4][vocodec::ActionPress] = true;
+    if (button == buttons[4]) {
+        vocodec::buttonActionsSFX[4][vocodec::ActionRelease] = true;
+    }
+    if (button == buttons[5])
+        vocodec::buttonActionsSFX[5][vocodec::ActionRelease] = true;
+    if (button == buttons[6])
+        vocodec::buttonActionsSFX[6][vocodec::ActionRelease] = true;
+    if (button == buttons[7])
+        vocodec::buttonActionsSFX[7][vocodec::ActionRelease] = true;
+    if (button == buttons[8])
+        vocodec::buttonActionsSFX[8][vocodec::ActionRelease] = true;
+    if (button == buttons[9])
+        vocodec::buttonActionsSFX[9][vocodec::ActionRelease] = true;
+}
+else if (button->getState() == Button::ButtonState::buttonOver) {
+    if (button == buttons[1])
+        vocodec::buttonActionsSFX[1][vocodec::ActionRelease] = true;
+    if (button == buttons[2])
+        vocodec::buttonActionsSFX[2][vocodec::ActionRelease] = true;
+    if (button == buttons[3]) {
+        vocodec::buttonActionsSFX[3][vocodec::ActionRelease] = true;
+    }
+    if (button == buttons[4]) {
+        vocodec::buttonActionsSFX[4][vocodec::ActionRelease] = true;
+    }
+    if (button == buttons[5])
+        vocodec::buttonActionsSFX[5][vocodec::ActionRelease] = true;
+    if (button == buttons[6])
+        vocodec::buttonActionsSFX[6][vocodec::ActionRelease] = true;
+    if (button == buttons[7])
+        vocodec::buttonActionsSFX[7][vocodec::ActionRelease] = true;
+    if (button == buttons[8])
+        vocodec::buttonActionsSFX[8][vocodec::ActionRelease] = true;
+    if (button == buttons[9])
+        vocodec::buttonActionsSFX[9][vocodec::ActionRelease] = true;
+}
+else if (button->getState() == Button::ButtonState::buttonDown) {
+    if (button == buttons[0])
+        if (vocodec::buttonActionsSFX[0][vocodec::ActionHoldContinuous] == false){
+            vocodec::buttonActionsSFX[0][vocodec::ActionHoldContinuous] = true;
+            lightStates[6] = true;
+        }
+        else {
+            lightStates[6] = false;
+            vocodec::buttonActionsSFX[0][vocodec::ActionHoldContinuous] = false;
+        }
+    if (button == buttons[1]) {
+        //vocodec::buttonActionsSFX[1][vocodec::ActionPress] = true;
+        if (processor.presetNumber > 1) {
+            menu.setSelectedId(processor.presetNumber - 1, dontSendNotification);
+        }
+        else {
+            menu.setSelectedId(18, dontSendNotification);
+        }
+        presetChanged();
+    }
+    if (button == buttons[2]) {
+        //vocodec::buttonActionsSFX[2][vocodec::ActionPress] = true;
+        if (processor.presetNumber < 18) {
+            menu.setSelectedId(processor.presetNumber + 1, dontSendNotification);
+        }
+        else {
+            menu.setSelectedId(1, dontSendNotification);
+        }
+        presetChanged();
+    }
+    if (button == buttons[3])
+        vocodec::decrementPage();
+        //vocodec::buttonActionsSFX[3][vocodec::ActionPress] = true;
+    if (button == buttons[4])
+        vocodec::incrementPage();
+        //vocodec::buttonActionsSFX[4][vocodec::ActionPress] = true;
 
-        if (button == buttons[5])
-            vocodec::buttonActionsSFX[5][vocodec::ActionPress] = true;
-        if (button == buttons[6])
-            vocodec::buttonActionsSFX[6][vocodec::ActionPress] = true;
-        if (button == buttons[7])
-            vocodec::buttonActionsSFX[7][vocodec::ActionPress] = true;
-        if (button == buttons[8])
-            vocodec::buttonActionsSFX[8][vocodec::ActionPress] = true;
-        if (button == buttons[9])
-            vocodec::buttonActionsSFX[9][vocodec::ActionPress] = true;
-    }
+    if (button == buttons[5])
+        vocodec::buttonActionsSFX[5][vocodec::ActionPress] = true;
+    if (button == buttons[6])
+        vocodec::buttonActionsSFX[6][vocodec::ActionPress] = true;
+    if (button == buttons[7])
+        vocodec::buttonActionsSFX[7][vocodec::ActionPress] = true;
+    if (button == buttons[8])
+        vocodec::buttonActionsSFX[8][vocodec::ActionPress] = true;
+    if (button == buttons[9])
+        vocodec::buttonActionsSFX[9][vocodec::ActionPress] = true;
+}
 }
 
 void VocodecAudioProcessorEditor::timerCallback()
