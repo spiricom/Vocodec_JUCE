@@ -46,7 +46,7 @@
         <MODULEPATH id="juce_gui_basics" path="../../../../Applications/JUCE/modules"/>
         <MODULEPATH id="juce_gui_extra" path="../../../../Applications/JUCE/modules"/>
         <MODULEPATH id="juce_opengl" path="../../../../Applications/JUCE/modules"/>
-        <MODULEPATH id="leaf" path="../../LEAF/leaf"/>
+        <MODULEPATH id="leaf" path="../../LEAF"/>
       </MODULEPATHS>
     </XCODE_MAC>
     <VS2017 targetFolder="Builds/VisualStudio2017">
@@ -112,7 +112,7 @@
     <MODULE id="juce_gui_basics" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
     <MODULE id="juce_gui_extra" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
     <MODULE id="juce_opengl" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
-    <MODULE id="leaf" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
+    <MODULE id="leaf" showAllCode="1" useLocalCopy="0" useGlobalPath="0"/>
   </MODULES>
   <LIVE_SETTINGS>
     <OSX/>

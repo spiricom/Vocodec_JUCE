@@ -877,11 +877,31 @@ else if (button->getState() == Button::ButtonState::buttonDown) {
         vocodec::buttonActionsSFX[6][vocodec::ActionPress] = true;
     if (button == buttons[7])
         vocodec::buttonActionsSFX[7][vocodec::ActionPress] = true;
+        if (vocodec::buttonActionsSFX[0][vocodec::ActionHoldContinuous] == 1)
+        {
+            vocodec::keyCenter = (vocodec::keyCenter + 1) % 12;
+            //OLEDclearLine(SecondLine);
+            //OLEDwriteString("KEY: ", 5, 0, SecondLine);
+            //OLEDwritePitchClass(keyCenter+60, 64, SecondLine);
+        }
+    
     if (button == buttons[8])
-        vocodec::buttonActionsSFX[8][vocodec::ActionPress] = true;
+    {
+        if (vocodec::currentTuning == 0)
+        {
+            vocodec::currentTuning = NUM_TUNINGS - 1;
+        }
+        else
+        {
+            vocodec::currentTuning = (vocodec::currentTuning - 1);
+        }
+        vocodec::changeTuning();
+        //OLED_writeTuning();
+    }
     if (button == buttons[9])
-        vocodec::buttonActionsSFX[9][vocodec::ActionPress] = true;
-}
+        vocodec::currentTuning = (vocodec::currentTuning + 1) % NUM_TUNINGS;
+        vocodec::changeTuning();
+    }
 }
 
 void VocodecAudioProcessorEditor::timerCallback()

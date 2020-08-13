@@ -395,9 +395,8 @@ namespace vocodec
                 buttonValues[7] =!(GPIOB->IDR & GPIO_PIN_11);
                 buttonValues[8] =!(GPIOG->IDR & GPIO_PIN_11);
                 buttonValues[9] =!(GPIOB->IDR & GPIO_PIN_10);
-#else
                 {
-#endif
+
                     for (int i = 0; i < NUM_BUTTONS; i++)
                     {
                         if (buttonValues[i] != buttonValuesPrev[i])
@@ -563,6 +562,7 @@ namespace vocodec
                     //            buttonActionsUI[ButtonEdit][ActionPress] = 0;
                     //        }
                 }
+#endif
             }
             int firstADCPass = 1;
             void adcCheck()

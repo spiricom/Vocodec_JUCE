@@ -15,7 +15,7 @@
 #endif
 
 #include "ui.h"
-
+#include "tunings.h"
 #ifdef __cplusplus
 namespace vocodec
 {
