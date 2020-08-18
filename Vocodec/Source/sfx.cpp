@@ -354,6 +354,7 @@ namespace vocodec
         
         void SFXVocoderAlloc()
         {
+            leaf.clearOnAllocation = 1;
             tTalkboxFloat_initToPool(&vocoder, 1024,  &smallPool);
             tTalkboxFloat_setWarpOn(&vocoder, 1);
             tNoise_initToPool(&vocoderNoise, WhiteNoise, &smallPool);
@@ -556,7 +557,7 @@ namespace vocodec
         
         void SFXVocoderChAlloc()
         {
-            
+            leaf.clearOnAllocation = 1;
             displayValues[0] = presetKnobValues[VocoderCh][0]; //vocoder volume
             
             displayValues[1] = (presetKnobValues[VocoderCh][1] * 0.8f) - 0.4f; //warp factor

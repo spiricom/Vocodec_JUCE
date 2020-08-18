@@ -53,6 +53,7 @@ class OtherLookAndFeel : public LookAndFeel_V4
 
 };
 
+
 class VocodecAudioProcessorEditor : public AudioProcessorEditor, public Slider::Listener, public Button::Listener, public Timer
 {
 public:
@@ -76,7 +77,7 @@ private:
 	std::unique_ptr<Drawable> panel;
 
 
-	String paramName = String("THIS IS A TEST");
+	String paramName = String("");
     Image baseline;
 //    Array<DrawableImage*> knobs;
     
