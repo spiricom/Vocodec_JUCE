@@ -17,7 +17,7 @@ namespace vocodec
     extern "C"
     {
 #endif
-        
+
         float centsDeviation[12] = {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f};
         uint32_t currentTuning = 0;
         uint8_t keyCenter = 0;
@@ -86,7 +86,7 @@ namespace vocodec
             {"Partch_Grm"},
             {"Partch_Greek"},
         };
-        
+
         //12_TET                            12 tone equal temperament
         //jeff Just                        12 custom simple overtone just scale
         //kirnberger.scl                 12  Kirnberger's well-temperament, also called Kirnberger III, letter to Forkel 1779
@@ -150,7 +150,7 @@ namespace vocodec
         //carlos_harm.scl            12  Carlos Harmonic & Ben Johnston's scale of 'Blues' from Suite f.micr.piano (1977) & David Beardsley's scale of 'Science Friction'
         //partch-grm.scl                  9  Partch Greek scales from "Two Studies on Ancient Greek Scales" mixed
         //partch-greek.scl               12  Partch Greek scales from "Two Studies on Ancient Greek Scales" on black/white
-        
+
         //encoded as deviations in semitones from scale position - always a full 12 note scale, repeating notes if there are fewer than 12 in scale.
         const float tuningPresets[NUM_TUNINGS][12] = {
             {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f},
@@ -217,12 +217,11 @@ namespace vocodec
             {0.000000f, -0.370391f, -0.882687f, -1.882687f, -1.960900f, -1.843587f, -2.843587f, -2.019550f, -0.980450f, -1.980450f, -2.350841f, -2.863137f},
             {0.000000f, -0.370391f, 0.039100f, -1.882687f, 0.980450f, -1.843587f, 1.019550f, 0.019550f, -0.350841f, -0.863137f, -1.863137f, 1.000000f},
         };
-        
+
 #ifdef __cplusplus
     }
 } // extern "C"
 #endif
-
 
 
 

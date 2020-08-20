@@ -18,12 +18,12 @@ namespace vocodec
     extern "C"
     {
 #endif
-        
+
 #define NUM_ADC_CHANNELS 6
 #define NUM_BUTTONS 10
 #define NUM_PRESET_KNOB_VALUES 25
 #define KNOB_PAGE_SIZE 5
-        
+
         //PresetNil is used as a counter for the size of the enum
         typedef enum _VocodecPresetType
         {
@@ -47,7 +47,7 @@ namespace vocodec
             Rhodes,
             PresetNil
         } VocodecPresetType;
-        
+
         typedef enum _VocodecButton
         {
             ButtonEdit = 0,
@@ -63,7 +63,7 @@ namespace vocodec
             ExtraMessage,
             ButtonNil
         } VocodecButton;
-        
+
         typedef enum _ButtonAction
         {
             ActionPress = 0,
@@ -72,22 +72,22 @@ namespace vocodec
             ActionHoldContinuous,
             ActionNil
         } ButtonAction;
-        
+
         extern tExpSmooth adc[6];
         extern uint16_t ADC_values[NUM_ADC_CHANNELS];
-        
+
         extern float smoothedADC[6];
-        
+
         extern uint8_t buttonValues[NUM_BUTTONS];
         //extern uint8_t buttonPressed[NUM_BUTTONS];
         //extern uint8_t buttonReleased[NUM_BUTTONS];
-        
+
         extern int8_t writeKnobFlag;
         extern int8_t writeButtonFlag;
         extern int8_t writeActionFlag;
-        
+
         extern float floatADCUI[NUM_ADC_CHANNELS];
-        
+
         extern VocodecPresetType currentPreset;
         extern VocodecPresetType previousPreset;
         extern uint8_t loadingPreset;
@@ -99,33 +99,34 @@ namespace vocodec
         extern float displayValues[NUM_PRESET_KNOB_VALUES];
         extern int8_t cvAddParam[PresetNil];
         extern uint8_t knobPage;
+        extern uint8_t numPages[PresetNil];
         extern uint8_t buttonActionsUI[NUM_BUTTONS+1][ActionNil];
         extern uint8_t buttonActionsSFX[NUM_BUTTONS+1][ActionNil];
-        extern char* (*buttonActionFunctions[PresetNil])(VocodecButton, ButtonAction);
-        
+        extern const char* (*buttonActionFunctions[PresetNil])(VocodecButton, ButtonAction);
+
         void initModeNames(void);
-        
+
         void buttonCheck(void);
-        
+
         void adcCheck(void);
-        
+
         void clearButtonActions(void);
-        
+
         void changeTuning(void);
-        
+
         void writeCurrentPresetToFlash(void);
-        
+
         void incrementPage(void);
-        
+
         void decrementPage(void);
-        
+
         void resetKnobValues(void);
-        
+
         void setKnobValues(float* values);
-        
+
         void deactivateKnob(int knob);
         void deactivateAllKnobs(void);
-        
+
         const char* UIVocoderButtons(VocodecButton button, ButtonAction action);
         const char* UIVocoderChButtons(VocodecButton button, ButtonAction action);
         const char* UIPitchShiftButtons(VocodecButton button, ButtonAction action);
@@ -144,11 +145,10 @@ namespace vocodec
         const char* UILivingStringSynthButtons(VocodecButton button, ButtonAction action);
         const char* UIClassicSynthButtons(VocodecButton button, ButtonAction action);
         const char* UIRhodesButtons(VocodecButton button, ButtonAction action);
-        
+
 #ifdef __cplusplus
     }
 } // extern "C"
 #endif
 
 #endif /* UI_H_ */
-

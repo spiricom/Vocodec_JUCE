@@ -5,7 +5,6 @@
   <MAINGROUP id="uEka6H" name="Vocodec">
     <GROUP id="{B405E64B-4792-254D-5BDE-97BC1F91F9E6}" name="Source">
       <GROUP id="{F62A9309-7BE1-5B65-A806-641EB05C4C88}" name="Resources-Vocoder">
-        <FILE id="ndJRgF" name="EuphemiaCAS.ttf" compile="0" resource="1" file="../../../Downloads/Adafruit-GFX-Library-master/fontconvert/fonts/EuphemiaCAS.ttf"/>
         <FILE id="gg3oYc" name="logo_large.svg" compile="0" resource="1" file="Source/Resources-Vocoder/logo_large.svg"/>
         <FILE id="MinlXu" name="panel.svg" compile="0" resource="1" file="Source/Resources-Vocoder/panel.svg"/>
         <FILE id="dxrfkP" name="snyderphonics-whitelogo.svg" compile="0" resource="1"
@@ -24,6 +23,7 @@
       <FILE id="rqJLei" name="tunings.h" compile="0" resource="0" file="Source/tunings.h"/>
       <FILE id="qdJuMr" name="ui.cpp" compile="1" resource="0" file="Source/ui.cpp"/>
       <FILE id="NdmU3l" name="ui.h" compile="0" resource="0" file="Source/ui.h"/>
+      <FILE id="lVbEgC" name="UIConstants.h" compile="0" resource="0" file="Source/UIConstants.h"/>
     </GROUP>
   </MAINGROUP>
   <EXPORTFORMATS>
@@ -47,7 +47,7 @@
         <MODULEPATH id="juce_gui_basics" path="../../../../Applications/JUCE/modules"/>
         <MODULEPATH id="juce_gui_extra" path="../../../../Applications/JUCE/modules"/>
         <MODULEPATH id="juce_opengl" path="../../../../Applications/JUCE/modules"/>
-        <MODULEPATH id="leaf" path="../../LEAF"/>
+        <MODULEPATH id="leaf" path="../../LEAF-master"/>
       </MODULEPATHS>
     </XCODE_MAC>
     <VS2017 targetFolder="Builds/VisualStudio2017">
@@ -70,7 +70,7 @@
         <MODULEPATH id="juce_audio_formats" path="../../juce"/>
         <MODULEPATH id="juce_audio_devices" path="../../juce"/>
         <MODULEPATH id="juce_audio_basics" path="../../juce"/>
-        <MODULEPATH id="leaf" path="../../LEAF"/>
+        <MODULEPATH id="leaf" path="..\..\LEAF"/>
       </MODULEPATHS>
     </VS2017>
     <VS2019 targetFolder="Builds/VisualStudio2019">
@@ -79,6 +79,7 @@
         <CONFIGURATION isDebug="0" name="Release"/>
       </CONFIGURATIONS>
       <MODULEPATHS>
+        <MODULEPATH id="leaf" path="..\..\LEAF"/>
         <MODULEPATH id="juce_opengl"/>
         <MODULEPATH id="juce_gui_extra"/>
         <MODULEPATH id="juce_gui_basics"/>
@@ -93,7 +94,6 @@
         <MODULEPATH id="juce_audio_formats"/>
         <MODULEPATH id="juce_audio_devices"/>
         <MODULEPATH id="juce_audio_basics"/>
-        <MODULEPATH id="leaf" path="../../LEAF"/>
       </MODULEPATHS>
     </VS2019>
   </EXPORTFORMATS>
@@ -113,7 +113,7 @@
     <MODULE id="juce_gui_basics" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
     <MODULE id="juce_gui_extra" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
     <MODULE id="juce_opengl" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
-    <MODULE id="leaf" showAllCode="1" useLocalCopy="0" useGlobalPath="0"/>
+    <MODULE id="leaf" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
   </MODULES>
   <LIVE_SETTINGS>
     <OSX/>

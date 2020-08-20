@@ -9,8 +9,10 @@
 #include "main.h"
 #include "oled.h"
 #include "MIDI_application.h"
-#endif
+#else
 #include "PluginEditor.h"
+#endif
+
 #include "sfx.h"
 #include "tunings.h"
 
@@ -33,14 +35,18 @@ namespace vocodec
         char medium_memory[MED_MEM_SIZE] __ATTR_RAM_D1;
         char large_memory[LARGE_MEM_SIZE] __ATTR_SDRAM;
 #endif
-
         
-        tMempool smallPool;
+        void (*allocFunctions[PresetNil])(void);
+        void (*frameFunctions[PresetNil])(void);
+        void (*tickFunctions[PresetNil])(float*);
+        void (*freeFunctions[PresetNil])(void);
+        
+        tMempool mediumPool;
         tMempool largePool;
         
         float defaultPresetKnobValues[PresetNil][NUM_PRESET_KNOB_VALUES];
         float presetKnobValues[PresetNil][NUM_PRESET_KNOB_VALUES];
-        uint8_t knobActive[NUM_ADC_CHANNELS];
+        int knobActive[NUM_ADC_CHANNELS];
         float prevDisplayValues[NUM_PRESET_KNOB_VALUES];
         
         //audio objects
@@ -123,16 +129,18 @@ namespace vocodec
         {
             calculateNoteArray();
             
-            tSimplePoly_initToPool(&poly, NUM_VOC_VOICES, &smallPool);
+            tSimplePoly_init(&poly, NUM_VOC_VOICES);
             for (int i = 0; i < NUM_VOC_VOICES; i++)
             {
-                tExpSmooth_initToPool(&polyRamp[i], 0.0f, 0.02f, &smallPool);
+                tExpSmooth_init(&polyRamp[i], 0.0f, 0.02f);
+                freq[i] = 220.0f;
             }
             
             tExpSmooth_init(&comp, 1.0f, 0.01f);
             
             LEAF_generate_exp(expBuffer, 1000.0f, -1.0f, 0.0f, -0.0008f, EXP_BUFFER_SIZE); //exponential buffer rising from 0 to 1
             LEAF_generate_exp(decayExpBuffer, 0.001f, 0.0f, 1.0f, -0.0008f, DECAY_EXP_BUFFER_SIZE); // exponential decay buffer falling from 1 to 0
+            
             
             
             // Note that these are the actual knob values
@@ -336,6 +344,99 @@ namespace vocodec
             }
         }
         
+        void initFunctionPointers(void)
+        {
+            allocFunctions[Vocoder] = SFXVocoderAlloc;
+            frameFunctions[Vocoder] = SFXVocoderFrame;
+            tickFunctions[Vocoder] = SFXVocoderTick;
+            freeFunctions[Vocoder] = SFXVocoderFree;
+            
+            allocFunctions[VocoderCh] = SFXVocoderChAlloc;
+            frameFunctions[VocoderCh] = SFXVocoderChFrame;
+            tickFunctions[VocoderCh] = SFXVocoderChTick;
+            freeFunctions[VocoderCh] = SFXVocoderChFree;
+            
+            allocFunctions[Pitchshift] = SFXPitchShiftAlloc;
+            frameFunctions[Pitchshift] = SFXPitchShiftFrame;
+            tickFunctions[Pitchshift] = SFXPitchShiftTick;
+            freeFunctions[Pitchshift] = SFXPitchShiftFree;
+            
+            allocFunctions[AutotuneMono] = SFXNeartuneAlloc;
+            frameFunctions[AutotuneMono] = SFXNeartuneFrame;
+            tickFunctions[AutotuneMono] = SFXNeartuneTick;
+            freeFunctions[AutotuneMono] = SFXNeartuneFree;
+            
+            allocFunctions[AutotunePoly] = SFXAutotuneAlloc;
+            frameFunctions[AutotunePoly] = SFXAutotuneFrame;
+            tickFunctions[AutotunePoly] = SFXAutotuneTick;
+            freeFunctions[AutotunePoly] = SFXAutotuneFree;
+            
+            allocFunctions[SamplerButtonPress] = SFXSamplerBPAlloc;
+            frameFunctions[SamplerButtonPress] = SFXSamplerBPFrame;
+            tickFunctions[SamplerButtonPress] = SFXSamplerBPTick;
+            freeFunctions[SamplerButtonPress] = SFXSamplerBPFree;
+            
+            allocFunctions[SamplerKeyboard] = SFXSamplerKAlloc;
+            frameFunctions[SamplerKeyboard] = SFXSamplerKFrame;
+            tickFunctions[SamplerKeyboard] = SFXSamplerKTick;
+            freeFunctions[SamplerKeyboard] = SFXSamplerKFree;
+            
+            allocFunctions[SamplerAutoGrab] = SFXSamplerAutoAlloc;
+            frameFunctions[SamplerAutoGrab] = SFXSamplerAutoFrame;
+            tickFunctions[SamplerAutoGrab] = SFXSamplerAutoTick;
+            freeFunctions[SamplerAutoGrab] = SFXSamplerAutoFree;
+            
+            allocFunctions[Distortion] = SFXDistortionAlloc;
+            frameFunctions[Distortion] = SFXDistortionFrame;
+            tickFunctions[Distortion] = SFXDistortionTick;
+            freeFunctions[Distortion] = SFXDistortionFree;
+            
+            allocFunctions[Wavefolder] = SFXWaveFolderAlloc;
+            frameFunctions[Wavefolder] = SFXWaveFolderFrame;
+            tickFunctions[Wavefolder] = SFXWaveFolderTick;
+            freeFunctions[Wavefolder] = SFXWaveFolderFree;
+            
+            allocFunctions[BitCrusher] = SFXBitcrusherAlloc;
+            frameFunctions[BitCrusher] = SFXBitcrusherFrame;
+            tickFunctions[BitCrusher] = SFXBitcrusherTick;
+            freeFunctions[BitCrusher] = SFXBitcrusherFree;
+            
+            allocFunctions[Delay] = SFXDelayAlloc;
+            frameFunctions[Delay] = SFXDelayFrame;
+            tickFunctions[Delay] = SFXDelayTick;
+            freeFunctions[Delay] = SFXDelayFree;
+            
+            allocFunctions[Reverb] = SFXReverbAlloc;
+            frameFunctions[Reverb] = SFXReverbFrame;
+            tickFunctions[Reverb] = SFXReverbTick;
+            freeFunctions[Reverb] = SFXReverbFree;
+            
+            allocFunctions[Reverb2] = SFXReverb2Alloc;
+            frameFunctions[Reverb2] = SFXReverb2Frame;
+            tickFunctions[Reverb2] = SFXReverb2Tick;
+            freeFunctions[Reverb2] = SFXReverb2Free;
+            
+            allocFunctions[LivingString] = SFXLivingStringAlloc;
+            frameFunctions[LivingString] = SFXLivingStringFrame;
+            tickFunctions[LivingString] = SFXLivingStringTick;
+            freeFunctions[LivingString] = SFXLivingStringFree;
+            
+            allocFunctions[LivingStringSynth] = SFXLivingStringSynthAlloc;
+            frameFunctions[LivingStringSynth] = SFXLivingStringSynthFrame;
+            tickFunctions[LivingStringSynth] = SFXLivingStringSynthTick;
+            freeFunctions[LivingStringSynth] = SFXLivingStringSynthFree;
+            
+            allocFunctions[ClassicSynth] = SFXClassicSynthAlloc;
+            frameFunctions[ClassicSynth] = SFXClassicSynthFrame;
+            tickFunctions[ClassicSynth] = SFXClassicSynthTick;
+            freeFunctions[ClassicSynth] = SFXClassicSynthFree;
+            
+            allocFunctions[Rhodes] = SFXRhodesAlloc;
+            frameFunctions[Rhodes] = SFXRhodesFrame;
+            tickFunctions[Rhodes] = SFXRhodesTick;
+            freeFunctions[Rhodes] = SFXRhodesFree;
+        }
+        
         ///1 vocoder internal poly
         
         tTalkboxFloat vocoder;
@@ -343,8 +444,8 @@ namespace vocodec
         tZeroCrossingCounter zerox;
         tSawtooth osc[NUM_VOC_VOICES * NUM_OSC_PER_VOICE];
         tRosenbergGlottalPulse glottal[NUM_VOC_VOICES];
-        uint8_t numVoices = NUM_VOC_VOICES;
-        uint8_t internalExternal = 0;
+        int numVoices = NUM_VOC_VOICES;
+        int internalExternal = 0;
         int vocFreezeLPC = 0;
         tExpSmooth noiseRamp;
         tNoise breathNoise;
@@ -355,26 +456,26 @@ namespace vocodec
         void SFXVocoderAlloc()
         {
             leaf.clearOnAllocation = 1;
-            tTalkboxFloat_initToPool(&vocoder, 1024,  &smallPool);
+            tTalkboxFloat_init(&vocoder, 1024);
             tTalkboxFloat_setWarpOn(&vocoder, 1);
-            tNoise_initToPool(&vocoderNoise, WhiteNoise, &smallPool);
-            tZeroCrossingCounter_initToPool(&zerox, 16, &smallPool);
+            tNoise_init(&vocoderNoise, WhiteNoise);
+            tZeroCrossingCounter_init(&zerox, 16);
             tSimplePoly_setNumVoices(&poly, numVoices);
-            tExpSmooth_initToPool(&noiseRamp, 0.0f, 0.005f, &smallPool);
+            tExpSmooth_init(&noiseRamp, 0.0f, 0.005f);
             
             //tilt filter
-            tVZFilter_initToPool(&shelf1, Lowshelf, 80.0f, 6.0f, &smallPool);
-            tVZFilter_initToPool(&shelf2, Highshelf, 12000.0f, 6.0f, &smallPool);
+            tVZFilter_init(&shelf1, Lowshelf, 80.0f, 6.0f);
+            tVZFilter_init(&shelf2, Highshelf, 12000.0f, 6.0f);
             
-            tNoise_initToPool(&breathNoise, WhiteNoise, &smallPool);
-            tHighpass_initToPool(&noiseHP, 4500.0f, &smallPool);
+            tNoise_init(&breathNoise, WhiteNoise);
+            tHighpass_init(&noiseHP, 4500.0f);
             
             for (int i = 0; i < NUM_VOC_VOICES; i++)
             {
                 
-                tSawtooth_initToPool(&osc[i], &smallPool);
+                tSawtooth_init(&osc[i]);
                 
-                tRosenbergGlottalPulse_initToPool(&glottal[i], &smallPool);
+                tRosenbergGlottalPulse_init(&glottal[i]);
                 tRosenbergGlottalPulse_setOpenLengthAndPulseLength(&glottal[i], 0.3f, 0.4f);
             }
             setLED_A(numVoices == 1);
@@ -431,7 +532,7 @@ namespace vocodec
             
             if (tSimplePoly_getNumActiveVoices(&poly) != 0)
             {
-                tExpSmooth_setDest(&comp, sqrtf(1.0f / tSimplePoly_getNumActiveVoices(&poly)));
+                tExpSmooth_setDest(&comp, sqrtf(1.0f / (float)tSimplePoly_getNumActiveVoices(&poly)));
             }
             else
             {
@@ -521,8 +622,8 @@ namespace vocodec
         tVZFilter synthesisBands[MAX_NUM_VOCODER_BANDS][MAX_VOCODER_FILTER_ORDER];
         
         tExpSmooth envFollowers[MAX_NUM_VOCODER_BANDS];
-        uint8_t numberOfVocoderBands = 22;
-        uint8_t prevNumberOfVocoderBands = 22;
+        int numberOfVocoderBands = 22;
+        int prevNumberOfVocoderBands = 22;
         float invNumberOfVocoderBands = 0.03125f;
         
         
@@ -595,59 +696,59 @@ namespace vocodec
             bandWidthInOctaves = bandWidthInSemitones * 0.083333333333333f;  // divide by 12
             thisBandwidth = bandWidthInOctaves * myQ;
             
-            tVZFilter_initToPool(&vocodec_highshelf, Highshelf, 6000.0f, 3.0f, &smallPool);
+            tVZFilter_init(&vocodec_highshelf, Highshelf, 6000.0f, 3.0f);
             tVZFilter_setGain(&vocodec_highshelf, 4.0f);
             
             for (int i = 0; i < MAX_NUM_VOCODER_BANDS; i++)
             {
                 
-                float bandFreq = faster_mtof((i * bandWidthInSemitones) + 30.0f); //midinote 28 (41Hz) to midinote 134 (18814Hz) is 106 midinotes, divide that by how many bands to find out how far apart to put the bands
+                float bandFreq = faster_mtof(((float)i * bandWidthInSemitones) + 30.0f); //midinote 28 (41Hz) to midinote 134 (18814Hz) is 106 midinotes, divide that by how many bands to find out how far apart to put the bands
                 
                 bandGains[i] = 1.0f;
                 
                 if (i == 0)
                 {
-                    tVZFilter_initToPool(&analysisBands[i][0], Lowpass, bandFreq, thisBandwidth, &smallPool);
-                    tVZFilter_initToPool(&analysisBands[i][1], Lowpass, bandFreq, thisBandwidth, &smallPool);
+                    tVZFilter_init(&analysisBands[i][0], Lowpass, bandFreq, thisBandwidth);
+                    tVZFilter_init(&analysisBands[i][1], Lowpass, bandFreq, thisBandwidth);
                     
-                    tVZFilter_initToPool(&synthesisBands[i][0], Lowpass, bandFreq,thisBandwidth, &smallPool);
-                    tVZFilter_initToPool(&synthesisBands[i][1], Lowpass, bandFreq,thisBandwidth, &smallPool);
+                    tVZFilter_init(&synthesisBands[i][0], Lowpass, bandFreq,thisBandwidth);
+                    tVZFilter_init(&synthesisBands[i][1], Lowpass, bandFreq,thisBandwidth);
                     
                 }
                 else if (i == (MAX_NUM_VOCODER_BANDS-1))
                 {
-                    tVZFilter_initToPool(&analysisBands[i][0], Highpass, bandFreq, thisBandwidth, &smallPool);
-                    tVZFilter_initToPool(&analysisBands[i][1], Highpass, bandFreq, thisBandwidth, &smallPool);
+                    tVZFilter_init(&analysisBands[i][0], Highpass, bandFreq, thisBandwidth);
+                    tVZFilter_init(&analysisBands[i][1], Highpass, bandFreq, thisBandwidth);
                     
-                    tVZFilter_initToPool(&synthesisBands[i][0], Highpass, bandFreq, thisBandwidth, &smallPool);
-                    tVZFilter_initToPool(&synthesisBands[i][1], Highpass, bandFreq, thisBandwidth, &smallPool);
+                    tVZFilter_init(&synthesisBands[i][0], Highpass, bandFreq, thisBandwidth);
+                    tVZFilter_init(&synthesisBands[i][1], Highpass, bandFreq, thisBandwidth);
                     
                 }
                 else
                 {
-                    tVZFilter_initToPool(&analysisBands[i][0], BandpassPeak, bandFreq, thisBandwidth, &smallPool);
-                    tVZFilter_initToPool(&analysisBands[i][1], BandpassPeak, bandFreq, thisBandwidth, &smallPool);
+                    tVZFilter_init(&analysisBands[i][0], BandpassPeak, bandFreq, thisBandwidth);
+                    tVZFilter_init(&analysisBands[i][1], BandpassPeak, bandFreq, thisBandwidth);
                     
-                    tVZFilter_initToPool(&synthesisBands[i][0], BandpassPeak, bandFreq, thisBandwidth, &smallPool);
-                    tVZFilter_initToPool(&synthesisBands[i][1], BandpassPeak, bandFreq, thisBandwidth, &smallPool);
+                    tVZFilter_init(&synthesisBands[i][0], BandpassPeak, bandFreq, thisBandwidth);
+                    tVZFilter_init(&synthesisBands[i][1], BandpassPeak, bandFreq, thisBandwidth);
                     
                 }
-                tExpSmooth_initToPool(&envFollowers[i], 0.0f, 0.001f, &smallPool); // factor of .001 is 10 ms?
+                tExpSmooth_init(&envFollowers[i], 0.0f, 0.001f); // factor of .001 is 10 ms?
             }
-            tNoise_initToPool(&breathNoise, WhiteNoise, &smallPool);
-            tNoise_initToPool(&vocoderNoise, WhiteNoise, &smallPool);
-            tZeroCrossingCounter_initToPool(&zerox, 256, &smallPool);
+            tNoise_init(&breathNoise, WhiteNoise);
+            tNoise_init(&vocoderNoise, WhiteNoise);
+            tZeroCrossingCounter_init(&zerox, 256);
             tSimplePoly_setNumVoices(&poly, numVoices);
-            tExpSmooth_initToPool(&noiseRamp, 0.0f, 0.05f, &smallPool);
-            tHighpass_initToPool(&noiseHP, 5000.0f, &smallPool);
-            tHighpass_initToPool(&chVocFinalHP1, 20.0f, &smallPool);
-            tHighpass_initToPool(&chVocFinalHP2, 20.0f, &smallPool);
+            tExpSmooth_init(&noiseRamp, 0.0f, 0.05f);
+            tHighpass_init(&noiseHP, 5000.0f);
+            tHighpass_init(&chVocFinalHP1, 20.0f);
+            tHighpass_init(&chVocFinalHP2, 20.0f);
             for (int i = 0; i < NUM_VOC_VOICES; i++)
             {
                 
-                tSawtooth_initToPool(&osc[i], &smallPool);
+                tSawtooth_init(&osc[i]);
                 
-                tRosenbergGlottalPulse_initToPool(&glottal[i], &smallPool);
+                tRosenbergGlottalPulse_init(&glottal[i]);
                 tRosenbergGlottalPulse_setOpenLength(&glottal[i], 0.3f);
                 tRosenbergGlottalPulse_setPulseLength(&glottal[i], 0.4f);
             }
@@ -754,7 +855,7 @@ namespace vocodec
             {
                 
                 float tempWarpFactor = warpFactor;
-                float bandFreq = faster_mtof((currentBandToAlter * bandWidthInSemitones) + bandOffset); //midinote 28 (41Hz) to midinote 134 (18814Hz) is 106 midinotes, divide that by how many bands to find out how far apart to put the bands
+                float bandFreq = faster_mtof(((float)currentBandToAlter * bandWidthInSemitones) + bandOffset); //midinote 28 (41Hz) to midinote 134 (18814Hz) is 106 midinotes, divide that by how many bands to find out how far apart to put the bands
                 
                 //warp to bark scale if knob 16 is up
                 bandFreq = (bandFreq * oneMinusBarkPull) + (barkBandFreqs[currentBandToAlter] * barkPull);
@@ -770,7 +871,7 @@ namespace vocodec
                 }
                 
                 float bandBandwidth = (thisBandwidth * oneMinusBarkPull) + (barkBandWidths[currentBandToAlter] *  barkPull * myQ);
-                float myHeight = currentBandToAlter * invNumberOfVocoderBands; //x value
+                float myHeight = (float)currentBandToAlter * invNumberOfVocoderBands; //x value
                 float tiltOffset = (1.0f - ((myTilt * 0.5f) + 0.5f)) + 0.5f;
                 float tiltY = displayValues[12] * myHeight + tiltOffset;
                 bandGains[currentBandToAlter] = invMyQ * tiltY;
@@ -828,7 +929,7 @@ namespace vocodec
             
             if (tSimplePoly_getNumActiveVoices(&poly) != 0)
             {
-                tExpSmooth_setDest(&comp, sqrtf(1.0f / tSimplePoly_getNumActiveVoices(&poly)));
+                tExpSmooth_setDest(&comp, sqrtf(1.0f / (float)tSimplePoly_getNumActiveVoices(&poly)));
             }
             else
             {
@@ -884,13 +985,13 @@ namespace vocodec
                 
             }
             
-            sample = LEAF_tanh(sample);
+            sample = fast_tanh4(sample);
             
             float output[2] = {0.0f, 0.0f};
             input[1] = input[1] * (displayValues[0] * 30.0f);
             for (int i = 0; i < numberOfVocoderBands; i++)
             {
-                uint8_t oddEven = i % 2;
+                int oddEven = i % 2;
                 float tempSamp = input[1];
                 if (!vocChFreeze)
                 {
@@ -911,10 +1012,8 @@ namespace vocodec
             
             float finalSample1 = tHighpass_tick(&chVocFinalHP1, (output[0] + (output[1] * oneMinusStereo)) * chVocOutputGain);
             float finalSample2 = tHighpass_tick(&chVocFinalHP2, (output[1] + (output[0] * oneMinusStereo)) * chVocOutputGain);
-            input[0] = 0.98f * tanhf(finalSample1);
-            input[1] = 0.98f * tanhf(finalSample2);
-            
-            
+            input[0] = 0.98f * fast_tanh4(finalSample1);
+            input[1] = 0.98f * fast_tanh4(finalSample2);
         }
         
         
@@ -952,9 +1051,9 @@ namespace vocodec
         void SFXPitchShiftAlloc()
         {
             
-            tFormantShifter_initToPool(&fs, 7, &smallPool);
-            tRetune_init(&retune, NUM_RETUNE, 1024, 512);
-            tRetune_init(&retune2, NUM_RETUNE, 1024, 512);
+            tFormantShifter_init(&fs, 7);
+            tRetune_initToPool(&retune, NUM_RETUNE, 1024, 512, &mediumPool);
+            tRetune_initToPool(&retune2, NUM_RETUNE, 1024, 512, &mediumPool);
             tRamp_init(&pitchshiftRamp, 100.0f, 1);
             tRamp_setVal(&pitchshiftRamp, 1.0f);
             
@@ -981,7 +1080,7 @@ namespace vocodec
             displayValues[0] = myPitchFactorCombined;
             displayValues[1] = myPitchFactorCombined;
             
-            float keyPitch = tSimplePoly_getPitchAndCheckActive(&poly, 0);
+            float keyPitch = (float)tSimplePoly_getPitchAndCheckActive(&poly, 0);
             if (keyPitch >= 0)
             {
                 keyPitch = LEAF_midiToFrequency(keyPitch) * 0.003822629969419f ;
@@ -1059,8 +1158,8 @@ namespace vocodec
         
         
         //5 autotune mono
-        uint8_t autotuneChromatic = 0;
-        uint32_t autotuneLock = 0;
+        int autotuneChromatic = 0;
+        int autotuneLock = 0;
         float lastSnap = 1.0f;
         float detectedNote = 60.0f;
         float desiredSnap = 60.0f;
@@ -1210,7 +1309,7 @@ namespace vocodec
         //6 autotune
         void SFXAutotuneAlloc()
         {
-            tAutotune_init(&autotunePoly, NUM_AUTOTUNE, 1024, 512);
+            tAutotune_initToPool(&autotunePoly, NUM_AUTOTUNE, 1024, 512, &mediumPool);
             tSimplePoly_setNumVoices(&poly, NUM_AUTOTUNE);
             
             //tAutotune_init(&autotunePoly, NUM_AUTOTUNE, 2048, 1024); //old settings
@@ -1269,7 +1368,7 @@ namespace vocodec
         float sampleLength = 0.0f;
         int crossfadeLength = 0;
         float samplerRate = 1.0f;
-        uint8_t samplePlaying = 1;
+        int samplePlaying = 1;
         tExpSmooth startSmooth;
         tExpSmooth lengthSmooth;
         int bpMode = 0;
@@ -1280,8 +1379,8 @@ namespace vocodec
             tBuffer_setRecordMode(&buff, RecordOneShot);
             tSampler_init(&sampler, &buff);
             tSampler_setMode(&sampler, (PlayMode)(bpMode + 1));
-            tExpSmooth_initToPool(&startSmooth, 0.0f, 0.01f, &smallPool);
-            tExpSmooth_initToPool(&lengthSmooth, 0.0f, 0.01f, &smallPool);
+            tExpSmooth_init(&startSmooth, 0.0f, 0.01f);
+            tExpSmooth_init(&lengthSmooth, 0.0f, 0.01f);
         }
         
         void SFXSamplerBPFrame()
@@ -1338,7 +1437,7 @@ namespace vocodec
             
             
             
-            sampleLength = recordPosition * leaf.invSampleRate;
+            sampleLength = (float)recordPosition * leaf.invSampleRate;
             displayValues[0] = knobs[0] * sampleLength;
             displayValues[1] = LEAF_clip(0.0f, knobs[1] * sampleLength, sampleLength * (1.0f - knobs[0]));
             displayValues[2] = (knobs[2] - 0.5f) * 4.0f;
@@ -1384,7 +1483,7 @@ namespace vocodec
         
         // keyboard sampler
         int currentSamplerKeyGlobal = 60 - LOWEST_SAMPLER_KEY;
-        uint8_t samplerKeyHeld[NUM_SAMPLER_KEYS];
+        int samplerKeyHeld[NUM_SAMPLER_KEYS];
         
         tExpSmooth kSamplerGains[NUM_SAMPLER_KEYS];
         int waitingForDeactivation[NUM_SAMPLER_VOICES];
@@ -1412,7 +1511,7 @@ namespace vocodec
                 
                 tBuffer_initToPool(&keyBuff[i], leaf.sampleRate * 3.5f, &largePool);
                 tBuffer_setRecordMode(&keyBuff[i], RecordOneShot);
-                tSampler_initToPool(&keySampler[i], &keyBuff[i], &smallPool);
+                tSampler_init(&keySampler[i], &keyBuff[i]);
                 tSampler_setMode(&keySampler[i], PlayLoop);
                 
                 samplePlayStarts[i] = 0;
@@ -1420,7 +1519,7 @@ namespace vocodec
                 detectedAttackPos[i] = 0;
                 crossfadeLengths[i] = 1000;
                 samplerKeyHeld[i] = 0;
-                tExpSmooth_initToPool(&kSamplerGains[i], 0.0f, 0.04f, &smallPool);
+                tExpSmooth_init(&kSamplerGains[i], 0.0f, 0.04f);
                 sampleRates[i] = 1.0f;
                 sampleRatesMult[i] = 1.0f;
                 loopOns[i] = 1;
@@ -1431,7 +1530,7 @@ namespace vocodec
                 waitingForDeactivation[i] = -1;
             }
             setLED_B(controlAllKeys);
-            samp_thresh = 0.0002f;
+            samp_thresh = 0.02f;
         }
         
         
@@ -1619,25 +1718,25 @@ namespace vocodec
                 displayValues[6] = knobs[6];
                 
                 //check if display values are new
-                if (fabsf(knobs[0]-prevKnobs[0]) > 0.0001f)
+                if (fabsf(knobs[0]-prevKnobs[0]) > 0.0005f)
                 {
                     samplePlayStarts[currentSamplerKey]= (knobs[0] * recordedLength);// + detectedAttackPos[currentSamplerKey];
                     
                 }
                 
-                if (fabsf(knobs[1]-prevKnobs[1])  > 0.0001f)
+                if (fabsf(knobs[1]-prevKnobs[1])  > 0.0005f)
                 {
                     samplePlayLengths[currentSamplerKey] = (knobs[1] * recordedLength);// - detectedAttackPos[currentSamplerKey];
                     
                 }
                 
-                if (fabsf(knobs[2]-prevKnobs[2])  > 0.0001f)
+                if (fabsf(knobs[2]-prevKnobs[2])  > 0.0005f)
                 {
                     sampleRates[currentSamplerKey] = displayValues[2];
                     
                 }
                 
-                if (fabsf(knobs[3]-prevKnobs[3])  > 0.0001f)
+                if (fabsf(knobs[3]-prevKnobs[3])  > 0.0005f)
                 {
                     sampleRatesMult[currentSamplerKey] = displayValues[3];
                     
@@ -1645,14 +1744,14 @@ namespace vocodec
                 
                 
                 
-                if (fabsf(knobs[4]-prevKnobs[4]) > 0.0001f)
+                if (fabsf(knobs[4]-prevKnobs[4]) > 0.0005f)
                 {
                     
                     loopOns[currentSamplerKey] = roundf(knobs[4]);
                     
                 }
                 
-                if (fabsf(knobs[5]-prevKnobs[5])> 0.0001f)
+                if (fabsf(knobs[5]-prevKnobs[5])> 0.0005f)
                 {
                     
                     crossfadeLengths[currentSamplerKey] = displayValues[5];
@@ -1799,7 +1898,7 @@ namespace vocodec
             }
             
             
-            sample = tanhf(sample) * 0.98;
+            sample = tanhf(sample) * 0.98f;
             input[0] = sample;
             input[1] = sample;
         }
@@ -1825,8 +1924,8 @@ namespace vocodec
         volatile int samp_triggered = 0;
         uint32_t sample_countdown = 0;
         PlayMode samplerMode = PlayLoop;
-        uint8_t triggerChannel = 0;
-        uint8_t currentSampler = 0;
+        int triggerChannel = 0;
+        int currentSampler = 0;
         int pitchQuantization = 0;
         int randLengthVal = 0;
         float randRateVal = 0.0f;
@@ -1841,13 +1940,13 @@ namespace vocodec
             tBuffer_setRecordMode(&asBuff[0], RecordOneShot);
             tBuffer_initToPool(&asBuff[1], MAX_AUTOSAMP_LENGTH, &largePool);
             tBuffer_setRecordMode(&asBuff[1], RecordOneShot);
-            tSampler_initToPool(&asSampler[0], &asBuff[0], &smallPool);
+            tSampler_init(&asSampler[0], &asBuff[0]);
             tSampler_setMode(&asSampler[0], PlayLoop);
-            tSampler_initToPool(&asSampler[1], &asBuff[1], &smallPool);
+            tSampler_init(&asSampler[1], &asBuff[1]);
             tSampler_setMode(&asSampler[1], PlayLoop);
             
-            tEnvelopeFollower_initToPool(&envfollow, 0.00001f, 0.9999f, &smallPool);
-            tExpSmooth_initToPool(&cfxSmooth, 0.0f, 0.01f, &smallPool);
+            tEnvelopeFollower_init(&envfollow, 0.00001f, 0.9999f);
+            tExpSmooth_init(&cfxSmooth, 0.0f, 0.01f);
             
             setLED_A(samplerMode == PlayBackAndForth);
             setLED_B(triggerChannel);
@@ -2036,17 +2135,17 @@ namespace vocodec
         }
         
         //10 distortion tanh
-        uint8_t distortionMode = 0;
+        int distortionMode = 0;
         tVZFilter bell1;
         int distOS_ratio = 4;
         
         void SFXDistortionAlloc()
         {
             leaf.clearOnAllocation = 1;
-            tOversampler_initToPool(&oversampler, distOS_ratio, 0, &smallPool);
-            tVZFilter_initToPool(&shelf1, Lowshelf, 80.0f, 6.0f, &smallPool);
-            tVZFilter_initToPool(&shelf2, Highshelf, 12000.0f, 6.0f, &smallPool);
-            tVZFilter_initToPool(&bell1, Bell, 1000.0f, 1.9f, &smallPool);
+            tOversampler_init(&oversampler, distOS_ratio, 0);
+            tVZFilter_init(&shelf1, Lowshelf, 80.0f, 6.0f);
+            tVZFilter_init(&shelf2, Highshelf, 12000.0f, 6.0f);
+            tVZFilter_init(&bell1, Bell, 1000.0f, 1.9f);
             tVZFilter_setSampleRate(&shelf1, leaf.sampleRate * distOS_ratio);
             tVZFilter_setSampleRate(&shelf2, leaf.sampleRate * distOS_ratio);
             tVZFilter_setSampleRate(&bell1, leaf.sampleRate * distOS_ratio);
@@ -2118,10 +2217,10 @@ namespace vocodec
         void SFXWaveFolderAlloc()
         {
             leaf.clearOnAllocation = 1;
-            tLockhartWavefolder_initToPool(&wavefolder1, &smallPool);
-            tLockhartWavefolder_initToPool(&wavefolder2, &smallPool);
-            tHighpass_initToPool(&wfHP, 10.0f, &smallPool);
-            tOversampler_initToPool(&oversampler, 2, 0, &smallPool);
+            tLockhartWavefolder_init(&wavefolder1);
+            tLockhartWavefolder_init(&wavefolder2);
+            tHighpass_init(&wfHP, 10.0f);
+            tOversampler_init(&oversampler, 2, 0);
             setLED_A(foldMode);
             leaf.clearOnAllocation = 0;
         }
@@ -2218,12 +2317,12 @@ namespace vocodec
             tOversampler_free(&oversampler);
         }
         
-        uint32_t crusherStereo = 0;
+        int crusherStereo = 0;
         //13 bitcrusher
         void SFXBitcrusherAlloc()
         {
-            tCrusher_initToPool(&crush, &smallPool);
-            tCrusher_initToPool(&crush2, &smallPool);
+            tCrusher_init(&crush);
+            tCrusher_init(&crush2);
             setLED_A(crusherStereo);
         }
         
@@ -2285,13 +2384,13 @@ namespace vocodec
         
         //delay
         int delayShaper = 0;
-        uint8_t capFeedback = 0;
+        int capFeedback = 0;
         
         void SFXDelayAlloc()
         {
             leaf.clearOnAllocation = 1;
-            tTapeDelay_init(&delay, 2000, 30000);
-            tTapeDelay_init(&delay2, 2000, 30000);
+            tTapeDelay_initToPool(&delay, 2000, 30000, &mediumPool);
+            tTapeDelay_initToPool(&delay2, 2000, 30000, &mediumPool);
             tSVF_init(&delayLP, SVFTypeLowpass, 16000.f, .7f);
             tSVF_init(&delayHP, SVFTypeHighpass, 20.f, .7f);
             
@@ -2299,7 +2398,7 @@ namespace vocodec
             tSVF_init(&delayHP2, SVFTypeHighpass, 20.f, .7f);
             
             tHighpass_init(&delayShaperHp, 20.0f);
-            tFeedbackLeveler_init(&feedbackControl, .99f, 0.01, 0.125f, 0);
+            tFeedbackLeveler_init(&feedbackControl, .99f, 0.01f, 0.125f, 0);
             delayShaper = 0;
             capFeedback = 1;
             freeze = 0;
@@ -2404,7 +2503,7 @@ namespace vocodec
         
         
         //reverb
-        uint32_t freeze = 0;
+        int freeze = 0;
         
         tDattorroReverb reverb;
         tExpSmooth sizeSmoother;
@@ -2412,7 +2511,7 @@ namespace vocodec
         void SFXReverbAlloc()
         {
             leaf.clearOnAllocation = 1;
-            tDattorroReverb_init(&reverb);
+            tDattorroReverb_initToPool(&reverb, &mediumPool);
             tExpSmooth_init(&sizeSmoother, 0.5f, 0.001f);
             tDattorroReverb_setMix(&reverb, 1.0f);
             freeze = 0;
@@ -2481,7 +2580,7 @@ namespace vocodec
         void SFXReverb2Alloc()
         {
             leaf.clearOnAllocation = 1;
-            tNReverb_init(&reverb2, 1.0f);
+            tNReverb_initToPool(&reverb2, 1.0f, &mediumPool);
             tNReverb_setMix(&reverb2, 1.0f);
             tSVF_init(&lowpass, SVFTypeLowpass, 18000.0f, 0.75f);
             tSVF_init(&highpass, SVFTypeHighpass, 40.0f, 0.75f);
@@ -2581,8 +2680,8 @@ namespace vocodec
             {
                 myDetune[i] = (leaf.random() * 0.3f) - 0.15f;
                 //tComplexLivingString_init(&theString[i],  myFreq, 0.4f, 0.0f, 16000.0f, .999f, .5f, .5f, 0.1f, 0);
-                tComplexLivingString_init(&theString[i], 440.f, 0.8f, 0.3f, 0.f, 9000.f, 1.0f, 0.3f, 0.01f, 0.125f, levMode);
-                tExpSmooth_initToPool(&stringGains[i], 0.0f, 0.002f, &smallPool);
+                tComplexLivingString_initToPool(&theString[i], 440.f, 0.8f, 0.3f, 0.f, 9000.f, 1.0f, 0.3f, 0.01f, 0.125f, levMode, &mediumPool);
+                tExpSmooth_init(&stringGains[i], 0.0f, 0.002f);
             }
             ignoreFreqKnobs = 0;
             setLED_A(ignoreFreqKnobs);
@@ -2619,8 +2718,8 @@ namespace vocodec
             displayValues[1] = presetKnobValues[LivingString][1]; //detune
             displayValues[2] = presetKnobValues[LivingString][2]; //decay
             displayValues[3] = mtof((presetKnobValues[LivingString][3] * 130.0f)+12.0f); //lowpass
-            displayValues[4] = (presetKnobValues[LivingString][4] * 0.48) + 0.5f;//pickPos
-            displayValues[5] = (presetKnobValues[LivingString][5] * 0.48) + 0.02f;//prepPos
+            displayValues[4] = (presetKnobValues[LivingString][4] * 0.48f) + 0.5f;//pickPos
+            displayValues[5] = (presetKnobValues[LivingString][5] * 0.48f) + 0.02f;//prepPos
             displayValues[6] = ((tanhf((presetKnobValues[LivingString][6] * 8.0f) - 4.0f)) * 0.5f) + 0.5f;//prep Index
             displayValues[7] = presetKnobValues[LivingString][7];// let ring
             
@@ -2733,14 +2832,14 @@ namespace vocodec
             tSimplePoly_setNumVoices(&poly, NUM_STRINGS);
             for (int i = 0; i < NUM_STRINGS; i++)
             {
-                tComplexLivingString_init(&theString[i], 440.f, 0.2f, 0.3f, 0.f, 9000.f, 1.0f, 0.0f, 0.01f, 0.125f, levModeStr);
-                tSlide_initToPool(&stringOutEnvs[i], 10.0f, 1000.0f, &smallPool);
-                tSlide_initToPool(&stringInEnvs[i], 12.0f, 1000.0f, &smallPool);
-                tADSR4_initToPool(&pluckEnvs[i], 4.0f, 70.0f, 0.0f, 5.0f, decayExpBuffer, DECAY_EXP_BUFFER_SIZE, &smallPool);
+                tComplexLivingString_initToPool(&theString[i], 440.f, 0.2f, 0.3f, 0.f, 9000.f, 1.0f, 0.0f, 0.01f, 0.125f, levModeStr, &mediumPool);
+                tSlide_init(&stringOutEnvs[i], 10.0f, 1000.0f);
+                tSlide_init(&stringInEnvs[i], 12.0f, 1000.0f);
+                tADSR4_init(&pluckEnvs[i], 4.0f, 70.0f, 0.0f, 5.0f, decayExpBuffer, DECAY_EXP_BUFFER_SIZE);
                 
             }
-            tVZFilter_initToPool(&pluckFilt, BandpassPeak, 2000.0f, 4.0f, &smallPool);
-            tNoise_initToPool(&stringPluckNoise, WhiteNoise, &smallPool);
+            tVZFilter_init(&pluckFilt, BandpassPeak, 2000.0f, 4.0f);
+            tNoise_init(&stringPluckNoise, WhiteNoise);
             setLED_A(numVoices == 1);
             setLED_B(voicePluck);
             setLED_C(levModeStr);
@@ -2782,8 +2881,8 @@ namespace vocodec
             displayValues[1] = presetKnobValues[LivingStringSynth][1]; //lowpass
             displayValues[2] = presetKnobValues[LivingStringSynth][2]; //decay
             displayValues[3] = faster_mtof((presetKnobValues[LivingStringSynth][3] * 119.0f)+20.0f); //lowpass
-            displayValues[4] = (presetKnobValues[LivingStringSynth][4] * 0.44) + 0.52f;//pick Pos
-            displayValues[5] = (presetKnobValues[LivingStringSynth][5] * 0.44) + 0.04f;//prep Pos
+            displayValues[4] = (presetKnobValues[LivingStringSynth][4] * 0.44f) + 0.52f;//pick Pos
+            displayValues[5] = (presetKnobValues[LivingStringSynth][5] * 0.44f) + 0.04f;//prep Pos
             displayValues[6] = ((LEAF_tanh((presetKnobValues[LivingStringSynth][6] * 8.5f) - 4.25f)) * 0.5f) + 0.5f;//prep Index
             displayValues[7] = presetKnobValues[LivingStringSynth][7];//let Ring
             displayValues[8] = presetKnobValues[LivingStringSynth][8];//feedback level
@@ -2924,28 +3023,28 @@ namespace vocodec
             {
                 for (int j = 0; j < NUM_OSC_PER_VOICE; j++)
                 {
-                    tSawtooth_initToPool(&osc[(i * NUM_OSC_PER_VOICE) + j], &smallPool);
+                    tSawtooth_init(&osc[(i * NUM_OSC_PER_VOICE) + j]);
                     synthDetune[i][j] = ((leaf.random() * 0.0264f) - 0.0132f);
-                    tRosenbergGlottalPulse_initToPool(&glottal[(i * NUM_OSC_PER_VOICE) + j], &smallPool);
+                    tRosenbergGlottalPulse_init(&glottal[(i * NUM_OSC_PER_VOICE) + j]);
                     tRosenbergGlottalPulse_setOpenLength(&glottal[(i * NUM_OSC_PER_VOICE) + j], 0.3f);
                     tRosenbergGlottalPulse_setPulseLength(&glottal[(i * NUM_OSC_PER_VOICE) + j], 0.4f);
                 }
                 
-                tEfficientSVF_initToPool(&synthLP[i], SVFTypeLowpass, 6000.0f, displayValues[4], &smallPool);
-                tADSR4_initToPool(&polyEnvs[i], displayValues[5], displayValues[6], displayValues[7], displayValues[8], decayExpBuffer, DECAY_EXP_BUFFER_SIZE, &smallPool);
+                tEfficientSVF_init(&synthLP[i], SVFTypeLowpass, 2000, displayValues[4]);
+                tADSR4_init(&polyEnvs[i], displayValues[5], displayValues[6], displayValues[7], displayValues[8], decayExpBuffer, DECAY_EXP_BUFFER_SIZE);
                 tADSR4_setLeakFactor(&polyEnvs[i],((1.0f - displayValues[9]) * 0.00005f) + 0.99995f);
-                tADSR4_initToPool(&polyFiltEnvs[i], displayValues[10], displayValues[11], displayValues[12], displayValues[13], decayExpBuffer, DECAY_EXP_BUFFER_SIZE, &smallPool);
+                tADSR4_init(&polyFiltEnvs[i], displayValues[10], displayValues[11], displayValues[12], displayValues[13], decayExpBuffer, DECAY_EXP_BUFFER_SIZE);
                 tADSR4_setLeakFactor(&polyFiltEnvs[i], ((1.0f - displayValues[14]) * 0.00005f) + 0.99995f);
                 
             }
-            tCycle_initToPool(&pwmLFO1, &smallPool);
-            tCycle_initToPool(&pwmLFO2, &smallPool);
+            tCycle_init(&pwmLFO1);
+            tCycle_init(&pwmLFO2);
             tCycle_setFreq(&pwmLFO1, 63.0f);
             tCycle_setFreq(&pwmLFO2, 72.11f);
             
             setLED_A(numVoices == 1);
             leaf.clearOnAllocation = 0;
-//            cycleCountVals[0][2] = 2;
+            //            cycleCountVals[0][2] = 2;
         }
         
         void SFXClassicSynthFrame()
@@ -2959,79 +3058,114 @@ namespace vocodec
             }
             if (buttonActionsSFX[ButtonB][ActionPress] == 1)
             {
-//                cycleCountVals[0][1] = 0;
+                //                cycleCountVals[0][1] = 0;
                 buttonActionsSFX[ButtonB][ActionPress] = 0;
                 setLED_Edit(0);
             }
             
             float* knobs = presetKnobValues[ClassicSynth];
-     
-            displayValues[0] = knobs[0]; //synth volumebreak;
-       
-            displayValues[1] = knobs[1] * 4096.0f; //lowpass cutoff
-      
-            displayValues[2] = knobs[2]; //keyfollow filter cutoff
-      
-            displayValues[3] = knobs[3]; //detune
-            displayValues[4] = (knobs[4] * 2.0f) + 0.4f; //filter Q
-            for (int i = 0; i < numVoices; i++)
+            
+            if (writeKnobFlag != -1)
             {
-                tEfficientSVF_setQ(&synthLP[i],displayValues[4]);
+                switch(writeKnobFlag + (knobPage * KNOB_PAGE_SIZE))
+                {
+                    case 0:
+                        displayValues[0] = knobs[0]; //synth volume
+                        break;
+                    case 1:
+                        displayValues[1] = knobs[1] * 4096.0f; //lowpass cutoff
+                        break;
+                    case 2:
+                        displayValues[2] = knobs[2]; //keyfollow filter cutoff
+                        break;
+                    case 3:
+                        displayValues[3] = knobs[3]; //detune
+                        break;
+                    case 4:
+                        displayValues[4] = (knobs[4] * 2.0f) + 0.4f; //filter Q
+                        for (int i = 0; i < numVoices; i++)
+                        {
+                            tEfficientSVF_setQ(&synthLP[i],displayValues[4]);
+                        }
+                        break;
+                    case 5:
+                        displayValues[5] = expBuffer[(int)(knobs[5] * expBufferSizeMinusOne)] * 8192.0f; //att
+                        for (int i = 0; i < numVoices; i++)
+                        {
+                            tADSR4_setAttack(&polyEnvs[i], displayValues[5]);
+                        }
+                        break;
+                    case 6:
+                        displayValues[6] = expBuffer[(int)(knobs[6] * expBufferSizeMinusOne)] * 8192.0f; //dec
+                        for (int i = 0; i < numVoices; i++)
+                        {
+                            tADSR4_setDecay(&polyEnvs[i], displayValues[6]);
+                        }
+                        break;
+                    case 7:
+                        displayValues[7] = knobs[7]; //sus
+                        for (int i = 0; i < numVoices; i++)
+                        {
+                            tADSR4_setSustain(&polyEnvs[i], displayValues[7]);
+                        }
+                        break;
+                    case 8:
+                        displayValues[8] = expBuffer[(int)(knobs[8] * expBufferSizeMinusOne)] * 8192.0f; //rel
+                        for (int i = 0; i < numVoices; i++)
+                        {
+                            tADSR4_setRelease(&polyEnvs[i], displayValues[8]);
+                        }
+                        break;
+                    case 9:
+                        displayValues[9] = knobs[9]; //leak
+                        for (int i = 0; i < numVoices; i++)
+                        {
+                            tADSR4_setLeakFactor(&polyEnvs[i], ((1.0f - displayValues[9]) * 0.00005f) + 0.99995f);
+                        }
+                        break;
+                    case 10:
+                        displayValues[10] = expBuffer[(int)(knobs[10] * expBufferSizeMinusOne)] * 8192.0f; //att
+                        for (int i = 0; i < numVoices; i++)
+                        {
+                            tADSR4_setAttack(&polyFiltEnvs[i], displayValues[10]);
+                        }
+                        break;
+                    case 11:
+                        displayValues[11] = expBuffer[(int)(knobs[11] * expBufferSizeMinusOne)] * 8192.0f; //dec
+                        for (int i = 0; i < numVoices; i++)
+                        {
+                            tADSR4_setDecay(&polyFiltEnvs[i], displayValues[11]);
+                        }
+                        break;
+                    case 12:
+                        displayValues[12] = knobs[12]; //sus
+                        for (int i = 0; i < numVoices; i++)
+                        {
+                            tADSR4_setSustain(&polyFiltEnvs[i], displayValues[12]);
+                        }
+                        break;
+                    case 13:
+                        displayValues[13] = expBuffer[(int)(knobs[13] * expBufferSizeMinusOne)] * 8192.0f; //rel
+                        for (int i = 0; i < numVoices; i++)
+                        {
+                            tADSR4_setRelease(&polyFiltEnvs[i], displayValues[13]);
+                        }
+                        break;
+                    case 14:
+                        displayValues[14] = knobs[14]; //leak
+                        for (int i = 0; i < numVoices; i++)
+                        {
+                            tADSR4_setLeakFactor(&polyFiltEnvs[i], ((1.0f - displayValues[14]) * 0.00005f) + 0.99995f);
+                        }
+                        break;
+                    case 15:
+                        displayValues[15] = knobs[15] * 4095.0f;  // filter envelope amount
+                        break;
+                    case 16:
+                        displayValues[16] = knobs[16];  // fade between sawtooth and glottal pulse
+                        break;
+                }
             }
-            displayValues[5] = expBuffer[(int)(knobs[5] * expBufferSizeMinusOne)] * 8192.0f; //att
-            for (int i = 0; i < numVoices; i++)
-            {
-                tADSR4_setAttack(&polyEnvs[i], displayValues[5]);
-            }
-      
-            displayValues[6] = expBuffer[(int)(knobs[6] * expBufferSizeMinusOne)] * 8192.0f; //dec
-            for (int i = 0; i < numVoices; i++)
-            {
-                tADSR4_setDecay(&polyEnvs[i], displayValues[6]);
-            }
-            displayValues[7] = knobs[7]; //sus
-            for (int i = 0; i < numVoices; i++)
-            {
-                tADSR4_setSustain(&polyEnvs[i], displayValues[7]);
-            }
-            displayValues[8] = expBuffer[(int)(knobs[8] * expBufferSizeMinusOne)] * 8192.0f; //rel
-            for (int i = 0; i < numVoices; i++)
-            {
-                tADSR4_setRelease(&polyEnvs[i], displayValues[8]);
-            }
-            displayValues[9] = knobs[9]; //leak
-            for (int i = 0; i < numVoices; i++)
-            {
-                tADSR4_setLeakFactor(&polyEnvs[i], ((1.0f - displayValues[9]) * 0.00005f) + 0.99995f);
-            }
-            displayValues[10] = expBuffer[(int)(knobs[10] * expBufferSizeMinusOne)] * 8192.0f; //att
-            for (int i = 0; i < numVoices; i++)
-            {
-                tADSR4_setAttack(&polyFiltEnvs[i], displayValues[10]);
-            }
-            displayValues[11] = expBuffer[(int)(knobs[11] * expBufferSizeMinusOne)] * 8192.0f; //dec
-            for (int i = 0; i < numVoices; i++)
-            {
-                tADSR4_setDecay(&polyFiltEnvs[i], displayValues[11]);
-            }
-            displayValues[12] = knobs[12]; //sus
-            for (int i = 0; i < numVoices; i++)
-            {
-                tADSR4_setSustain(&polyFiltEnvs[i], displayValues[12]);
-            }
-            displayValues[13] = expBuffer[(int)(knobs[13] * expBufferSizeMinusOne)] * 8192.0f; //rel
-            for (int i = 0; i < numVoices; i++)
-            {
-                tADSR4_setRelease(&polyFiltEnvs[i], displayValues[13]);
-            }
-            displayValues[14] = knobs[14]; //leak
-            for (int i = 0; i < numVoices; i++)
-            {
-                tADSR4_setLeakFactor(&polyFiltEnvs[i], ((1.0f - displayValues[14]) * 0.00005f) + 0.99995f);
-            }
-      
-            displayValues[15] = knobs[15] * 4095.0f;  // filter envelope amount
-            displayValues[16] = knobs[16];  // fade between sawtooth and glottal pulse
             
             
             float tempLFO1 = (tCycle_tick(&pwmLFO1) * 0.25f) + 0.5f; // pulse length
@@ -3131,7 +3265,7 @@ namespace vocodec
         
         float panValues[NUM_VOC_VOICES];
         tCycle tremolo;
-        uint8_t tremoloStereo = 0;
+        int tremoloStereo = 0;
         
         int Rsound = 0;
         
@@ -3157,16 +3291,16 @@ namespace vocodec
             {
                 for (int j = 0; j < 6; j++)
                 {
-                    tCycle_initToPool(&FM_sines[i][j], &smallPool);
-                    tADSR4_initToPool(&FM_envs[i][j], 10, 1000, 0.5f, 100.0f, decayExpBuffer, DECAY_EXP_BUFFER_SIZE, &smallPool);
+                    tCycle_init(&FM_sines[i][j]);
+                    tADSR4_init(&FM_envs[i][j], 10, 1000, 0.5f, 100.0f, decayExpBuffer, DECAY_EXP_BUFFER_SIZE);
                     tADSR4_setLeakFactor(&FM_envs[i][j], 0.99998f);
                 }
             }
             for (int i = 0; i < 6; i++)
             {
-                tExpSmooth_initToPool(&susSmoothers[i], 1.0f, 0.01f, &smallPool);
+                tExpSmooth_init(&susSmoothers[i], 1.0f, 0.01f);
             }
-            tCycle_initToPool(&tremolo, &smallPool);
+            tCycle_init(&tremolo);
             tCycle_setFreq(&tremolo, 3.0f);
             tSimplePoly_setNumVoices(&poly, NUM_VOC_VOICES);
             
@@ -3299,12 +3433,12 @@ namespace vocodec
                                 for (int j = 0; j < 6; j++)
                                 {
                                     //tADSR_setAttack(&FM_envs[i][j], FM_attacks[Rsound][j] * displayValues[5]);
-//                                    cycleCountVals[1][2] = 0;
-//                                    uint64_t tempCount1 = DWT->CYCCNT;
+                                    //                                    cycleCountVals[1][2] = 0;
+                                    //                                    uint64_t tempCount1 = DWT->CYCCNT;
                                     tADSR4_setAttack(&FM_envs[i][j], displayValues[5] );
-//                                    uint64_t tempCount2 = DWT->CYCCNT;
-//                                    cycleCountVals[1][1] = tempCount2-tempCount1;
-//                                    CycleCounterTrackMinAndMax(1);
+                                    //                                    uint64_t tempCount2 = DWT->CYCCNT;
+                                    //                                    cycleCountVals[1][1] = tempCount2-tempCount1;
+                                    //                                    CycleCounterTrackMinAndMax(1);
                                 }
                             }
                             break;
@@ -3340,6 +3474,8 @@ namespace vocodec
                                     tADSR4_setLeakFactor(&FM_envs[i][j], ((1.0f - displayValues[9])  * 0.00004f) + 0.99996f);
                                 }
                             }
+                            break;
+                        default:
                             break;
                     }
                 }
@@ -3669,7 +3805,7 @@ namespace vocodec
                         {
                             tADSR4_on(&FM_envs[whichVoice][j], velocity * 0.0078125f);
                         }
-                        panValues[whichVoice] = key * 0.0078125; // divide by 128.0f
+                        panValues[whichVoice] = key * 0.0078125f; // divide by 128.0f
                     }
                 }
                 else if (currentPreset == ClassicSynth)
@@ -3866,4 +4002,3 @@ namespace vocodec
     }
 } // extern "C"
 #endif
-

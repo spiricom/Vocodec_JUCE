@@ -69,6 +69,14 @@ public:
 	void buttonStateChanged(Button *button) override;
     
     void timerCallback() override;
+    
+    OwnedArray<Slider> dials;
+    
+    OwnedArray<ShapeButton> buttons;
+    
+    ComboBox menu;
+    
+    Label pageLabel;
 
 private:
 
@@ -90,12 +98,6 @@ private:
 	OtherLookAndFeel knobSeven;
 
 //    Array<DrawableImage*> lights;
-
-	OwnedArray<Slider> dials;
-    
-    OwnedArray<ShapeButton> buttons;
-    
-	ComboBox menu;
 
 	int sliderOpacity[7];
 
