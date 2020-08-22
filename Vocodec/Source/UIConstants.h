@@ -10,7 +10,50 @@
 
 #pragma once
 
-static const std::initializer_list<const char*> cPluginParamPrefixes = {
+#include <JuceHeader.h>
+
+#define MIN_METER_VOL -80.0f
+#define INV_MIN_METER_VOL -0.0125f
+
+typedef enum VocodecLightID
+{
+    VocodecLightUSB = 0,
+    VocodecLight1,
+    VocodecLight2,
+    VocodecLightA,
+    VocodecLightB,
+    VocodecLightC,
+    VocodecLightEdit,
+    VocodecLightIn1Meter,
+    VocodecLightIn1Clip,
+    VocodecLightIn2Meter,
+    VocodecLightIn2Clip,
+    VocodecLightOut1Meter,
+    VocodecLightOut1Clip,
+    VocodecLightOut2Meter,
+    VocodecLightOut2Clip,
+    VocodecLightNil
+} VocodecLightID;
+
+const std::vector<const Colour> cLightColours = {
+    Colours::limegreen,
+    Colours::red,
+    Colours::limegreen,
+    Colours::gold,
+    Colours::limegreen,
+    Colours::limegreen,
+    Colours::red,
+    Colours::gold,
+    Colours::red,
+    Colours::gold,
+    Colours::red,
+    Colours::gold,
+    Colours::red,
+    Colours::gold,
+    Colours::red
+};
+
+const std::initializer_list<const char*> cPluginParamPrefixes = {
     "vocoder",
     "vocoderCh",
     "pitchShift",
@@ -31,7 +74,7 @@ static const std::initializer_list<const char*> cPluginParamPrefixes = {
     "rhodes"
 };
 
-static const std::initializer_list<const char*> cPluginParamNames = {
+const std::initializer_list<const char*> cPluginParamNames = {
     "vocoder_volume",
     "vocoder_warp",
     "vocoder_quality",

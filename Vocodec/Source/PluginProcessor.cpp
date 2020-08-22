@@ -11,6 +11,7 @@
 #include "PluginProcessor.h"
 #include "PluginEditor.h"
 
+bool lightStates[VocodecLightNil];
 //==============================================================================
 VocodecAudioProcessor::VocodecAudioProcessor()
 #ifndef JucePlugin_PreferredChannelConfigurations
@@ -31,6 +32,9 @@ pluginParamNames(StringArray(cPluginParamNames))
     
     vocodec::initModeNames();
     vocodec::initFunctionPointers();
+    
+    for (int i = 0; i < VocodecLightNil; ++i)
+        lightStates[i] = false;
 }
 
 VocodecAudioProcessor::~VocodecAudioProcessor()
@@ -103,7 +107,8 @@ void VocodecAudioProcessor::changeProgramName (int index, const String& newName)
 void VocodecAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlock)
 {
     
-    LEAF_init(sampleRate, samplesPerBlock, vocodec::small_memory, SMALL_MEM_SIZE, []() {return (float)rand() / RAND_MAX; });
+    LEAF_init(sampleRate, samplesPerBlock, vocodec::small_memory, SMALL_MEM_SIZE,
+              []() {return (float)rand() / RAND_MAX; });
     tMempool_init(&vocodec::mediumPool, vocodec::medium_memory, MED_MEM_SIZE);
     tMempool_init(&vocodec::largePool, vocodec::large_memory, LARGE_MEM_SIZE);
     

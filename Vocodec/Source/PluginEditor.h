@@ -12,6 +12,7 @@
 
 #include <JuceHeader.h>
 #include "PluginProcessor.h"
+#include "VocodecComponents.h"
 #include "sfx.h"
 #include "tunings.h"
 //==============================================================================
@@ -69,10 +70,12 @@ public:
 	void buttonStateChanged(Button *button) override;
     
     void timerCallback() override;
-    
+
     OwnedArray<Slider> dials;
     
-    OwnedArray<ShapeButton> buttons;
+    OwnedArray<VocodecButton> buttons;
+    
+    OwnedArray<VocodecLight> lights;
     
     ComboBox menu;
     
@@ -82,8 +85,7 @@ private:
 
 	std::unique_ptr<Drawable> logo;
 	std::unique_ptr<Drawable> sideThingy;
-	std::unique_ptr<Drawable> panel;
-
+    std::unique_ptr<Drawable> panel;
 
 	String paramName = String("");
     Image baseline;
@@ -120,6 +122,8 @@ void setLED_C(int onOFF);
 void setLED_1(int onOFF);
 void setLED_2(int onOFF);
 void setLED_Edit(int onOFF);
+
+void setLightState(VocodecLightID light, bool state);
 
 void OLED_process(void);
 

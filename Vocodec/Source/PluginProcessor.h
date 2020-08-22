@@ -14,6 +14,7 @@
 #include "UIConstants.h"
 #include "sfx.h"
 
+extern bool lightStates[VocodecLightNil];
 //==============================================================================
 /**
 */

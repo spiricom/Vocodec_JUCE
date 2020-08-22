@@ -24,6 +24,10 @@
       <FILE id="qdJuMr" name="ui.cpp" compile="1" resource="0" file="Source/ui.cpp"/>
       <FILE id="NdmU3l" name="ui.h" compile="0" resource="0" file="Source/ui.h"/>
       <FILE id="lVbEgC" name="UIConstants.h" compile="0" resource="0" file="Source/UIConstants.h"/>
+      <FILE id="UMlOdr" name="VocodecComponents.cpp" compile="1" resource="0"
+            file="Source/VocodecComponents.cpp"/>
+      <FILE id="CoWBPy" name="VocodecComponents.h" compile="0" resource="0"
+            file="Source/VocodecComponents.h"/>
     </GROUP>
   </MAINGROUP>
   <EXPORTFORMATS>
