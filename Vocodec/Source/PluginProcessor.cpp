@@ -108,7 +108,6 @@ void VocodecAudioProcessor::changeProgramName (int index, const String& newName)
 //==============================================================================
 void VocodecAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlock)
 {
-    
     LEAF_init(sampleRate, samplesPerBlock, vocodec::small_memory, SMALL_MEM_SIZE,
               []() {return (float)rand() / RAND_MAX; });
     tMempool_init(&vocodec::mediumPool, vocodec::medium_memory, MED_MEM_SIZE);
@@ -148,8 +147,9 @@ void VocodecAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBloc
         }
         
         vocodec::currentPreset = vocodec::Vocoder;
-        vocodec::loadingPreset = 1;
     }
+    vocodec::previousPreset = vocodec::PresetNil;
+    vocodec::loadingPreset = 1;
 }
 
 void VocodecAudioProcessor::releaseResources()
@@ -184,11 +184,6 @@ bool VocodecAudioProcessor::isBusesLayoutSupported (const BusesLayout& layouts) 
 
 void VocodecAudioProcessor::processBlock (AudioBuffer<float>& buffer, MidiBuffer& midiMessages)
 {
-    for (int i = 0; i < KNOB_PAGE_SIZE; ++i)
-    {
-        
-
-    }
     vocodec::buttonCheck();
     vocodec::adcCheck();
     
@@ -207,7 +202,7 @@ void VocodecAudioProcessor::processBlock (AudioBuffer<float>& buffer, MidiBuffer
         if (vocodec::currentPreset != vocodec::PresetNil)
             vocodec::allocFunctions[vocodec::currentPreset]();
 
-        vocodec::loadingPreset = false;
+        vocodec::loadingPreset = 0;
     }
     else vocodec::frameFunctions[vocodec::currentPreset]();
     
