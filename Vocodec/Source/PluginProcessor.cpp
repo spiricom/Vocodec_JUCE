@@ -10,6 +10,7 @@
 
 #include "PluginProcessor.h"
 #include "PluginEditor.h"
+#include "oled.h"
 
 bool lightStates[VocodecLightNil];
 //==============================================================================
@@ -30,8 +31,9 @@ pluginParamNames(StringArray(cPluginParamNames))
     vocodec::currentPreset = vocodec::PresetNil;
     vocodec::previousPreset = vocodec::PresetNil;
     
-    vocodec::initModeNames();
     vocodec::initFunctionPointers();
+    I2C_HandleTypeDef* dummyArg = nullptr;
+    vocodec::OLED_init(dummyArg);
     
     for (int i = 0; i < VocodecLightNil; ++i)
         lightStates[i] = false;
@@ -117,6 +119,12 @@ void VocodecAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBloc
     tEnvelopeFollower_init(&outputFollower[0], 0.0001f, 0.9995f);
     tEnvelopeFollower_init(&outputFollower[1], 0.0001f, 0.9995f);
     
+    //ramps to smooth the knobs
+    for (int i = 0; i < 6; i++)
+    {
+        tExpSmooth_init(&vocodec::adc[i], 0.0f, 0.2f);
+    }
+    
     vocodec::initGlobalSFXObjects();
 
     // Everything in here should only happen on the first prepareToPlay.
@@ -176,7 +184,13 @@ bool VocodecAudioProcessor::isBusesLayoutSupported (const BusesLayout& layouts) 
 
 void VocodecAudioProcessor::processBlock (AudioBuffer<float>& buffer, MidiBuffer& midiMessages)
 {
+    for (int i = 0; i < KNOB_PAGE_SIZE; ++i)
+    {
+        
+
+    }
     vocodec::buttonCheck();
+    vocodec::adcCheck();
     
     if (vocodec::loadingPreset)
     {
@@ -259,8 +273,6 @@ void VocodecAudioProcessor::processBlock (AudioBuffer<float>& buffer, MidiBuffer
         audioOutput[0] = tEnvelopeFollower_tick(&outputFollower[0], audio[0]);
         audioOutput[1] = tEnvelopeFollower_tick(&outputFollower[1], audio[1]);
     }
-    
-    
 }
 
 //==============================================================================

@@ -7,12 +7,10 @@
 
 #ifndef __cplusplus
 #include "main.h"
-#include "oled.h"
 #include "MIDI_application.h"
-#else
-#include "PluginEditor.h"
 #endif
 
+#include "oled.h"
 #include "sfx.h"
 #include "tunings.h"
 

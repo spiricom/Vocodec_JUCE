@@ -10,31 +10,32 @@
 
 #include "PluginProcessor.h"
 #include "PluginEditor.h"
+#include "oled.h"
 #include <iostream>
-using namespace std;
 //==============================================================================
 
-VocodecAudioProcessorEditor::VocodecAudioProcessorEditor (VocodecAudioProcessor& p)
-: AudioProcessorEditor (&p), processor (p)
+unsigned char buffer[512];
+bool shouldDrawScreen = false;
+
+VocodecAudioProcessorEditor::VocodecAudioProcessorEditor (VocodecAudioProcessor& p) :
+AudioProcessorEditor (&p), processor (p),
+constrain(new ComponentBoundsConstrainer()),
+resizer(new ResizableCornerComponent (this, constrain.get()))
 {
-    // Make sure that before the constructor has finished, you've set the
-    // editor's size to whatever you need it to be.
-    
-    
-    //logo = Drawable::createFromImageData(BinaryData::snyderphonicswhitelogo_svg, BinaryData::snyderphonicswhitelogo_svgSize);
-    //sideThingy = Drawable::createFromImageData(BinaryData::logo_large_svg, BinaryData::logo_large_svgSize);
     panel = Drawable::createFromImageData(BinaryData::panel_svg, BinaryData::panel_svgSize);
-    //addAndMakeVisible(*logo);
-    //addAndMakeVisible(*sideThingy);
-    addAndMakeVisible(*panel);
+    
+    screenImage = std::make_unique<Image>(Image::PixelFormat::RGB, 128, 32, false);
+    screen.setImage(*screenImage);
+    screen.setImagePlacement(RectanglePlacement::centred);
+    addAndMakeVisible(screen);
     
     for (int i = 0; i < NUM_KNOBS; i++) {
         //        knobs.add(new DrawableImage());
         dials.add(new Slider());
         addAndMakeVisible(dials[i]);
         //        addAndMakeVisible(knobs[i]);
-        dials[i]->setLookAndFeel(&knobOne);
-        dials[i]->setSliderStyle(Slider::RotaryVerticalDrag);
+        dials[i]->setLookAndFeel(&vocodecLAF);
+        dials[i]->setSliderStyle(Slider::Rotary);
         dials[i]->setTextBoxStyle(Slider::NoTextBox, false, 0, 0);
         addAndMakeVisible(dials[i]);
         dials[i]->addListener(this);
@@ -48,7 +49,7 @@ VocodecAudioProcessorEditor::VocodecAudioProcessorEditor (VocodecAudioProcessor&
     
     for (int i = 0; i < NUM_BUTTONS; i++)
     {
-        buttons.add(new VocodecButton("", Colours::lightgrey, Colours::grey, Colours::darkgrey));
+        buttons.add(new VocodecButton("", Colours::white, Colours::grey.brighter(), Colours::darkgrey));
         buttons[i]->setShape(path, true, true, true);
         addAndMakeVisible(buttons[i]);
         buttons[i]->addListener(this);
@@ -65,28 +66,27 @@ VocodecAudioProcessorEditor::VocodecAudioProcessorEditor (VocodecAudioProcessor&
     lightStates[VocodecLightOut1Meter] = true;
     lightStates[VocodecLightOut2Meter] = true;
     
-    
-    setSize(600, 712);
-    
     addAndMakeVisible(menu);
-    menu.addItem("Vocoder", 1);
-    menu.addItem("VocoderCh", 2);
-    menu.addItem("Pitchshift", 3);
-    menu.addItem("AutotuneMono", 4);
-    menu.addItem("AutotunePoly", 5);
-    menu.addItem("SamplerButtonPress", 6);
-    menu.addItem("SamplerKeyboard", 7);
-    menu.addItem("SamplerAutoGrab", 8);
-    menu.addItem("Distortion", 9);
-    menu.addItem("Wavefolder", 10);
-    menu.addItem("BitCrusher", 11);
-    menu.addItem("Delay", 12);
-    menu.addItem("Reverb", 13);
-    menu.addItem("Reverb 2", 14);
-    menu.addItem("LivingString", 15);
-    menu.addItem("LivingStringSynth", 16);
-    menu.addItem("ClassicSynth", 17);
-    menu.addItem("Rhodes", 18);
+    menu.setLookAndFeel(&vocodecLAF);
+    menu.setAlpha(0.0f);
+    menu.addItem("VOCODER", 1);
+    menu.addItem("VOCODERCH", 2);
+    menu.addItem("PITCHSHIFT", 3);
+    menu.addItem("AUTOTUNE", 4);
+    menu.addItem("HARMONIZE", 5);
+    menu.addItem("SAMPLERBUTTONPRESS", 6);
+    menu.addItem("SAMPLERKEYBOARD", 7);
+    menu.addItem("AUTOSAMPlER", 8);
+    menu.addItem("DISTORTION", 9);
+    menu.addItem("WAVEFOLDER", 10);
+    menu.addItem("BITCRUSHER", 11);
+    menu.addItem("DELAY", 12);
+    menu.addItem("REVERB", 13);
+    menu.addItem("REVERB2", 14);
+    menu.addItem("LIVINGSTRING", 15);
+    menu.addItem("LIVINGSTRINGSYNTH", 16);
+    menu.addItem("CLASSICSYNTH", 17);
+    menu.addItem("RHODES", 18);
     menu.setColour(ComboBox::ColourIds::backgroundColourId, Colours::transparentWhite);
     menu.setColour(ComboBox::ColourIds::textColourId, Colours::white);
     menu.setColour(ComboBox::ColourIds::buttonColourId, Colours::black);
@@ -95,20 +95,22 @@ VocodecAudioProcessorEditor::VocodecAudioProcessorEditor (VocodecAudioProcessor&
     menu.setJustificationType(Justification::centred);
     menu.setSelectedId(1, dontSendNotification);
     menu.onChange = [this] { presetChanged(); };
+
+    setSize(600, 716);
     
-    addAndMakeVisible(pageLabel);
-    pageLabel.setText("P" + String(vocodec::knobPage + 1), dontSendNotification);
+    constrain->setFixedAspectRatio(600.0f / 716.0f);
     
-    //logo->setBounds(Rectangle<int>(110, 10, 75, 75));
-    //sideThingy->setSize(1000, 700);
-    //sideThingy->setBounds(Rectangle<int>(-230, 230, 700, 1000));
-    panel->setBounds(Rectangle<int>(5, 10, 1000, 1000));
+    addAndMakeVisible(*resizer);
+    resizer->setAlwaysOnTop(true);
+    
+    vocodec::OLED_writePreset();
     
     startTimerHz(30);
 }
 
 VocodecAudioProcessorEditor::~VocodecAudioProcessorEditor()
 {
+    menu.setLookAndFeel(nullptr);
     for (int i = 0; i < NUM_KNOBS; i++)
         dials[i]->setLookAndFeel(nullptr);
 }
@@ -117,254 +119,106 @@ VocodecAudioProcessorEditor::~VocodecAudioProcessorEditor()
 void VocodecAudioProcessorEditor::paint (Graphics& g)
 {
     // (Our component is opaque, so we must completely fill the background with a solid colour)
-    g.setGradientFill(ColourGradient(Colour(30, 30, 30), juce::Point<float>(0,0), Colour(10, 10, 10), juce::Point<float>(0, 712), false));
+    g.setGradientFill(ColourGradient(Colour(25, 25, 25), juce::Point<float>(0,0), Colour(10, 10, 10), juce::Point<float>(0, getHeight()), false));
 
-    g.fillRect(0, 0, 600, 712);
+    g.fillRect(0, 0, getWidth(), getHeight());
+    
+    Rectangle<float> panelArea = getLocalBounds().toFloat();
+    panelArea.reduce(getWidth()*0.025f, getHeight()*0.01f);
+    panelArea.removeFromBottom(getHeight()*0.03f);
+    panel->drawWithin(g, panelArea, RectanglePlacement::centred, 1.0f);
 
     g.setFont (15.0f);
-    //    g.drawImageAt(baseline, 0, 0);
 
     g.setColour(Colours::white);
     g.drawFittedText(paramName, Rectangle<int>(175,80,150,50), Justification::centred, 1);
-    //    knobs[0]->setBounds(0, 3, getWidth(), getHeight());
 
     juce::Font mainComponentFont(Font::getDefaultSansSerifFontName(), 20.0f, juce::Font::bold | juce::Font::italic);
     g.setColour(Colours::gold);
-    /*g.drawFittedText("EDIT", Rectangle<int>(455, 70, 40, 15), Justification::left, 1);
-     g.drawFittedText("USB", Rectangle<int>(557, 217, 30, 15), Justification::left, 1);
-     g.drawFittedText("Dry/Wet", Rectangle<int>(380, 590, 75, 15), Justification::left, 1);
-     g.drawFittedText("1", Rectangle<int>(190, 290, 10, 20), Justification::left, 1);
-     g.drawFittedText("2", Rectangle<int>(405, 290, 10, 20), Justification::left, 1);
-     g.drawFittedText("3", Rectangle<int>(270, 420, 10, 20), Justification::left, 1);
-     g.drawFittedText("4", Rectangle<int>(470, 420, 10, 20), Justification::left, 1);
-     g.drawFittedText("5", Rectangle<int>(200, 580, 10, 20), Justification::left, 1);
-     g.drawFittedText("A", Rectangle<int>(573, 360, 10, 20), Justification::left, 1);
-     g.drawFittedText("B", Rectangle<int>(573, 420, 10, 20), Justification::left, 1);
-     g.drawFittedText("C", Rectangle<int>(306, 557, 10, 20), Justification::left, 1);
-     g.drawFittedText("D", Rectangle<int>(190, 650, 10, 20), Justification::left, 1);
-     g.drawFittedText("E", Rectangle<int>(250, 650, 10, 20), Justification::left, 1);*/
-
-
-    //g.drawLine(Line<float>(Point<float>(400, 722), Point<float>(612, 687)), 5);
-    //g.drawLine(Line<float>(Point<float>(550, 722), Point<float>(610, 662)), 5);
 
     g.setFont(60.0f);
     g.setColour(Colours::gold);
-    //g.drawFittedText("V O C O", Rectangle<int>(0, 400, 75, 300), Justification::left, 7);
-    //g.drawFittedText("D E C", Rectangle<int>(0, 640, 350, 100), Justification::left, 1);
-    
-    
-    
-//    // USB
-//    g.setColour(juce::Colours::darkgreen);
-//    g.fillEllipse(493, 252, 22, 22);
-//    g.setGradientFill(ColourGradient(Colours::lightgreen, juce::Point<float>(504, 263), Colours::transparentWhite, juce::Point<float>(493, 252), true));
-//    g.fillEllipse(489, 248, 30, 30);
-//    // 1
-//    
-//    g.setColour(Colours::darkred);
-//    g.fillEllipse(502, 296, 22, 22);
-//    if (lightStates[8]) {
-//        g.setGradientFill(ColourGradient(Colours::pink, juce::Point<float>(513, 307), Colours::transparentWhite, juce::Point<float>(502, 296), true));
-//        g.fillEllipse(497, 292, 30, 30);
-//    }
-//    // 2
-//    
-//    g.setColour(Colours::darkgreen);
-//    g.fillEllipse(539, 296, 22, 22);
-//    if (lightStates[9]) {
-//        g.setGradientFill(ColourGradient(Colours::lightgreen, juce::Point<float>(550, 307), Colours::transparentWhite, juce::Point<float>(539, 296), true));
-//        g.fillEllipse(535, 292, 30, 30);
-//    }
-//    // A
-//    
-//    // Trying this out, since it's technically more accurate to the hardware look
-//    g.setColour(Colours::white.withAlpha(0.5f));
-//    g.fillEllipse(510, 357, 22, 22);
-//    if (lightStates[0]) {
-//        g.setGradientFill(ColourGradient(Colours::gold, juce::Point<float>(521, 368), Colours::transparentWhite, juce::Point<float>(510, 357), true));
-//        g.fillEllipse(506, 353, 30, 30);
-//    }
-//    // B
-//    
-//    g.setColour(juce::Colours::darkgreen);
-//    g.fillEllipse(510, 414, 22, 22);
-//    if (lightStates[1]) {
-//        g.setGradientFill(ColourGradient(Colours::lightgreen, juce::Point<float>(521, 425), Colours::transparentWhite, juce::Point<float>(510, 414), true));
-//        g.fillEllipse(506, 410, 30, 30);
-//    }
-//    // C
-//    
-//    g.setColour(juce::Colours::darkgreen);
-//    g.fillEllipse(303, 493, 22, 22);
-//    if (lightStates[2]) {
-//        g.setGradientFill(ColourGradient(Colours::lightgreen, juce::Point<float>(314, 504), Colours::transparentWhite, juce::Point<float>(303, 493), true));
-//        g.fillEllipse(299, 489, 30, 30);
-//    }
-//    
-//    // EDIT
-//    g.setColour(juce::Colours::darkred);
-//    g.fillEllipse(421, 50, 22, 22);
-//    if (lightStates[6]) {
-//        g.setGradientFill(ColourGradient(Colours::pink, juce::Point<float>(432, 61), Colours::transparentWhite, juce::Point<float>(421, 50), true));
-//        g.fillEllipse(417, 46, 30, 30);
-//    }
-//    
-//    // In1Yellow
-//    g.setColour(Colours::gold);
-//    g.fillEllipse(15, 398, 10, 10);
-//    float inOne;
-//    inOne = atodb(processor.audioInput[0]);
-//    inOne = LEAF_clip(-120.0f, inOne, 0.0f);
-//    inOne = ( (inOne + 120.0f) / 120.0f ) * 8.0f;
-//    g.setGradientFill(ColourGradient(Colours::yellow, juce::Point<float>(21, 404), Colours::transparentWhite, juce::Point<float>(10 - inOne + 11.0f, 393 - inOne + 11.0f), true));
-//    g.fillEllipse(10, 393, 20, 20);
-//    
-//    
-//    // In1Red
-//    g.setColour(Colours::darkred);
-//    g.fillEllipse(35, 398, 10, 10);
-//    if(processor.audioInput[0] >= 0.999f){
-//        g.setGradientFill(ColourGradient(Colours::pink, juce::Point<float>(41, 404), Colours::transparentWhite, juce::Point<float>(30, 393), true));
-//        g.fillEllipse(30, 393, 20, 20);
-//    }
-//    
-//    
-//    // In2Yellow
-//    g.setColour(Colours::gold);
-//    g.fillEllipse(15, 530, 10, 10);
-//    float inTwo;
-//    inTwo = atodb(processor.audioInput[1]);
-//    inTwo = LEAF_clip(-120.0f, inTwo, 0.0f);
-//    inTwo = ( (inTwo + 120.0f) / 120.0f ) * 8.0f;
-//    g.setGradientFill(ColourGradient(Colours::yellow, juce::Point<float>(21, 536), Colours::transparentWhite, juce::Point<float>(10 - inTwo + 11.0f, 525 - inTwo + 11.0f), true));
-//    g.fillEllipse(10, 525, 20, 20);
-//    
-//    
-//    // In2Red
-//    g.setColour(Colours::darkred);
-//    g.fillEllipse(35, 530, 10, 10);
-//    if(processor.audioInput[1] >= 0.999f){
-//        g.setGradientFill(ColourGradient(Colours::pink, juce::Point<float>(41, 536), Colours::transparentWhite, juce::Point<float>(30, 525), true));
-//        g.fillEllipse(30, 525, 20, 20);
-//    }
-//    
-//    
-//    
-//    // Out1Yellow
-//    g.setColour(Colours::gold);
-//    g.fillEllipse(550, 632, 10, 10);
-//    float outOne;
-//    outOne = atodb(processor.audioOutput[0]);
-//    outOne = LEAF_clip(-120.0f, outOne, 0.0f);
-//    outOne = ( (outOne + 120.0f) / 120.0f ) * 8.0f;
-//    g.setGradientFill(ColourGradient(Colours::yellow, juce::Point<float>(556, 641), Colours::transparentWhite, juce::Point<float>(545 - outOne + 11.0f, 630 - outOne + 11.0f), true));
-//    g.fillEllipse(545, 627, 20, 20);
-//    
-//    
-//    // Out1Red
-//    g.setColour(Colours::darkred);
-//    g.fillEllipse(570, 632, 10, 10);
-//    if(processor.audioOutput[0] >= 0.999f){
-//        g.setGradientFill(ColourGradient(Colours::pink, juce::Point<float>(576, 638), Colours::transparentWhite, juce::Point<float>(565, 627), true));
-//        g.fillEllipse(565, 627, 20, 20);
-//    }
-//    
-//    
-//    // Out2Yellow
-//    g.setColour(Colours::gold);
-//    g.fillEllipse(550, 515, 10, 10);
-//    float outTwo;
-//    outTwo = atodb(processor.audioOutput[1]);
-//    outTwo = LEAF_clip(-120.0f, outTwo, 0.0f);
-//    outTwo = ( (outTwo + 120.0f) / 120.0f ) * 8.0f;
-//    g.setGradientFill(ColourGradient(Colours::yellow, juce::Point<float>(556, 521), Colours::transparentWhite, juce::Point<float>(545 - outTwo + 11.0f, 510 - outTwo + 11.0f), true));
-//    g.fillEllipse(545, 510, 20, 20);
-//    
-//    
-//    //Out2Red
-//    g.setColour(Colours::darkred);
-//    g.fillEllipse(570, 515, 10, 10);
-//    if(processor.audioOutput[1] >= 0.999f){
-//        g.setGradientFill(ColourGradient(Colours::pink, juce::Point<float>(576, 521), Colours::transparentWhite, juce::Point<float>(565, 510), true));
-//        g.fillEllipse(565, 510, 20, 20);
-//    }
 }
 
 void VocodecAudioProcessorEditor::resized()
 {
+    int width = getWidth();
+    int height = getHeight();
+    screen.setBounds(width*0.38f, height*0.1f, width*0.28f, height*0.1f);
     
-    //    for (int i = 1; i < NUM_KNOBS; i++) {
-    ////        knobs[i]->setBounds(0, 1, getWidth(), getHeight());
-    //    }
-    //    for (int i = 0; i < NUM_LIGHTS; i++) {
-    ////        lights[i]->setBounds(0, 1, getWidth(), getHeight());
-    //    }
+    menu.setBounds(screen.getBounds().toFloat().reduced(width*0.002f)
+                   .removeFromTop(screen.getHeight()*0.5f).toNearestInt());
     
-    buttons[vocodec::ButtonA]       ->setBounds(540, 353, 30, 30);
-    buttons[vocodec::ButtonB]       ->setBounds(540, 412, 30, 30);
-    buttons[vocodec::ButtonC]       ->setBounds(300, 523, 30, 30);
-    buttons[vocodec::ButtonD]       ->setBounds(181, 618, 30, 30);
-    buttons[vocodec::ButtonE]       ->setBounds(238, 618, 30, 30);
-    buttons[vocodec::ButtonEdit]    ->setBounds(419, 88, 30, 30);
-    buttons[vocodec::ButtonLeft]    ->setBounds(438, 142, 30, 30);
-    buttons[vocodec::ButtonRight]   ->setBounds(528, 142, 30, 30);
-    buttons[vocodec::ButtonUp]      ->setBounds(482, 118, 30, 30);
-    buttons[vocodec::ButtonDown]    ->setBounds(482, 174, 30, 30);
+    float s = width / 600.0f;
     
-    dials[1]->setBounds(175, 205, 57, 57);
-    dials[2]->setBounds(385, 205, 57, 57);
-    dials[3]->setBounds(250, 345, 57, 57);
-    dials[4]->setBounds(445, 345, 57, 57);
-    dials[5]->setBounds(175, 500, 57, 57);
-    dials[6]->setBounds(380, 500, 57, 57);
+    const float buttonSize = 24.0f*s;
+    const float knobSize = 57.0f*s;
+    const float bigLightSize = 23.0f*s;
+    const float smallLightSize = 15.0f*s;
     
-    lights[VocodecLightUSB]         ->setBounds(493, 252, 22);
-    lights[VocodecLight1]           ->setBounds(502, 296, 22);
-    lights[VocodecLight2]           ->setBounds(539, 296, 22);
-    lights[VocodecLightA]           ->setBounds(510, 357, 22);
-    lights[VocodecLightB]           ->setBounds(510, 414, 22);
-    lights[VocodecLightC]           ->setBounds(303, 493, 22);
-    lights[VocodecLightEdit]        ->setBounds(421, 50, 22);
-    lights[VocodecLightIn1Meter]    ->setBounds(15, 398, 10);
-    lights[VocodecLightIn1Clip]     ->setBounds(35, 398, 10);
-    lights[VocodecLightIn2Meter]    ->setBounds(15, 530, 10);
-    lights[VocodecLightIn2Clip]     ->setBounds(35, 530, 10);
-    lights[VocodecLightOut1Meter]   ->setBounds(550, 632, 10);
-    lights[VocodecLightOut1Clip]    ->setBounds(570, 632, 10);
-    lights[VocodecLightOut2Meter]   ->setBounds(550, 515, 10);
-    lights[VocodecLightOut2Clip]    ->setBounds(570, 515, 10);
+    buttons[vocodec::ButtonA]       ->setBounds(543*s, 356*s, buttonSize, buttonSize);
+    buttons[vocodec::ButtonB]       ->setBounds(543*s, 415*s, buttonSize, buttonSize);
+    buttons[vocodec::ButtonC]       ->setBounds(303*s, 526*s, buttonSize, buttonSize);
+    buttons[vocodec::ButtonD]       ->setBounds(184*s, 621*s, buttonSize, buttonSize);
+    buttons[vocodec::ButtonE]       ->setBounds(241*s, 621*s, buttonSize, buttonSize);
+    buttons[vocodec::ButtonEdit]    ->setBounds(422*s, 91*s,  buttonSize, buttonSize);
+    buttons[vocodec::ButtonLeft]    ->setBounds(441*s, 145*s, buttonSize, buttonSize);
+    buttons[vocodec::ButtonRight]   ->setBounds(531*s, 145*s, buttonSize, buttonSize);
+    buttons[vocodec::ButtonUp]      ->setBounds(485*s, 121*s, buttonSize, buttonSize);
+    buttons[vocodec::ButtonDown]    ->setBounds(485*s, 177*s, buttonSize, buttonSize);
     
-    menu.setBounds(175, 50, 150, 50);
-    pageLabel.setBounds(menu.getRight(), menu.getY(), 150, 50);
+    lights[VocodecLightUSB]         ->setBounds(493*s, 252*s, bigLightSize);
+    lights[VocodecLight1]           ->setBounds(502*s, 296*s, bigLightSize);
+    lights[VocodecLight2]           ->setBounds(539*s, 296*s, bigLightSize);
+    lights[VocodecLightA]           ->setBounds(510*s, 356*s, bigLightSize);
+    lights[VocodecLightB]           ->setBounds(510*s, 415*s, bigLightSize);
+    lights[VocodecLightC]           ->setBounds(303*s, 493*s, bigLightSize);
+    lights[VocodecLightEdit]        ->setBounds(422*s, 50*s,  bigLightSize);
+    lights[VocodecLightIn1Meter]    ->setBounds(25*s,  398*s, smallLightSize);
+    lights[VocodecLightIn1Clip]     ->setBounds(45*s,  398*s, smallLightSize);
+    lights[VocodecLightIn2Meter]    ->setBounds(25*s,  530*s, smallLightSize);
+    lights[VocodecLightIn2Clip]     ->setBounds(45*s,  530*s, smallLightSize);
+    lights[VocodecLightOut1Meter]   ->setBounds(538*s, 620*s, smallLightSize);
+    lights[VocodecLightOut1Clip]    ->setBounds(558*s, 620*s, smallLightSize);
+    lights[VocodecLightOut2Meter]   ->setBounds(538*s, 503*s, smallLightSize);
+    lights[VocodecLightOut2Clip]    ->setBounds(558*s, 503*s, smallLightSize);
+    
+    dials[1]                        ->setBounds(175*s, 205*s, knobSize, knobSize);
+    dials[2]                        ->setBounds(385*s, 205*s, knobSize, knobSize);
+    dials[3]                        ->setBounds(250*s, 345*s, knobSize, knobSize);
+    dials[4]                        ->setBounds(445*s, 345*s, knobSize, knobSize);
+    dials[5]                        ->setBounds(175*s, 500*s, knobSize, knobSize);
+    dials[6]                        ->setBounds(380*s, 500*s, knobSize, knobSize);
+    
+    float r = 600.0f / 716.0f;
+    constrain->setSizeLimits(200, 200/r, 800*r, 800);
+    resizer->setBounds(getWidth()-16, getHeight()-16, 16, 16);
 }
 
 void VocodecAudioProcessorEditor::sliderValueChanged(Slider* slider)
 {
     if (slider == nullptr) return;
     
-    if (slider == dials[6]) {
-        processor.interpVal = slider->getValue();
+    int whichKnob = dials.indexOf(slider) - 1;
+    if (whichKnob < 0) return;
+    
+    float sliderValue;
+    sliderValue = slider->getValue();
+    
+    // Set ADC_values so that we can take advantage of hardware UI internals
+    vocodec::ADC_values[whichKnob] = (uint16_t) (sliderValue * TWO_TO_10) << 6;
+    
+    if (whichKnob == 5) {
+        processor.interpVal = sliderValue;
     }
     else
     {
-        float sliderValue;
-        sliderValue = slider->getValue();
-        
-        int whichKnob = dials.indexOf(slider) - 1;
-        if (whichKnob < 0) return;
         int whichParam = (vocodec::knobPage * KNOB_PAGE_SIZE) + whichKnob;
         
-        vocodec::displayValues[whichParam] =
         vocodec::presetKnobValues[vocodec::currentPreset][whichParam] = sliderValue;
-        
-        paramName = String(vocodec::knobParamNames[vocodec::currentPreset][whichParam]) + " ";
-        paramName += String(vocodec::displayValues[whichParam], 3);
         
         *processor.pluginParams[whichParam] = sliderValue;
     }
-    
-    repaint();
 }
 
 void VocodecAudioProcessorEditor::buttonClicked(Button*button)
@@ -393,12 +247,14 @@ void VocodecAudioProcessorEditor::presetChanged(){
     vocodec::previousPreset = vocodec::currentPreset;
     vocodec::currentPreset = vocodec::VocodecPresetType(id > 0 ? id - 1 : 0);
     vocodec::knobPage = 0;
+    
+    vocodec::OLED_writePreset();
+    vocodec::clearButtonActions();
 }
 
 void VocodecAudioProcessorEditor::timerCallback()
 {
     menu.setSelectedId(vocodec::currentPreset + 1, dontSendNotification);
-    pageLabel.setText("P" + String(vocodec::knobPage + 1), dontSendNotification);
     
     lightStates[VocodecLightIn1Clip] = processor.audioInput[0] >= 0.999f;
     lightStates[VocodecLightIn2Clip] = processor.audioInput[1] >= 0.999f;
@@ -429,121 +285,46 @@ void VocodecAudioProcessorEditor::timerCallback()
     b = LEAF_clip(MIN_METER_VOL, b, 0.0f);
     b = (b - MIN_METER_VOL) * -INV_MIN_METER_VOL;
     lights[VocodecLightOut2Meter]->setBrightness(b);
+    
+    for (int i = 0; i < NUM_ADC_CHANNELS; i++)
+    {
+        // Set ADC_values so that we can take advantage of hardware UI internals
+        vocodec::ADC_values[i] = (uint16_t) (dials[i+1]->getValue() * TWO_TO_10) << 6;
+    }
+    
+    vocodec::OLED_process();
+    
+    const Image::BitmapData screenBitmap (*screenImage, Image::BitmapData::writeOnly);
+    bool screenChanged;
+    for (int x = 0; x < 128; ++x)
+    {
+        for (int y = 0; y < 32; ++y)
+        {
+            bool set = (buffer[x + ((y/8) * 128)] >> (y&7)) & 1;
+            Colour colour = set ? Colours::white : Colours::black;
+            if (screenBitmap.getPixelColour(x, y) != colour)
+            {
+                screenBitmap.setPixelColour(x, y, colour);
+                screenChanged = true;
+            }
+        }
+    }
+    if (screenChanged) repaint();
 }
 
-void setLED_A(int onOFF) { setLightState(VocodecLightA, (bool) onOFF); }
-void setLED_B(int onOFF) { setLightState(VocodecLightB, (bool) onOFF); }
-void setLED_C(int onOFF) { setLightState(VocodecLightC, (bool) onOFF); }
-void setLED_1(int onOFF) { setLightState(VocodecLight1, (bool) onOFF); }
-void setLED_2(int onOFF) { setLightState(VocodecLight2, (bool) onOFF); }
-void setLED_Edit(int onOFF) { setLightState(VocodecLightEdit, (bool) onOFF); }
+namespace vocodec
+{
+    void setLED_A(int onOFF) { setLightState(VocodecLightA, (bool) onOFF); }
+    void setLED_B(int onOFF) { setLightState(VocodecLightB, (bool) onOFF); }
+    void setLED_C(int onOFF) { setLightState(VocodecLightC, (bool) onOFF); }
+    void setLED_1(int onOFF) { setLightState(VocodecLight1, (bool) onOFF); }
+    void setLED_2(int onOFF) { setLightState(VocodecLight2, (bool) onOFF); }
+    void setLED_Edit(int onOFF) { setLightState(VocodecLightEdit, (bool) onOFF); }
+    
+    void OLED_draw(void) { ; }
+}
 
 void setLightState(VocodecLightID light, bool state)
 {
     lightStates[light] = state;
-}
-
-void OLED_process(void)
-{
-    
-}
-
-void OLED_writePreset(void)
-{
-    
-}
-
-void OLED_writeEditScreen(void)
-{
-    
-}
-
-void OLED_writeKnobParameter(uint8_t whichParam)
-{
-    
-}
-
-void OLED_writeButtonAction(uint8_t whichButton, uint8_t whichAction)
-{
-    
-}
-
-void OLED_writeTuning(void)
-{
-    
-}
-
-void OLED_draw(void)
-{
-    
-}
-
-void OLEDclear(void)
-{
-    
-}
-
-void OLEDclearLine(OLEDLine line)
-{
-    
-}
-
-void OLEDwriteString(const char* myCharArray, uint8_t arrayLength, uint8_t startCursor, OLEDLine line)
-{
-    
-}
-
-void OLEDwriteLine(const char* myCharArray, uint8_t arrayLength, OLEDLine line)
-{
-    
-}
-
-void OLEDwriteInt(uint32_t myNumber, uint8_t numDigits, uint8_t startCursor, OLEDLine line)
-{
-    
-}
-
-void OLEDwriteIntLine(uint32_t myNumber, uint8_t numDigits, OLEDLine line)
-{
-    
-}
-
-void OLEDwritePitch(float midi, uint8_t startCursor, OLEDLine line, uint8_t showCents)
-{
-    
-}
-
-void OLEDwritePitchClass(float midi, uint8_t startCursor, OLEDLine line)
-{
-    
-}
-
-void OLEDwritePitchLine(float midi, OLEDLine line, uint8_t showCents)
-{
-    
-}
-
-void OLEDwriteFixedFloat(float input, uint8_t numDigits, uint8_t numDecimal, uint8_t startCursor, OLEDLine line)
-{
-    
-}
-
-void OLEDwriteFixedFloatLine(float input, uint8_t numDigits, uint8_t numDecimal, OLEDLine line)
-{
-    
-}
-
-void OLEDwriteFloat(float input, uint8_t startCursor, OLEDLine line)
-{
-    
-}
-
-void OLEDdrawFloatArray(float* input, float min, float max, uint8_t size, uint8_t offset, uint8_t startCursor, OLEDLine line)
-{
-    
-}
-
-int16_t OLEDgetCursor(void)
-{
-    return 0;
 }

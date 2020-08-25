@@ -52,6 +52,17 @@ void VocodecButton::setBorderSize (BorderSize<int> newBorder)
     border = newBorder;
 }
 
+void VocodecButton::setBounds (float x, float y, float w, float h)
+{
+    Rectangle<float> bounds (x, y, w, h);
+    Component::setBounds(bounds.toNearestInt());
+}
+
+void VocodecButton::setBounds (Rectangle<float> newBounds)
+{
+    Component::setBounds(newBounds.toNearestInt());
+}
+
 void VocodecButton::setShape (const Path& newShape,
                             const bool resizeNowToFitThisShape,
                             const bool maintainShapeProportions_,
@@ -91,10 +102,7 @@ void VocodecButton::paintButton (Graphics& g, bool shouldDrawButtonAsHighlighted
     auto r = border.subtractedFrom (getLocalBounds())
     .toFloat()
     .reduced (outlineWidth * 0.5f);
-    
-    if (getComponentEffect() != nullptr)
-        r = r.reduced (2.0f);
-    
+
     if (shouldDrawButtonAsDown)
     {
         const float sizeReductionWhenPressed = 0.04f;
@@ -126,7 +134,7 @@ normalColour(normalColour),
 onColour(onColour),
 isOn(false),
 brightness(1.0f),
-lightSize(4)
+lightSize(5.0f)
 {
     setPaintingIsUnclipped(true);
 }
@@ -135,15 +143,17 @@ VocodecLight::~VocodecLight()
 {
 }
 
-void VocodecLight::setBounds (int x, int y, int d)
+void VocodecLight::setBounds (float x, float y, float d)
 {
-    Rectangle<int> bounds (x, y, d, d);
-    Component::setBounds(bounds.expanded(lightSize, lightSize));
+    Rectangle<float> bounds (x, y, d, d);
+    lightSize = d * 0.25f;
+    Component::setBounds(bounds.expanded(lightSize, lightSize).toNearestInt());
 }
 
-void VocodecLight::setBounds (Rectangle<int> newBounds)
+void VocodecLight::setBounds (Rectangle<float> newBounds)
 {
-    Component::setBounds(newBounds.expanded(lightSize, lightSize));
+    lightSize = newBounds.getWidth() * 0.25f;
+    Component::setBounds(newBounds.expanded(lightSize, lightSize).toNearestInt());
 }
 
 void VocodecLight::setState (bool state)
@@ -165,12 +175,12 @@ void VocodecLight::paint (Graphics &g)
 {
     Rectangle<float> area = getLocalBounds().toFloat();
     Rectangle<float> innerArea = area.reduced(lightSize, lightSize);
-    g.setColour(normalColour);
+    g.setColour(normalColour.interpolatedWith(onColour, isOn ? (brightness * 0.5f) : 0.0f));
     g.fillEllipse(innerArea);
     
     if (isOn)
     {
-        float r = innerArea.getWidth() * 0.5f * (1.0f - brightness);
+        float r = area.getWidth() * 0.5f * (1.0f - brightness);
         g.setGradientFill(ColourGradient(onColour, innerArea.getCentre(), onColour.withAlpha(0.0f),
                                          juce::Point<float>(area.getCentreX(), area.getY() + r),
                                          true));
