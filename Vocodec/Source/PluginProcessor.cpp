@@ -37,6 +37,27 @@ pluginParamNames(StringArray(cPluginParamNames))
     
     for (int i = 0; i < VocodecLightNil; ++i)
         lightStates[i] = false;
+    
+    dryWetMix = new AudioParameterFloat("dryWetMix", "dryWetMix",
+                                        0.0f, 1.0f, 1.0f);
+    addParameter(dryWetMix);
+    for (int p = 0; p < int(vocodec::PresetNil); ++p)
+    {
+        for (int v = 0; v < vocodec::numPages[p] * KNOB_PAGE_SIZE; ++v)
+        {
+            String name = String(vocodec::knobParamNames[p][v]);
+            if (!name.isEmpty())
+            {
+                int paramId = (p * NUM_PRESET_KNOB_VALUES) + v;
+                String fullName = pluginParamPrefixes[p] + "_" + name;
+                
+                AudioParameterFloat* param = new AudioParameterFloat(fullName, fullName, 0.0f, 1.0f,
+                                                                     vocodec::defaultPresetKnobValues[p][v]);
+                pluginParams.set(paramId, param);
+                addParameter(param);
+            }
+        }
+    }
 }
 
 VocodecAudioProcessor::~VocodecAudioProcessor()
@@ -130,27 +151,6 @@ void VocodecAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBloc
     // Make sure not to set presetNumber to 0 except in the constructor.
     if (vocodec::currentPreset == vocodec::PresetNil)
     {
-        dryWetMix = new AudioParameterFloat("dryWetMix", "dryWetMix",
-                                            0.0f, 1.0f, 1.0f);
-        addParameter(dryWetMix);
-        for (int p = 0; p < int(vocodec::PresetNil); ++p)
-        {
-            for (int v = 0; v < vocodec::numPages[p] * KNOB_PAGE_SIZE; ++v)
-            {
-                String name = String(vocodec::knobParamNames[p][v]);
-                if (!name.isEmpty())
-                {
-                    int paramId = (p * NUM_PRESET_KNOB_VALUES) + v;
-                    String fullName = pluginParamPrefixes[p] + "_" + name;
-                    
-                    AudioParameterFloat* param = new AudioParameterFloat(fullName, fullName, 0.0f, 1.0f,
-                                                                         vocodec::defaultPresetKnobValues[p][v]);
-                    pluginParams.set(paramId, param);
-                    addParameter(param);
-                }
-            }
-        }
-        
         vocodec::currentPreset = vocodec::Vocoder;
     }
     vocodec::previousPreset = vocodec::PresetNil;

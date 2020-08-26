@@ -53,7 +53,7 @@ const std::vector<Colour> cLightColours = {
     Colours::red
 };
 
-const std::initializer_list<char*> cPluginParamPrefixes = {
+const std::initializer_list<const char*> cPluginParamPrefixes = {
     "vocoder",
     "vocoderCh",
     "pitchShift",
@@ -74,7 +74,7 @@ const std::initializer_list<char*> cPluginParamPrefixes = {
     "rhodes"
 };
 
-const std::initializer_list<char*> cPluginParamNames = {
+const std::initializer_list<const char*> cPluginParamNames = {
     "vocoder_volume",
     "vocoder_warp",
     "vocoder_quality",
