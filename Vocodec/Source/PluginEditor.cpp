@@ -209,7 +209,7 @@ void VocodecAudioProcessorEditor::sliderValueChanged(Slider* slider)
     vocodec::ADC_values[whichKnob] = (uint16_t) (sliderValue * TWO_TO_10) << 6;
     
     if (whichKnob == 5) {
-        processor.interpVal = sliderValue;
+        *processor.dryWetMix = sliderValue;
     }
     else
     {
@@ -217,7 +217,8 @@ void VocodecAudioProcessorEditor::sliderValueChanged(Slider* slider)
         
         vocodec::presetKnobValues[vocodec::currentPreset][whichParam] = sliderValue;
         
-        *processor.pluginParams[whichParam] = sliderValue;
+        int paramId = (vocodec::currentPreset * NUM_PRESET_KNOB_VALUES) + whichParam;
+        *processor.pluginParams[paramId] = sliderValue;
     }
 }
 
@@ -254,6 +255,14 @@ void VocodecAudioProcessorEditor::presetChanged(){
 
 void VocodecAudioProcessorEditor::timerCallback()
 {
+    for (int i = 1; i < NUM_KNOBS - 1; ++i)
+    {
+        int paramId = (vocodec::currentPreset * NUM_PRESET_KNOB_VALUES) + (i - 1);
+        if (processor.pluginParams.contains(paramId))
+            dials[i]->setValue(processor.pluginParams[paramId]->get(), dontSendNotification);
+    }
+    dials[6]->setValue(processor.dryWetMix->get(), dontSendNotification);
+         
     menu.setSelectedId(vocodec::currentPreset + 1, dontSendNotification);
     
     lightStates[VocodecLightIn1Clip] = processor.audioInput[0] >= 0.999f;

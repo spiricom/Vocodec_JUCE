@@ -12,10 +12,10 @@
               file="Source/Resources-Vocoder/snyderphonics-whitelogo.svg"/>
       </GROUP>
       <FILE id="kpt5Dz" name="custom_fonts.h" compile="0" resource="0" file="Source/custom_fonts.h"/>
-      <FILE id="ZOBOch" name="gfx.cpp" compile="1" resource="0" file="Source/gfx.cpp"/>
+      <FILE id="u5JWgW" name="gfx.cpp" compile="1" resource="0" file="Source/gfx.cpp"/>
       <FILE id="q2NTrM" name="gfx.h" compile="0" resource="0" file="Source/gfx.h"/>
       <FILE id="aMUrwU" name="gfx_font.h" compile="0" resource="0" file="Source/gfx_font.h"/>
-      <FILE id="q8SmBH" name="oled.cpp" compile="1" resource="0" file="Source/oled.cpp"/>
+      <FILE id="lTX8FO" name="oled.cpp" compile="1" resource="0" file="Source/oled.cpp"/>
       <FILE id="tR7SCW" name="oled.h" compile="0" resource="0" file="Source/oled.h"/>
       <FILE id="NPDxQk" name="PluginEditor.cpp" compile="1" resource="0"
             file="Source/PluginEditor.cpp"/>
@@ -24,11 +24,11 @@
             file="Source/PluginProcessor.cpp"/>
       <FILE id="FWnrhx" name="PluginProcessor.h" compile="0" resource="0"
             file="Source/PluginProcessor.h"/>
-      <FILE id="KbLOf9" name="sfx.cpp" compile="1" resource="0" file="Source/sfx.cpp"/>
+      <FILE id="L0sCZ9" name="sfx.cpp" compile="1" resource="0" file="Source/sfx.cpp"/>
       <FILE id="Git7gr" name="sfx.h" compile="0" resource="0" file="Source/sfx.h"/>
-      <FILE id="V0SB7j" name="tunings.cpp" compile="1" resource="0" file="Source/tunings.cpp"/>
+      <FILE id="ig2UmM" name="tunings.cpp" compile="1" resource="0" file="Source/tunings.cpp"/>
       <FILE id="rqJLei" name="tunings.h" compile="0" resource="0" file="Source/tunings.h"/>
-      <FILE id="qdJuMr" name="ui.cpp" compile="1" resource="0" file="Source/ui.cpp"/>
+      <FILE id="ZxWQ7a" name="ui.cpp" compile="1" resource="0" file="Source/ui.cpp"/>
       <FILE id="NdmU3l" name="ui.h" compile="0" resource="0" file="Source/ui.h"/>
       <FILE id="lVbEgC" name="UIConstants.h" compile="0" resource="0" file="Source/UIConstants.h"/>
       <FILE id="UMlOdr" name="VocodecComponents.cpp" compile="1" resource="0"

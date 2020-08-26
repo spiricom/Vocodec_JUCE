@@ -66,13 +66,12 @@ public:
     //==============================================================================
     void getStateInformation (MemoryBlock& destData) override;
     void setStateInformation (const void* data, int sizeInBytes) override;
-        
-	float interpVal = 0;
     
     StringArray pluginParamPrefixes;
     StringArray pluginParamNames;
     
     HashMap<int, AudioParameterFloat*> pluginParams;
+    std::unique_ptr<AudioParameterFloat> dryWetMix;
     
     float audioInput[2], audioOutput[2];
     

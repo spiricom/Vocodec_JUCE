@@ -109,11 +109,10 @@ public:
     
 private:
     
-    ComboBox presetCB;
-    Label pageLabel;
-    
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (VocodecScreen)
 };
+
+//==============================================================================
 
 class VocodecLookAndFeel : public LookAndFeel_V4
 {

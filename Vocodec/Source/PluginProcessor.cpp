@@ -130,6 +130,9 @@ void VocodecAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBloc
     // Make sure not to set presetNumber to 0 except in the constructor.
     if (vocodec::currentPreset == vocodec::PresetNil)
     {
+        dryWetMix = std::make_unique<AudioParameterFloat>("dryWetMix", "dryWetMix", 0.0f, 1.0f,
+                                                          1.0f);
+        addParameter(dryWetMix.get());
         for (int p = 0; p < int(vocodec::PresetNil); ++p)
         {
             for (int v = 0; v < vocodec::numPages[p] * KNOB_PAGE_SIZE; ++v)
@@ -139,7 +142,9 @@ void VocodecAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBloc
                 {
                     int paramId = (p * NUM_PRESET_KNOB_VALUES) + v;
                     String fullName = pluginParamPrefixes[p] + "_" + name;
-                    AudioParameterFloat* param = new AudioParameterFloat(fullName, fullName, 0.0f, 1.0f, vocodec::defaultPresetKnobValues[p][v]);
+                    
+                    AudioParameterFloat* param = new AudioParameterFloat(fullName, fullName, 0.0f, 1.0f,
+                                                                         vocodec::defaultPresetKnobValues[p][v]);
                     pluginParams.set(paramId, param);
                     addParameter(param);
                 }
@@ -255,13 +260,14 @@ void VocodecAudioProcessor::processBlock (AudioBuffer<float>& buffer, MidiBuffer
         
         vocodec::tickFunctions[vocodec::currentPreset](audio);
         
-		audio[0] = LEAF_interpolation_linear(leftChannel[i], audio[0], interpVal);
+        float mix = dryWetMix->get();
+        audio[0] = LEAF_interpolation_linear(leftChannel[i], audio[0], mix);
         
         buffer.setSample(0, i, audio[0]);
         
         if(buffer.getNumChannels() > 1)
         {
-			audio[1] = LEAF_interpolation_linear(rightChannel[i], audio[1], interpVal);
+			audio[1] = LEAF_interpolation_linear(rightChannel[i], audio[1], mix);
             buffer.setSample(1, i, audio[1]);
         }
         
