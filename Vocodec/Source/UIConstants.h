@@ -35,7 +35,7 @@ typedef enum VocodecLightID
     VocodecLightNil
 } VocodecLightID;
 
-const std::vector<const Colour> cLightColours = {
+const std::vector<Colour> cLightColours = {
     Colours::limegreen,
     Colours::red,
     Colours::limegreen,
@@ -53,7 +53,7 @@ const std::vector<const Colour> cLightColours = {
     Colours::red
 };
 
-const std::initializer_list<const char*> cPluginParamPrefixes = {
+const std::initializer_list<char*> cPluginParamPrefixes = {
     "vocoder",
     "vocoderCh",
     "pitchShift",
@@ -74,7 +74,7 @@ const std::initializer_list<const char*> cPluginParamPrefixes = {
     "rhodes"
 };
 
-const std::initializer_list<const char*> cPluginParamNames = {
+const std::initializer_list<char*> cPluginParamNames = {
     "vocoder_volume",
     "vocoder_warp",
     "vocoder_quality",
