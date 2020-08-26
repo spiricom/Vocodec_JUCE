@@ -105,6 +105,8 @@ resizer(new ResizableCornerComponent (this, constrain.get()))
     
     vocodec::OLED_writePreset();
     
+    currentKnobPreset = vocodec::currentPreset;
+    
     startTimerHz(30);
 }
 
@@ -128,23 +130,21 @@ void VocodecAudioProcessorEditor::paint (Graphics& g)
     panelArea.removeFromBottom(getHeight()*0.03f);
     panel->drawWithin(g, panelArea, RectanglePlacement::centred, 1.0f);
 
-    g.setFont (15.0f);
-
-    g.setColour(Colours::white);
-    g.drawFittedText(paramName, Rectangle<int>(175,80,150,50), Justification::centred, 1);
-
-    juce::Font mainComponentFont(Font::getDefaultSansSerifFontName(), 20.0f, juce::Font::bold | juce::Font::italic);
-    g.setColour(Colours::gold);
-
-    g.setFont(60.0f);
-    g.setColour(Colours::gold);
+    
+    Rectangle<float> screenBorder = screen.getBounds().toFloat().expanded(getWidth()*0.02f,
+                                                                          getHeight()*0.01f);
+    g.setColour(Colours::dimgrey);
+    g.fillRect(screenBorder.expanded(getWidth()*0.003f, getHeight()*0.001f)
+               .withTop(screenBorder.getY() - getHeight()*0.004f).toNearestInt());
+    g.setColour(Colours::black);
+    g.fillRect(screenBorder.toNearestInt());
 }
 
 void VocodecAudioProcessorEditor::resized()
 {
     int width = getWidth();
     int height = getHeight();
-    screen.setBounds(width*0.38f, height*0.1f, width*0.28f, height*0.1f);
+    screen.setBounds(width*0.37f, height*0.11f, width*0.26f, height*0.08f);
     
     menu.setBounds(screen.getBounds().toFloat().reduced(width*0.002f)
                    .removeFromTop(screen.getHeight()*0.5f).toNearestInt());
@@ -207,6 +207,7 @@ void VocodecAudioProcessorEditor::sliderValueChanged(Slider* slider)
     
     // Set ADC_values so that we can take advantage of hardware UI internals
     vocodec::ADC_values[whichKnob] = (uint16_t) (sliderValue * TWO_TO_10) << 6;
+    sliderActive[whichKnob] = true;
     
     if (whichKnob == 5) {
         *processor.dryWetMix = sliderValue;
@@ -224,7 +225,6 @@ void VocodecAudioProcessorEditor::sliderValueChanged(Slider* slider)
 
 void VocodecAudioProcessorEditor::buttonClicked(Button*button)
 {
-    
 }
 
 void VocodecAudioProcessorEditor::buttonStateChanged(Button *button)
@@ -237,7 +237,11 @@ void VocodecAudioProcessorEditor::buttonStateChanged(Button *button)
     {
         vocodec::buttonValues[whichButton] = button->getToggleState();
     }
-    else vocodec::buttonValues[whichButton] = (button->getState() == Button::ButtonState::buttonDown) ? 1 : 0;
+    else if (button->getState() == Button::ButtonState::buttonDown)
+    {
+        vocodec::buttonValues[whichButton] = 1;
+    }
+    else vocodec::buttonValues[whichButton] = 0;
 }
 
 void VocodecAudioProcessorEditor::presetChanged(){
@@ -255,13 +259,7 @@ void VocodecAudioProcessorEditor::presetChanged(){
 
 void VocodecAudioProcessorEditor::timerCallback()
 {
-    for (int i = 1; i < NUM_KNOBS - 1; ++i)
-    {
-        int paramId = (vocodec::currentPreset * NUM_PRESET_KNOB_VALUES) + (i - 1);
-        if (processor.pluginParams.contains(paramId))
-            dials[i]->setValue(processor.pluginParams[paramId]->get(), dontSendNotification);
-    }
-    dials[6]->setValue(processor.dryWetMix->get(), dontSendNotification);
+    updateKnobs();
          
     menu.setSelectedId(vocodec::currentPreset + 1, dontSendNotification);
     
@@ -295,10 +293,20 @@ void VocodecAudioProcessorEditor::timerCallback()
     b = (b - MIN_METER_VOL) * -INV_MIN_METER_VOL;
     lights[VocodecLightOut2Meter]->setBrightness(b);
     
+    if (currentKnobPreset != vocodec::currentPreset)
+    {
+        for (int i = 0; i < NUM_ADC_CHANNELS; i++)
+            sliderActive[i] = false;
+        currentKnobPreset = vocodec::currentPreset;
+    }
+    
     for (int i = 0; i < NUM_ADC_CHANNELS; i++)
     {
-        // Set ADC_values so that we can take advantage of hardware UI internals
-        vocodec::ADC_values[i] = (uint16_t) (dials[i+1]->getValue() * TWO_TO_10) << 6;
+        if (sliderActive[i])
+        {
+            // Set ADC_values so that we can take advantage of hardware UI internals
+            vocodec::ADC_values[i] = (uint16_t) (dials[i+1]->getValue() * TWO_TO_10) << 6;
+        }
     }
     
     vocodec::OLED_process();
@@ -310,7 +318,7 @@ void VocodecAudioProcessorEditor::timerCallback()
         for (int y = 0; y < 32; ++y)
         {
             bool set = (buffer[x + ((y/8) * 128)] >> (y&7)) & 1;
-            Colour colour = set ? Colours::white : Colours::black;
+            Colour colour = set ? Colours::white : Colour(10, 10, 10);
             if (screenBitmap.getPixelColour(x, y) != colour)
             {
                 screenBitmap.setPixelColour(x, y, colour);
@@ -319,6 +327,19 @@ void VocodecAudioProcessorEditor::timerCallback()
         }
     }
     if (screenChanged) repaint();
+}
+
+void VocodecAudioProcessorEditor::updateKnobs()
+{
+    for (int i = 1; i < NUM_KNOBS - 1; ++i)
+    {
+        int paramId = (vocodec::currentPreset * NUM_PRESET_KNOB_VALUES) + (i - 1);
+        if (processor.pluginParams.contains(paramId))
+            if (dials[i]->getValue() != processor.pluginParams[paramId]->get())
+                dials[i]->setValue(processor.pluginParams[paramId]->get(), dontSendNotification);
+    }
+    if (dials[6]->getValue() != processor.dryWetMix->get())
+        dials[6]->setValue(processor.dryWetMix->get(), dontSendNotification);
 }
 
 namespace vocodec

@@ -40,6 +40,8 @@ public:
 	void buttonStateChanged(Button *button) override;
     
     void timerCallback() override;
+    
+    void updateKnobs();
 
     OwnedArray<Slider> dials;
     
@@ -66,9 +68,10 @@ private:
 	String paramName = String("");
     Image baseline;
     
-    VocodecLookAndFeel vocodecLAF;
+    vocodec::VocodecPresetType currentKnobPreset;
+    bool sliderActive[NUM_ADC_CHANNELS];
     
-	int sliderOpacity[7];
+    VocodecLookAndFeel vocodecLAF;
     
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (VocodecAudioProcessorEditor)
 };

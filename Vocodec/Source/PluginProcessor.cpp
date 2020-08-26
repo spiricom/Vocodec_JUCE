@@ -130,9 +130,9 @@ void VocodecAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBloc
     // Make sure not to set presetNumber to 0 except in the constructor.
     if (vocodec::currentPreset == vocodec::PresetNil)
     {
-        dryWetMix = std::make_unique<AudioParameterFloat>("dryWetMix", "dryWetMix", 0.0f, 1.0f,
-                                                          1.0f);
-        addParameter(dryWetMix.get());
+        dryWetMix = new AudioParameterFloat("dryWetMix", "dryWetMix",
+                                            0.0f, 1.0f, 1.0f);
+        addParameter(dryWetMix);
         for (int p = 0; p < int(vocodec::PresetNil); ++p)
         {
             for (int v = 0; v < vocodec::numPages[p] * KNOB_PAGE_SIZE; ++v)

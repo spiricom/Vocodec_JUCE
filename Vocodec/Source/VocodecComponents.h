@@ -119,13 +119,13 @@ class VocodecLookAndFeel : public LookAndFeel_V4
 public:
     VocodecLookAndFeel()
     {
-        setColour(ComboBox::backgroundColourId, Colours::black);
+        setColour(ComboBox::backgroundColourId, Colour(10, 10, 10));
         setColour(ComboBox::textColourId, Colours::white);
         setColour(ComboBox::buttonColourId, Colours::black);
         setColour(ComboBox::outlineColourId, Colours::white);
         setColour(ComboBox::arrowColourId, Colours::white);
         
-        setColour(PopupMenu::backgroundColourId, Colours::black);
+        setColour(PopupMenu::backgroundColourId, Colour(10, 10, 10));
         setColour(PopupMenu::textColourId, Colours::white);
     }
     

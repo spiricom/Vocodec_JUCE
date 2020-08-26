@@ -71,7 +71,7 @@ public:
     StringArray pluginParamNames;
     
     HashMap<int, AudioParameterFloat*> pluginParams;
-    std::unique_ptr<AudioParameterFloat> dryWetMix;
+    AudioParameterFloat* dryWetMix;
     
     float audioInput[2], audioOutput[2];
     
