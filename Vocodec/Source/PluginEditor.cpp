@@ -203,8 +203,8 @@ void VocodecAudioProcessorEditor::buttonStateChanged(Button *button)
     else processor.vcd.buttonValues[whichButton] = 0;
 }
 
-void VocodecAudioProcessorEditor::presetChanged(){
-    
+void VocodecAudioProcessorEditor::presetChanged()
+{
     processor.vcd.loadingPreset = 1;
     
     int id = screen.getMenu()->getSelectedId();

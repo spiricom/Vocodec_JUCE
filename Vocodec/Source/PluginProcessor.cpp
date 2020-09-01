@@ -189,24 +189,30 @@ void VocodecAudioProcessor::processBlock (AudioBuffer<float>& buffer, MidiBuffer
     vocodec::buttonCheck(&vcd);
     vocodec::adcCheck(&vcd);
     
-    if (vcd.loadingPreset)
+    bool loadingPreset = (bool) vcd.loadingPreset;
+    vocodec::VocodecPresetType currentPreset = vcd.currentPreset;
+    vocodec::VocodecPresetType previousPreset = vcd.previousPreset;
+    
+    if (loadingPreset)
     {
         for (int i = 0; i < vocodec::ButtonNil; ++i)
+        {
             for (int j = 0; j < vocodec::ActionNil; ++j)
             {
                 vcd.buttonActionsSFX[i][j] = 0;
                 vcd.buttonActionsUI[i][j] = 0;
             }
+        }
         
-        if (vcd.previousPreset != vocodec::PresetNil)
-            vcd.freeFunctions[vcd.previousPreset](&vcd);
+        if (previousPreset != vocodec::PresetNil)
+            vcd.freeFunctions[previousPreset](&vcd);
         
-        if (vcd.currentPreset != vocodec::PresetNil)
-            vcd.allocFunctions[vcd.currentPreset](&vcd);
+        if (currentPreset != vocodec::PresetNil)
+            vcd.allocFunctions[currentPreset](&vcd);
 
         vcd.loadingPreset = 0;
     }
-    else vcd.frameFunctions[vcd.currentPreset](&vcd);
+    else vcd.frameFunctions[currentPreset](&vcd);
     
     
     MidiMessage m;
@@ -245,7 +251,7 @@ void VocodecAudioProcessor::processBlock (AudioBuffer<float>& buffer, MidiBuffer
             }
         }
     }
-    
+        
     for (int i = 0; i < buffer.getNumSamples(); i++)
     {
         audioInput[0] = tEnvelopeFollower_tick(&inputFollower[0], leftChannel[i]);
@@ -255,7 +261,7 @@ void VocodecAudioProcessor::processBlock (AudioBuffer<float>& buffer, MidiBuffer
         audio[0] = leftChannel[i];
         audio[1] = rightChannel[i];
         
-        vcd.tickFunctions[vcd.currentPreset](&vcd, audio);
+        vcd.tickFunctions[currentPreset](&vcd, audio);
         
         float mix = dryWetMix->get();
         audio[0] = LEAF_interpolation_linear(leftChannel[i], audio[0], mix);
