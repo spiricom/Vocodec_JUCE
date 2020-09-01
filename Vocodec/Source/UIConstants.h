@@ -15,26 +15,6 @@
 #define MIN_METER_VOL -80.0f
 #define INV_MIN_METER_VOL -0.0125f
 
-typedef enum VocodecLightID
-{
-    VocodecLightUSB = 0,
-    VocodecLight1,
-    VocodecLight2,
-    VocodecLightA,
-    VocodecLightB,
-    VocodecLightC,
-    VocodecLightEdit,
-    VocodecLightIn1Meter,
-    VocodecLightIn1Clip,
-    VocodecLightIn2Meter,
-    VocodecLightIn2Clip,
-    VocodecLightOut1Meter,
-    VocodecLightOut1Clip,
-    VocodecLightOut2Meter,
-    VocodecLightOut2Clip,
-    VocodecLightNil
-} VocodecLightID;
-
 const std::vector<Colour> cLightColours = {
     Colours::limegreen,
     Colours::red,

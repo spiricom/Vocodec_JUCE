@@ -14,7 +14,6 @@
 #include "UIConstants.h"
 #include "sfx.h"
 
-extern bool lightStates[VocodecLightNil];
 //==============================================================================
 /**
 */
@@ -77,7 +76,15 @@ public:
     
     tEnvelopeFollower inputFollower[2], outputFollower[2];
     
+    vocodec::Vocodec vcd;
+    
 private:
+    
+    char small_memory[SMALL_MEM_SIZE];
+    char medium_memory[MED_MEM_SIZE];
+    char large_memory[LARGE_MEM_SIZE];
+    
+    uint16_t ADC_values[NUM_ADC_CHANNELS];
     
 	bool isAddingFromMidiInput = false;
     

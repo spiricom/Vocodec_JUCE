@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <JUCERPROJECT id="zM8rA0" name="Vocodec" projectType="audioplug" pluginCharacteristicsValue="pluginProducesMidiOut,pluginWantsMidiIn"
-              displaySplashScreen="1" jucerFormatVersion="1" pluginVST3Category="Fx">
+              displaySplashScreen="1" jucerFormatVersion="1" pluginVST3Category="Fx"
+              pluginManufacturer="Snyderphonics" pluginAUMainType="'aumf'">
   <MAINGROUP id="uEka6H" name="Vocodec">
     <GROUP id="{B405E64B-4792-254D-5BDE-97BC1F91F9E6}" name="Source">
       <GROUP id="{F62A9309-7BE1-5B65-A806-641EB05C4C88}" name="Resources-Vocoder">
@@ -26,7 +27,6 @@
             file="Source/PluginProcessor.h"/>
       <FILE id="L0sCZ9" name="sfx.cpp" compile="1" resource="0" file="Source/sfx.cpp"/>
       <FILE id="Git7gr" name="sfx.h" compile="0" resource="0" file="Source/sfx.h"/>
-      <FILE id="ig2UmM" name="tunings.cpp" compile="1" resource="0" file="Source/tunings.cpp"/>
       <FILE id="rqJLei" name="tunings.h" compile="0" resource="0" file="Source/tunings.h"/>
       <FILE id="ZxWQ7a" name="ui.cpp" compile="1" resource="0" file="Source/ui.cpp"/>
       <FILE id="NdmU3l" name="ui.h" compile="0" resource="0" file="Source/ui.h"/>

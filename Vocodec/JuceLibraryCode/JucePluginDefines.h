@@ -44,7 +44,7 @@
  #define JucePlugin_Desc                   "Vocodec"
 #endif
 #ifndef  JucePlugin_Manufacturer
- #define JucePlugin_Manufacturer           "yourcompany"
+ #define JucePlugin_Manufacturer           "Snyderphonics"
 #endif
 #ifndef  JucePlugin_ManufacturerWebsite
  #define JucePlugin_ManufacturerWebsite    ""
@@ -149,7 +149,7 @@
  #define JucePlugin_IAASubType             JucePlugin_PluginCode
 #endif
 #ifndef  JucePlugin_IAAName
- #define JucePlugin_IAAName                "yourcompany: Vocodec"
+ #define JucePlugin_IAAName                "Snyderphonics: Vocodec"
 #endif
 #ifndef  JucePlugin_VSTNumMidiInputs
  #define JucePlugin_VSTNumMidiInputs       16

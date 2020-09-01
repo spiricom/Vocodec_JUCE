@@ -85,7 +85,7 @@ namespace vocodec
 #define _swap_int16_t(a, b) { int16_t t = a; a = b; b = t; }
 #endif
         
-        void GFXinit(GFX* myGfx, int16_t w, int16_t h)
+        void GFXinit(GFX* myGfx, unsigned char* buffer, int16_t w, int16_t h)
         {
             myGfx->WIDTH = w;
             myGfx->HEIGHT = h;
@@ -103,6 +103,7 @@ namespace vocodec
             myGfx->rotation = 0;
             myGfx->fontDesc = 0;
             myGfx->fontHeight = 8;
+            myGfx->buffer = buffer;
         }
         
         // Bresenham's algorithm - thx wikpedia
@@ -174,9 +175,9 @@ namespace vocodec
             // x is which column
             switch (color)
             {
-                case WHITE:   buffer[x+ (y/8)*myGFX->WIDTH] |=  (1 << (y&7)); break;
-                case BLACK:   buffer[x+ (y/8)*myGFX->WIDTH] &= ~(1 << (y&7)); break;
-                case INVERSE: buffer[x+ (y/8)*myGFX->WIDTH] ^=  (1 << (y&7)); break;
+                case WHITE:   myGFX->buffer[x+ (y/8)*myGFX->WIDTH] |=  (1 << (y&7)); break;
+                case BLACK:   myGFX->buffer[x+ (y/8)*myGFX->WIDTH] &= ~(1 << (y&7)); break;
+                case INVERSE: myGFX->buffer[x+ (y/8)*myGFX->WIDTH] ^=  (1 << (y&7)); break;
             }
             
         }

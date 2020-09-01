@@ -13,8 +13,8 @@
 #include <JuceHeader.h>
 #include "PluginProcessor.h"
 #include "VocodecComponents.h"
-#include "sfx.h"
-#include "tunings.h"
+//#include "ui.h"
+//#include "tunings.h"
 //==============================================================================
 /**
 */
@@ -22,8 +22,6 @@
 #define NUM_KNOBS 7
 #define NUM_LIGHTS 10
 #define NUM_BUTTONS 10
-
-extern unsigned char buffer[512];
 
 class VocodecAudioProcessorEditor : public AudioProcessorEditor, public Slider::Listener, public Button::Listener, public Timer
 {
@@ -49,8 +47,6 @@ public:
     
     OwnedArray<VocodecLight> lights;
     
-    ComboBox menu;
-
 private:
     
     VocodecAudioProcessor& processor;
@@ -58,15 +54,9 @@ private:
     std::unique_ptr<ComponentBoundsConstrainer> constrain;
     std::unique_ptr<ResizableCornerComponent> resizer;
 
-	std::unique_ptr<Drawable> logo;
-	std::unique_ptr<Drawable> sideThingy;
     std::unique_ptr<Drawable> panel;
     
-    ImageComponent screen;
-    std::unique_ptr<Image> screenImage;
-
-	String paramName = String("");
-    Image baseline;
+    VocodecScreen screen;
     
     vocodec::VocodecPresetType currentKnobPreset;
     bool sliderActive[NUM_ADC_CHANNELS];
@@ -75,5 +65,3 @@ private:
     
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (VocodecAudioProcessorEditor)
 };
-
-void setLightState(VocodecLightID light, bool state);

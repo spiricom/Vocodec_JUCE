@@ -11,106 +11,7 @@
 #pragma once
 
 #include <JuceHeader.h>
-
-//==============================================================================
-// Copy of juce::ShapeButton in case we want to change/add things
-class VocodecButton  : public Button
-{
-public:
-    
-    VocodecButton (const String& name,
-                   Colour normalColour,
-                   Colour overColour,
-                   Colour downColour);
-    
-    /** Destructor. */
-    ~VocodecButton() override;
-    
-    void setBounds (float x, float y, float w, float h);
-    void setBounds (Rectangle<float> newBounds);
-    
-    void setShape (const Path& newShape,
-                   bool resizeNowToFitThisShape,
-                   bool maintainShapeProportions,
-                   bool hasDropShadow);
-    
-    void setColours (Colour normalColour,
-                     Colour overColour,
-                     Colour downColour);
-    
-    
-    void setOnColours (Colour normalColourOn,
-                       Colour overColourOn,
-                       Colour downColourOn);
-    
-    void shouldUseOnColours (bool shouldUse);
-    
-    void setOutline (Colour outlineColour, float outlineStrokeWidth);
-    
-    void setBorderSize (BorderSize<int> border);
-    
-    void paintButton (Graphics&, bool, bool) override;
-    
-private:
-    
-    Colour normalColour,   overColour,   downColour,
-    normalColourOn, overColourOn, downColourOn, outlineColour;
-    bool useOnColours;
-    DropShadowEffect shadow;
-    Path shape;
-    BorderSize<int> border;
-    bool maintainShapeProportions;
-    float outlineWidth;
-    
-    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (VocodecButton)
-};
-
-//==============================================================================
-class VocodecLight : public Component,
-public SettableTooltipClient
-{
-public:
-    
-    VocodecLight(const String& name,
-                 Colour normalColour,
-                 Colour onColour);
-    ~VocodecLight() override;
-    
-    void setBounds (float x, float y, float d);
-    void setBounds (Rectangle<float> newBounds);
-    
-    void setState (bool state);
-    void setBrightness (float newBrightness);
-    
-    void paint (Graphics &g) override;
-    
-private:
-    
-    Colour normalColour, onColour;
-    bool isOn;
-    float brightness;
-    float lightSize;
-    
-    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (VocodecLight)
-};
-
-//==============================================================================
-class VocodecScreen : public Component
-{
-public:
-    
-    VocodecScreen(const String& name,
-                  Colour backgroundColour,
-                  Colour textColour,
-                  Font font);
-    ~VocodecScreen() override;
-    
-    void paint (Graphics &g) override;
-    
-private:
-    
-    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (VocodecScreen)
-};
+#include "PluginProcessor.h"
 
 //==============================================================================
 
@@ -144,6 +45,9 @@ public:
     
     void drawRotarySlider(Graphics& g, int x, int y, int width, int height, float sliderPos, const float rotaryStartAngle, const float rotaryEndAngle, Slider& slider) override
     {
+        g.setGradientFill(ColourGradient(Colour(25, 25, 25), juce::Point<float>(-slider.getX(),-slider.getY()), Colour(10, 10, 10), juce::Point<float>(-slider.getX(), slider.getParentHeight()-slider.getY()), false));
+        g.fillRect(slider.getLocalBounds());
+        
         auto radius = jmin(width / 2, height / 2) - 4.0f;
         auto centreX = x + width * 0.5f;
         auto centreY = y + height * 0.5f;
@@ -155,8 +59,8 @@ public:
         //auto colorOne = Colour(117, 117, 117);
         
         Path p;
-        auto pointerLength = fmax(radius * 0.33f, 3.0f);
-        auto pointerThickness = pointerLength > 3.0f ? 2.0f : 1.0f;
+        auto pointerLength = fmax(radius * 0.4f, 3.0f);
+        auto pointerThickness = pointerLength * 0.33f;
         p.addRectangle(-pointerThickness * 0.5f, -radius, pointerThickness, pointerLength);
         p.applyTransform(AffineTransform::rotation(angle).translated(centreX, centreY));
         g.setColour(Colours::dimgrey);
@@ -256,3 +160,116 @@ public:
     }
 };
 
+//==============================================================================
+// Copy of juce::ShapeButton in case we want to change/add things
+class VocodecButton  : public Button
+{
+public:
+    
+    VocodecButton (const String& name,
+                   Colour normalColour,
+                   Colour overColour,
+                   Colour downColour);
+    
+    /** Destructor. */
+    ~VocodecButton() override;
+    
+    void setBounds (float x, float y, float w, float h);
+    void setBounds (Rectangle<float> newBounds);
+    
+    void setShape (const Path& newShape,
+                   bool resizeNowToFitThisShape,
+                   bool maintainShapeProportions,
+                   bool hasDropShadow);
+    
+    void setColours (Colour normalColour,
+                     Colour overColour,
+                     Colour downColour);
+    
+    
+    void setOnColours (Colour normalColourOn,
+                       Colour overColourOn,
+                       Colour downColourOn);
+    
+    void shouldUseOnColours (bool shouldUse);
+    
+    void setOutline (Colour outlineColour, float outlineStrokeWidth);
+    
+    void setBorderSize (BorderSize<int> border);
+    
+    void paintButton (Graphics&, bool, bool) override;
+    
+private:
+    
+    Colour normalColour,   overColour,   downColour,
+    normalColourOn, overColourOn, downColourOn, outlineColour;
+    bool useOnColours;
+    DropShadowEffect shadow;
+    Path shape;
+    BorderSize<int> border;
+    bool maintainShapeProportions;
+    float outlineWidth;
+    
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (VocodecButton)
+};
+
+//==============================================================================
+class VocodecLight : public Component,
+public SettableTooltipClient
+{
+public:
+    
+    VocodecLight(const String& name,
+                 Colour normalColour,
+                 Colour onColour);
+    ~VocodecLight() override;
+    
+    void setBounds (float x, float y, float d);
+    void setBounds (Rectangle<float> newBounds);
+    
+    void setState (bool state);
+    void setBrightness (float newBrightness);
+    
+    void paint (Graphics &g) override;
+    
+private:
+    
+    Colour normalColour, onColour;
+    bool isOn;
+    float brightness;
+    float lightSize;
+    
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (VocodecLight)
+};
+
+//==============================================================================
+class VocodecScreen : public Component, public Timer
+{
+public:
+    
+    VocodecScreen(VocodecAudioProcessor& p);
+    ~VocodecScreen() override;
+    
+    void setBounds (float x, float y, float w, float h);
+    void setBounds (Rectangle<float> newBounds);
+    
+    void paint (Graphics &g) override;
+    
+    void timerCallback() override;
+    
+    ComboBox* getMenu();
+    
+    std::function<void()> onChange;
+    
+private:
+    
+    VocodecAudioProcessor& processor;
+    
+    ComboBox menu;
+    ImageComponent screen;
+    std::unique_ptr<Image> screenImage;
+    
+    VocodecLookAndFeel vocodecLAF;
+    
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (VocodecScreen)
+};

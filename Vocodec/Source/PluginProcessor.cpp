@@ -11,8 +11,8 @@
 #include "PluginProcessor.h"
 #include "PluginEditor.h"
 #include "oled.h"
+#include "ui.h"
 
-bool lightStates[VocodecLightNil];
 //==============================================================================
 VocodecAudioProcessor::VocodecAudioProcessor()
 #ifndef JucePlugin_PreferredChannelConfigurations
@@ -28,31 +28,28 @@ VocodecAudioProcessor::VocodecAudioProcessor()
 pluginParamPrefixes(StringArray(cPluginParamPrefixes)),
 pluginParamNames(StringArray(cPluginParamNames))
 {
-    vocodec::currentPreset = vocodec::PresetNil;
-    vocodec::previousPreset = vocodec::PresetNil;
+    SFX_init(&vcd, &ADC_values);
+    vcd.currentPreset = vocodec::PresetNil;
+    vcd.previousPreset = vocodec::PresetNil;
     
-    vocodec::initFunctionPointers();
     I2C_HandleTypeDef* dummyArg = nullptr;
-    vocodec::OLED_init(dummyArg);
-    
-    for (int i = 0; i < VocodecLightNil; ++i)
-        lightStates[i] = false;
+    vocodec::OLED_init(&vcd, dummyArg);
     
     dryWetMix = new AudioParameterFloat("dryWetMix", "dryWetMix",
                                         0.0f, 1.0f, 1.0f);
     addParameter(dryWetMix);
     for (int p = 0; p < int(vocodec::PresetNil); ++p)
     {
-        for (int v = 0; v < vocodec::numPages[p] * KNOB_PAGE_SIZE; ++v)
+        for (int v = 0; v < vcd.numPages[p] * KNOB_PAGE_SIZE; ++v)
         {
-            String name = String(vocodec::knobParamNames[p][v]);
+            String name = String(vcd.knobParamNames[p][v]);
             if (!name.isEmpty())
             {
                 int paramId = (p * NUM_PRESET_KNOB_VALUES) + v;
                 String fullName = pluginParamPrefixes[p] + "_" + name;
                 
                 AudioParameterFloat* param = new AudioParameterFloat(fullName, fullName, 0.0f, 1.0f,
-                                                                     vocodec::defaultPresetKnobValues[p][v]);
+                                                                     vcd.defaultPresetKnobValues[p][v]);
                 pluginParams.set(paramId, param);
                 addParameter(param);
             }
@@ -129,32 +126,32 @@ void VocodecAudioProcessor::changeProgramName (int index, const String& newName)
 //==============================================================================
 void VocodecAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlock)
 {
-    LEAF_init(sampleRate, samplesPerBlock, vocodec::small_memory, SMALL_MEM_SIZE,
+    LEAF_init(&vcd.leaf, sampleRate, samplesPerBlock, small_memory, SMALL_MEM_SIZE,
               []() {return (float)rand() / RAND_MAX; });
-    tMempool_init(&vocodec::mediumPool, vocodec::medium_memory, MED_MEM_SIZE);
-    tMempool_init(&vocodec::largePool, vocodec::large_memory, LARGE_MEM_SIZE);
+    tMempool_init(&vcd.mediumPool, medium_memory, MED_MEM_SIZE, &vcd.leaf);
+    tMempool_init(&vcd.largePool, large_memory, LARGE_MEM_SIZE, &vcd.leaf);
     
-    tEnvelopeFollower_init(&inputFollower[0], 0.0001f, 0.9995f);
-    tEnvelopeFollower_init(&inputFollower[1], 0.0001f, 0.9995f);
-    tEnvelopeFollower_init(&outputFollower[0], 0.0001f, 0.9995f);
-    tEnvelopeFollower_init(&outputFollower[1], 0.0001f, 0.9995f);
+    tEnvelopeFollower_init(&inputFollower[0], 0.0001f, 0.9995f, &vcd.leaf);
+    tEnvelopeFollower_init(&inputFollower[1], 0.0001f, 0.9995f, &vcd.leaf);
+    tEnvelopeFollower_init(&outputFollower[0], 0.0001f, 0.9995f, &vcd.leaf);
+    tEnvelopeFollower_init(&outputFollower[1], 0.0001f, 0.9995f, &vcd.leaf);
     
     //ramps to smooth the knobs
     for (int i = 0; i < 6; i++)
     {
-        tExpSmooth_init(&vocodec::adc[i], 0.0f, 0.2f);
+        tExpSmooth_init(&vcd.adc[i], 0.0f, 0.2f, &vcd.leaf);
     }
     
-    vocodec::initGlobalSFXObjects();
+    vocodec::initGlobalSFXObjects(&vcd);
 
     // Everything in here should only happen on the first prepareToPlay.
     // Make sure not to set presetNumber to 0 except in the constructor.
-    if (vocodec::currentPreset == vocodec::PresetNil)
+    if (vcd.currentPreset == vocodec::PresetNil)
     {
-        vocodec::currentPreset = vocodec::Vocoder;
+        vcd.currentPreset = vocodec::Vocoder;
     }
-    vocodec::previousPreset = vocodec::PresetNil;
-    vocodec::loadingPreset = 1;
+    vcd.previousPreset = vocodec::PresetNil;
+    vcd.loadingPreset = 1;
 }
 
 void VocodecAudioProcessor::releaseResources()
@@ -189,27 +186,27 @@ bool VocodecAudioProcessor::isBusesLayoutSupported (const BusesLayout& layouts) 
 
 void VocodecAudioProcessor::processBlock (AudioBuffer<float>& buffer, MidiBuffer& midiMessages)
 {
-    vocodec::buttonCheck();
-    vocodec::adcCheck();
+    vocodec::buttonCheck(&vcd);
+    vocodec::adcCheck(&vcd);
     
-    if (vocodec::loadingPreset)
+    if (vcd.loadingPreset)
     {
         for (int i = 0; i < vocodec::ButtonNil; ++i)
             for (int j = 0; j < vocodec::ActionNil; ++j)
             {
-                vocodec::buttonActionsSFX[i][j] = false;
-                vocodec::buttonActionsUI[i][j] = false;
+                vcd.buttonActionsSFX[i][j] = 0;
+                vcd.buttonActionsUI[i][j] = 0;
             }
         
-        if (vocodec::previousPreset != vocodec::PresetNil)
-            vocodec::freeFunctions[vocodec::previousPreset]();
+        if (vcd.previousPreset != vocodec::PresetNil)
+            vcd.freeFunctions[vcd.previousPreset](&vcd);
         
-        if (vocodec::currentPreset != vocodec::PresetNil)
-            vocodec::allocFunctions[vocodec::currentPreset]();
+        if (vcd.currentPreset != vocodec::PresetNil)
+            vcd.allocFunctions[vcd.currentPreset](&vcd);
 
-        vocodec::loadingPreset = 0;
+        vcd.loadingPreset = 0;
     }
-    else vocodec::frameFunctions[vocodec::currentPreset]();
+    else vcd.frameFunctions[vcd.currentPreset](&vcd);
     
     
     MidiMessage m;
@@ -238,13 +235,13 @@ void VocodecAudioProcessor::processBlock (AudioBuffer<float>& buffer, MidiBuffer
     
     for (int p = 0; p < int(vocodec::PresetNil); ++p)
     {
-        for (int v = 0; v < vocodec::numPages[p] * KNOB_PAGE_SIZE; ++v)
+        for (int v = 0; v < vcd.numPages[p] * KNOB_PAGE_SIZE; ++v)
         {
-            String name = String(vocodec::knobParamNames[p][v]);
+            String name = String(vcd.knobParamNames[p][v]);
             if (!name.isEmpty())
             {
                 int paramId = (p * NUM_PRESET_KNOB_VALUES) + v;
-                vocodec::presetKnobValues[p][v] = pluginParams[paramId]->get();
+                vcd.presetKnobValues[p][v] = pluginParams[paramId]->get();
             }
         }
     }
@@ -258,7 +255,7 @@ void VocodecAudioProcessor::processBlock (AudioBuffer<float>& buffer, MidiBuffer
         audio[0] = leftChannel[i];
         audio[1] = rightChannel[i];
         
-        vocodec::tickFunctions[vocodec::currentPreset](audio);
+        vcd.tickFunctions[vcd.currentPreset](&vcd, audio);
         
         float mix = dryWetMix->get();
         audio[0] = LEAF_interpolation_linear(leftChannel[i], audio[0], mix);
@@ -309,10 +306,10 @@ void VocodecAudioProcessor::handleIncomingMidiMessage(MidiInput* source, const M
 {
     const ScopedValueSetter<bool> scopedInputFlag(isAddingFromMidiInput, true);
     if (message.isNoteOn()) {
-        vocodec::noteOn(message.getNoteNumber(), message.getVelocity());
+        vocodec::noteOn(&vcd, message.getNoteNumber(), message.getVelocity());
     }
     else {
-        vocodec::noteOff(message.getNoteNumber(), message.getVelocity());
+        vocodec::noteOff(&vcd, message.getNoteNumber(), message.getVelocity());
     }
     keyboardState.processNextMidiEvent(message);
 }
