@@ -208,7 +208,6 @@ void VocodecAudioProcessorEditor::presetChanged()
     processor.vcd.loadingPreset = 1;
     
     int id = screen.getMenu()->getSelectedId();
-    processor.vcd.previousPreset = processor.vcd.currentPreset;
     processor.vcd.currentPreset = vocodec::VocodecPresetType(id > 0 ? id - 1 : 0);
     processor.vcd.knobPage = 0;
     

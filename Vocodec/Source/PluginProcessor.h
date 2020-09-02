@@ -18,7 +18,10 @@
 /**
 */
 
-class VocodecAudioProcessor  : public AudioProcessor, public MidiInputCallback, public MidiKeyboardStateListener
+class VocodecAudioProcessor : public AudioProcessor,
+                              public MidiInputCallback,
+                              public MidiKeyboardStateListener,
+                              public HighResolutionTimer
 {
 public:
     //==============================================================================
@@ -66,6 +69,8 @@ public:
     void getStateInformation (MemoryBlock& destData) override;
     void setStateInformation (const void* data, int sizeInBytes) override;
     
+    void hiResTimerCallback() override;
+    
     StringArray pluginParamPrefixes;
     StringArray pluginParamNames;
     
@@ -87,6 +92,9 @@ private:
     uint16_t ADC_values[NUM_ADC_CHANNELS];
     
 	bool isAddingFromMidiInput = false;
+    
+    int processingInactiveCount;
+    int processingInactiveThreshold;
     
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (VocodecAudioProcessor)

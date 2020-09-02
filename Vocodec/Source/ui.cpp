@@ -403,8 +403,7 @@ namespace vocodec
                 
                 if (vcd->buttonActionsUI[ButtonLeft][ActionPress] == 1)
                 {
-                    vcd->previousPreset = vcd->currentPreset;
-                    
+//                    vcd->previousPreset = vcd->currentPreset;
                     if (vcd->currentPreset <= 0) vcd->currentPreset = (VocodecPresetType)((int)PresetNil - 1);
                     else vcd->currentPreset = (VocodecPresetType)((int)vcd->currentPreset - 1);
                     
@@ -415,7 +414,7 @@ namespace vocodec
                 }
                 if (vcd->buttonActionsUI[ButtonRight][ActionPress] == 1)
                 {
-                    vcd->previousPreset = vcd->currentPreset;
+//                    vcd->previousPreset = vcd->currentPreset;
                     if (vcd->currentPreset >= PresetNil - 1) vcd->currentPreset = (VocodecPresetType)0;
                     else vcd->currentPreset = (VocodecPresetType)((int)vcd->currentPreset + 1);
                     
