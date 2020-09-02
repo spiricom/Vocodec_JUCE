@@ -267,8 +267,6 @@ void VocodecAudioProcessorEditor::timerCallback()
         }
     }
     
-    vocodec::OLED_process(&processor.vcd);
-    
     screen.timerCallback();
 }
 

@@ -248,6 +248,8 @@ void VocodecAudioProcessor::processBlock (AudioBuffer<float>& buffer, MidiBuffer
         audioOutput[0] = tEnvelopeFollower_tick(&outputFollower[0], audio[0]);
         audioOutput[1] = tEnvelopeFollower_tick(&outputFollower[1], audio[1]);
     }
+    
+    vocodec::OLED_process(&vcd);
 }
 
 //==============================================================================
@@ -353,6 +355,7 @@ void VocodecAudioProcessor::hiResTimerCallback()
         vcd.frameFunctions[currentPreset](&vcd);
         float audio[2] = { 0.0f, 0.0f };
         vcd.tickFunctions[currentPreset](&vcd, audio);
+        vocodec::OLED_process(&vcd);
     }
     else processingInactiveCount++;
 }
