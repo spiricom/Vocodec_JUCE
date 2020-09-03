@@ -67,7 +67,11 @@ namespace vocodec
 #define pgm_read_word(addr) (*(const unsigned short *)(addr))
 #endif
 #ifndef pgm_read_dword
+#ifdef __cplusplus
 #define pgm_read_dword(addr) (*(const unsigned long long *)(addr))
+#else
+#define pgm_read_dword(addr) (*(const unsigned long *)(addr))
+#endif
 #endif
         
         // Pointers are a peculiar case...typically 16-bit on AVR boards,
