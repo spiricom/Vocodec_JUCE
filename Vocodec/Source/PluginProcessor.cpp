@@ -60,6 +60,7 @@ pluginParamNames(StringArray(cPluginParamNames))
 
 VocodecAudioProcessor::~VocodecAudioProcessor()
 {
+    stopTimer();
 }
 
 //==============================================================================
@@ -266,12 +267,39 @@ AudioProcessorEditor* VocodecAudioProcessor::createEditor()
 //==============================================================================
 void VocodecAudioProcessor::getStateInformation (MemoryBlock& destData)
 {
-
+    std::unique_ptr<juce::XmlElement> xml(new juce::XmlElement("Vocodec"));
+    xml->setAttribute("preset", vcd.currentPreset);
+    xml->setAttribute(dryWetMix->getName(20), *dryWetMix);
+    for (auto param : pluginParams)
+        xml->setAttribute(param->getName(20).removeCharacters(StringRef(" /<>")), *param);
+    copyXmlToBinary(*xml, destData);
 }
 
 void VocodecAudioProcessor::setStateInformation (const void* data, int sizeInBytes)
 {
-   
+    std::unique_ptr<juce::XmlElement> xmlState(getXmlFromBinary(data, sizeInBytes));
+
+    if (xmlState.get() != nullptr)
+    {
+        vcd.currentPreset = (vocodec::VocodecPresetType) xmlState->getIntAttribute("preset", 0);
+        vcd.loadingPreset = 1;
+
+        String name = dryWetMix->getName(20);
+        dryWetMix->setValueNotifyingHost((float)xmlState->getDoubleAttribute(name, 1.0f));
+
+        for (int p = 0; p < int(vocodec::PresetNil); ++p)
+        {
+            for (int v = 0; v < vcd.numPages[p] * KNOB_PAGE_SIZE; ++v)
+            {
+                int paramId = (p * NUM_PRESET_KNOB_VALUES) + v;
+                if (pluginParams.contains(paramId))
+                {
+                    name = pluginParams[paramId]->getName(20).removeCharacters(StringRef(" /<>"));
+                    pluginParams[paramId]->setValueNotifyingHost((float)xmlState->getDoubleAttribute(name, vcd.defaultPresetKnobValues[p][v]));
+                }
+            }
+        }
+    }
 }
 
 //==============================================================================

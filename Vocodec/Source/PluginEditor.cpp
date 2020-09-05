@@ -178,7 +178,8 @@ void VocodecAudioProcessorEditor::sliderValueChanged(Slider* slider)
         processor.vcd.presetKnobValues[processor.vcd.currentPreset][whichParam] = sliderValue;
         
         int paramId = (processor.vcd.currentPreset * NUM_PRESET_KNOB_VALUES) + whichParam;
-        *processor.pluginParams[paramId] = sliderValue;
+        if (processor.pluginParams.contains(paramId))
+            *processor.pluginParams[paramId] = sliderValue;
     }
 }
 

@@ -12,13 +12,13 @@ namespace BinaryData
     const int            EuphemiaCAS_ttfSize = 534712;
 
     extern const char*   logo_large_svg;
-    const int            logo_large_svgSize = 5256;
+    const int            logo_large_svgSize = 5258;
 
     extern const char*   panel_svg;
-    const int            panel_svgSize = 51239;
+    const int            panel_svgSize = 51241;
 
     extern const char*   snyderphonicswhitelogo_svg;
-    const int            snyderphonicswhitelogo_svgSize = 9291;
+    const int            snyderphonicswhitelogo_svgSize = 9293;
 
     // Number of elements in the namedResourceList and originalFileNames arrays.
     const int namedResourceListSize = 4;
