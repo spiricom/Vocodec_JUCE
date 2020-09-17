@@ -2406,8 +2406,14 @@ namespace vocodec
         {
             vcd->displayValues[0] = vcd->presetKnobValues[Delay][0] * 30000.0f;
             vcd->displayValues[1] = vcd->presetKnobValues[Delay][1] * 30000.0f;
-            vcd->displayValues[2] = faster_mtof((vcd->presetKnobValues[Delay][2] * 128) + 10.0f);
-            vcd->displayValues[3] = faster_mtof((vcd->presetKnobValues[Delay][3] * 128) + 10.0f);
+            float cutoff1 = LEAF_clip(10.0f,
+                                      faster_mtof((vcd->presetKnobValues[Delay][2] * 133) + 3.0f),
+                                      20000.0f);
+            float cutoff2 = LEAF_clip(10.0f,
+                                      faster_mtof((vcd->presetKnobValues[Delay][3] * 133) + 3.0f),
+                                      20000.0f);
+            vcd->displayValues[2] = cutoff1;
+            vcd->displayValues[3] = cutoff2;
             vcd->displayValues[4] = vcd->capFeedback ? LEAF_clip(0.0f, vcd->presetKnobValues[Delay][4] * 1.1f, 0.9f) : vcd->presetKnobValues[Delay][4] * 1.1f;
             vcd->displayValues[5] = vcd->presetKnobValues[Delay][5];
             
