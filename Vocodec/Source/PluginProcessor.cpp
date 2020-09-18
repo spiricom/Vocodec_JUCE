@@ -194,9 +194,48 @@ bool VocodecAudioProcessor::isBusesLayoutSupported (const BusesLayout& layouts) 
 void VocodecAudioProcessor::processBlock (AudioBuffer<float>& buffer, MidiBuffer& midiMessages)
 {
     processingInactiveCount = 0;
+    
+    if (processingFalseBlock) return;
+    
     vocodec::VocodecPresetType currentPreset = vcd.currentPreset;
     
-    if (vcd.loadingPreset) return;
+    if (vcd.loadingPreset)
+    {
+        for (int i = 0; i < vocodec::ButtonNil; ++i)
+        {
+            for (int j = 0; j < vocodec::ActionNil; ++j)
+            {
+                vcd.buttonActionsSFX[i][j] = 0;
+                vcd.buttonActionsUI[i][j] = 0;
+            }
+        }
+        
+        if (vcd.previousPreset != vocodec::PresetNil)
+            vcd.freeFunctions[vcd.previousPreset](&vcd);
+        
+        if (currentPreset != vocodec::PresetNil)
+            vcd.allocFunctions[currentPreset](&vcd);
+        
+        vcd.previousPreset = currentPreset;
+        vcd.loadingPreset = 0;
+    }
+    
+    for (int p = 0; p < int(vocodec::PresetNil); ++p)
+    {
+        for (int v = 0; v < vcd.numPages[p] * KNOB_PAGE_SIZE; ++v)
+        {
+            String name = String(vcd.knobParamNames[p][v]);
+            if (!name.isEmpty())
+            {
+                int paramId = (p * NUM_PRESET_KNOB_VALUES) + v;
+                vcd.presetKnobValues[p][v] = pluginParams[paramId]->get();
+            }
+        }
+    }
+    
+    vocodec::buttonCheck(&vcd);
+    vocodec::adcCheck(&vcd);
+    
     vcd.frameFunctions[currentPreset](&vcd);
     
     MidiMessage m;
@@ -232,7 +271,6 @@ void VocodecAudioProcessor::processBlock (AudioBuffer<float>& buffer, MidiBuffer
         audio[0] = leftChannel[i];
         audio[1] = rightChannel[i];
         
-        if (vcd.loadingPreset) return;
         vcd.tickFunctions[currentPreset](&vcd, audio);
         
         float mix = dryWetMix->get();
@@ -339,51 +377,52 @@ void VocodecAudioProcessor::handleNoteOff(MidiKeyboardState*, int midiChannel, i
 
 void VocodecAudioProcessor::hiResTimerCallback()
 {
-    vocodec::buttonCheck(&vcd);
-    vocodec::adcCheck(&vcd);
-    
-    vocodec::VocodecPresetType currentPreset = vcd.currentPreset;
-    
-    if (vcd.loadingPreset)
-    {
-        for (int i = 0; i < vocodec::ButtonNil; ++i)
-        {
-            for (int j = 0; j < vocodec::ActionNil; ++j)
-            {
-                vcd.buttonActionsSFX[i][j] = 0;
-                vcd.buttonActionsUI[i][j] = 0;
-            }
-        }
-        
-        if (vcd.previousPreset != vocodec::PresetNil)
-            vcd.freeFunctions[vcd.previousPreset](&vcd);
-        
-        if (currentPreset != vocodec::PresetNil)
-            vcd.allocFunctions[currentPreset](&vcd);
-        
-        vcd.previousPreset = currentPreset;
-        vcd.loadingPreset = 0;
-    }
-    
-    for (int p = 0; p < int(vocodec::PresetNil); ++p)
-    {
-        for (int v = 0; v < vcd.numPages[p] * KNOB_PAGE_SIZE; ++v)
-        {
-            String name = String(vcd.knobParamNames[p][v]);
-            if (!name.isEmpty())
-            {
-                int paramId = (p * NUM_PRESET_KNOB_VALUES) + v;
-                vcd.presetKnobValues[p][v] = pluginParams[paramId]->get();
-            }
-        }
-    }
-    
     if (processingInactiveCount > processingInactiveThreshold)
     {
+        processingFalseBlock = true;
+        vocodec::VocodecPresetType currentPreset = vcd.currentPreset;
+        
+        if (vcd.loadingPreset)
+        {
+            for (int i = 0; i < vocodec::ButtonNil; ++i)
+            {
+                for (int j = 0; j < vocodec::ActionNil; ++j)
+                {
+                    vcd.buttonActionsSFX[i][j] = 0;
+                    vcd.buttonActionsUI[i][j] = 0;
+                }
+            }
+            
+            if (vcd.previousPreset != vocodec::PresetNil)
+                vcd.freeFunctions[vcd.previousPreset](&vcd);
+            
+            if (currentPreset != vocodec::PresetNil)
+                vcd.allocFunctions[currentPreset](&vcd);
+            
+            vcd.previousPreset = currentPreset;
+            vcd.loadingPreset = 0;
+        }
+        
+        for (int p = 0; p < int(vocodec::PresetNil); ++p)
+        {
+            for (int v = 0; v < vcd.numPages[p] * KNOB_PAGE_SIZE; ++v)
+            {
+                String name = String(vcd.knobParamNames[p][v]);
+                if (!name.isEmpty())
+                {
+                    int paramId = (p * NUM_PRESET_KNOB_VALUES) + v;
+                    vcd.presetKnobValues[p][v] = pluginParams[paramId]->get();
+                }
+            }
+        }
+        
+        vocodec::buttonCheck(&vcd);
+        vocodec::adcCheck(&vcd);
         vcd.frameFunctions[currentPreset](&vcd);
         float audio[2] = { 0.0f, 0.0f };
         vcd.tickFunctions[currentPreset](&vcd, audio);
         vocodec::OLED_process(&vcd);
     }
     else processingInactiveCount++;
+    processingFalseBlock = false;
 }

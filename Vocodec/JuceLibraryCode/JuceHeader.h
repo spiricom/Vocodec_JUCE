@@ -52,7 +52,7 @@ namespace ProjectInfo
 {
     const char* const  projectName    = "Vocodec";
     const char* const  companyName    = "Snyderphonics";
-    const char* const  versionString  = "0.1.1";
-    const int          versionNumber  = 0x101;
+    const char* const  versionString  = "0.1.2";
+    const int          versionNumber  = 0x102;
 }
 #endif

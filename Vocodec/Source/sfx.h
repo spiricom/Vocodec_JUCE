@@ -138,6 +138,113 @@ namespace vocodec
             VocodecLightNil
         } VocodecLightType;
         
+        typedef struct _VocoderButtonParams
+        {
+            int numVoices;
+            int internalExternal;
+            int freeze;
+        } VocoderButtonParams;
+        
+        typedef struct _VocoderChButtonParams
+        {
+            int numVoices;
+            int internalExternal;
+            int freeze;
+        } VocoderChButtonParams;
+        
+        typedef struct _PitchShiftButtonParams
+        {
+            int _;
+        } PitchShiftButtonParams;
+        
+        typedef struct _NeartuneButtonParams
+        {
+            int useChromatic;
+            int lock;
+        } NeartuneButtonParams;
+        
+        typedef struct _AutotuneButtonParams
+        {
+            int _;
+        } AutotuneButtonParams;
+        
+        typedef struct _SamplerBPButtonParams
+        {
+            PlayMode playMode;
+            int samplePlaying;
+        } SamplerBPButtonParams;
+        
+        typedef struct _SamplerKButtonParams
+        {
+            int controlAllKeys;
+        } SamplerKButtonParams;
+        
+        typedef struct _SamplerAutoButtonParams
+        {
+            PlayMode playMode;
+            int triggerChannel;
+            int quantizeRate;
+        } SamplerAutoButtonParams;
+        
+        typedef struct _DistortionButtonParams
+        {
+            int mode;
+        } DistortionButtonParams;
+        
+        typedef struct _WaveFolderButtonParams
+        {
+            int mode;
+        } WaveFolderButtonParams;
+        
+        typedef struct _BitcrusherButtonParams
+        {
+            int stereo;
+        } BitcrusherButtonParams;
+        
+        typedef struct _DelayButtonParams
+        {
+            int shaper;
+            int uncapFeedback;
+            int freeze;
+        } DelayButtonParams;
+        
+        typedef struct _ReverbButtonParams
+        {
+            int uncapFeedback;
+            int freeze;
+        } ReverbButtonParams;
+        
+        typedef struct _Reverb2ButtonParams
+        {
+            int freeze;
+        } Reverb2ButtonParams;
+        
+        typedef struct _LivingStringButtonParams
+        {
+            int ignoreFreqKnobs;
+            int independentStrings;
+            int feedback;
+        } LivingStringButtonParams;
+        
+        typedef struct _LivingStringSynthButtonParams
+        {
+            int numVoices;
+            int audioIn;
+            int feedback;
+        } LivingStringSynthButtonParams;
+        
+        typedef struct _ClassicSynthButtonParams
+        {
+            int numVoices;
+        } ClassicSynthButtonParams;
+        
+        typedef struct _RhodesButtonParams
+        {
+            int numVoices;
+            int sound;
+            int tremoloStereo;
+        } RhodesButtonParams;
+        
         typedef struct _Vocodec Vocodec;
         struct _Vocodec
         {
@@ -155,6 +262,25 @@ namespace vocodec
             float presetKnobValues[PresetNil][NUM_PRESET_KNOB_VALUES];
             int knobActive[NUM_ADC_CHANNELS];
             float prevDisplayValues[NUM_PRESET_KNOB_VALUES];
+            
+            VocoderButtonParams vocoderParams;
+            VocoderChButtonParams vocoderChParams;
+            PitchShiftButtonParams pitchShiftParams;
+            NeartuneButtonParams neartuneParams;
+            AutotuneButtonParams autotuneParams;
+            SamplerBPButtonParams samplerBPParams;
+            SamplerKButtonParams samplerKParams;
+            SamplerAutoButtonParams samplerAutoParams;
+            DistortionButtonParams distortionParams;
+            WaveFolderButtonParams waveFolderParams;
+            BitcrusherButtonParams bitcrusherParams;
+            DelayButtonParams delayParams;
+            ReverbButtonParams reverbParams;
+            Reverb2ButtonParams reverb2Params;
+            LivingStringButtonParams livingStringParams;
+            LivingStringSynthButtonParams livingStringSynthParams;
+            ClassicSynthButtonParams classicSynthParams;
+            RhodesButtonParams rhodesParams;
             
             //audio objects
             tFormantShifter fs;
@@ -212,8 +338,6 @@ namespace vocodec
             float decayExpBuffer[DECAY_EXP_BUFFER_SIZE];
             float decayExpBufferSizeMinusOne;
             
-            
-
             tComplexLivingString theString[NUM_STRINGS];
             
             float myDetune[NUM_STRINGS];
@@ -230,9 +354,6 @@ namespace vocodec
             
             ///1 vocoder internal poly
             
-            int numVoices;
-            int internalExternal;
-            int vocFreezeLPC;
             tTalkboxFloat vocoder;
             tNoise vocoderNoise;
             tZeroCrossingCounter zerox;
@@ -272,8 +393,6 @@ namespace vocodec
             float prevMyTilt;
             float prevBarkPull;
             
-            int vocChFreeze;
-            
             tVZFilter vocodec_highshelf;
             
             float barkBandFreqs[24];
@@ -290,8 +409,6 @@ namespace vocodec
             float pitchShiftOffset;
             
             //5 autotune mono
-            int autotuneChromatic;
-            int autotuneLock;
             float lastSnap;
             float detectedNote;
             float desiredSnap;
@@ -308,10 +425,8 @@ namespace vocodec
             float sampleLength;
             int crossfadeLength;
             float samplerRate;
-            int samplePlaying;
             tExpSmooth startSmooth;
             tExpSmooth lengthSmooth;
-            int bpMode;
             
             // keyboard sampler
             int currentSamplerKeyGlobal;
@@ -319,7 +434,6 @@ namespace vocodec
             
             tExpSmooth kSamplerGains[NUM_SAMPLER_KEYS];
             int waitingForDeactivation[NUM_SAMPLER_VOICES];
-            int controlAllKeys;
             int prevSamplerKey;
             
             float samp_thresh;
@@ -339,10 +453,7 @@ namespace vocodec
             
             volatile int samp_triggered;
             uint32_t sample_countdown;
-            PlayMode samplerMode;
-            int triggerChannel;
             int currentSampler;
-            int pitchQuantization;
             int randLengthVal;
             float randRateVal;
             
@@ -352,29 +463,21 @@ namespace vocodec
             int finalWindowSize;
             
             //10 distortion tanh
-            int distortionMode;
             tVZFilter bell1;
             int distOS_ratio;
             
             // distortion wave folder
             
-            int foldMode;
-            
             float oversampleBuf[2];
             
             //13 bitcrusher
             
-            int crusherStereo;
-            
             //delay
-            int delayShaper;
-            int capFeedback;
             
             float delayFB1;
             float delayFB2;
             
             //reverb
-            int freeze;
             
             tDattorroReverb reverb;
             tExpSmooth sizeSmoother;
@@ -390,27 +493,20 @@ namespace vocodec
             tSVF bandpass2;
             
             //Living String
-            
-            int ignoreFreqKnobs;
-            int levMode;
-            int independentStrings;
             tExpSmooth stringGains[NUM_STRINGS];
             
             //Living String Synth
             
-            int voicePluck;
             tSlide stringOutEnvs[NUM_STRINGS];
             tSlide stringInEnvs[NUM_STRINGS];
             tADSR4 pluckEnvs[NUM_STRINGS];
-            int levModeStr;
             tNoise stringPluckNoise;
             
             tVZFilter pluckFilt;
             float samplesPerMs;
             
             // CLASSIC SUBTRACTIVE SYNTH
-            
-            
+
             tEfficientSVF synthLP[NUM_VOC_VOICES];
             uint16_t filtFreqs[NUM_VOC_VOICES];
             tADSR4 polyEnvs[NUM_VOC_VOICES];
@@ -428,9 +524,6 @@ namespace vocodec
             
             float panValues[NUM_VOC_VOICES];
             tCycle tremolo;
-            int tremoloStereo;
-            
-            int Rsound;
             
             const char* soundNames[5];
             tExpSmooth susSmoothers[6];

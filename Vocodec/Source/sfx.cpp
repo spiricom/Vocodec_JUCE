@@ -46,11 +46,62 @@ namespace vocodec
                 vcd->lockArray[i] = 0;
             }
             
-            ///1 vocoder internal poly
+            //============================================//
             
-            vcd->numVoices = NUM_VOC_VOICES;
-            vcd->internalExternal = 0;
-            vcd->vocFreezeLPC = 0;
+            vcd->vocoderParams.numVoices = NUM_VOC_VOICES;
+            vcd->vocoderParams.internalExternal = 0;
+            vcd->vocoderParams.freeze = 0;
+            
+            vcd->vocoderChParams.numVoices = NUM_VOC_VOICES;
+            vcd->vocoderChParams.internalExternal = 0;
+            vcd->vocoderChParams.freeze = 0;
+            
+            vcd->pitchShiftParams._ = 0;
+            
+            vcd->neartuneParams.useChromatic = 0;
+            vcd->neartuneParams.lock = 0;
+            
+            vcd->autotuneParams._ = 0;
+            
+            vcd->samplerBPParams.playMode = PlayLoop;
+            vcd->samplerBPParams.samplePlaying = 0;
+
+            vcd->samplerKParams.controlAllKeys = 0;
+            
+            vcd->samplerAutoParams.playMode = PlayLoop;
+            vcd->samplerAutoParams.triggerChannel = 0;
+            vcd->samplerAutoParams.quantizeRate = 0;
+            
+            vcd->distortionParams.mode = 0;
+            
+            vcd->waveFolderParams.mode = 0;
+            
+            vcd->bitcrusherParams.stereo = 0;
+            
+            vcd->delayParams.shaper = 0;
+            vcd->delayParams.uncapFeedback = 0;
+            vcd->delayParams.freeze = 0;
+            
+            vcd->reverbParams.uncapFeedback = 0;
+            vcd->reverbParams.freeze = 0;
+            
+            vcd->reverb2Params.freeze = 0;
+            
+            vcd->livingStringParams.ignoreFreqKnobs = 0;
+            vcd->livingStringParams.independentStrings = 0;
+            vcd->livingStringParams.feedback = 0;
+            
+            vcd->livingStringSynthParams.numVoices = NUM_STRINGS;
+            vcd->livingStringSynthParams.audioIn = 0;
+            vcd->livingStringSynthParams.feedback = 0;
+            
+            vcd->classicSynthParams.numVoices = NUM_VOC_VOICES;
+            
+            vcd->rhodesParams.numVoices = NUM_VOC_VOICES;
+            vcd->rhodesParams.sound = 0;
+            vcd->rhodesParams.tremoloStereo = 0;
+            
+            //============================================//
             
             vcd->numberOfVocoderBands = 22;
             vcd->prevNumberOfVocoderBands = 22;
@@ -71,8 +122,6 @@ namespace vocodec
             vcd->prevMyTilt = 0.0f;
             vcd->prevBarkPull = 0.0f;
             
-            vcd->vocChFreeze = 0;
-            
             for (int i = 0; i < 24; ++i)
             {
                 vcd->barkBandFreqs[i] = defaultBarkBandFreqs[i];
@@ -87,8 +136,6 @@ namespace vocodec
             vcd->pitchShiftOffset = -1.0f;
             
             //5 autotune mono
-            vcd->autotuneChromatic = 0;
-            vcd->autotuneLock = 0;
             vcd->lastSnap = 1.0f;
             vcd->detectedNote = 60.0f;
             vcd->desiredSnap = 60.0f;
@@ -105,14 +152,9 @@ namespace vocodec
             vcd->sampleLength = 0.0f;
             vcd->crossfadeLength = 0;
             vcd->samplerRate = 1.0f;
-            vcd->samplePlaying = 1;
-
-            vcd->bpMode = 0;
             
             // keyboard sampler
             vcd->currentSamplerKeyGlobal = 60 - LOWEST_SAMPLER_KEY;
-            
-            vcd->controlAllKeys = 0;
             vcd->prevSamplerKey = 60;
             
             vcd->samp_thresh = 0.0f;
@@ -124,10 +166,7 @@ namespace vocodec
             
             vcd->samp_triggered = 0;
             vcd->sample_countdown = 0;
-            vcd->samplerMode = PlayLoop;
-            vcd->triggerChannel = 0;
             vcd->currentSampler = 0;
-            vcd->pitchQuantization = 0;
             vcd->randLengthVal = 0;
             vcd->randRateVal = 0.0f;
                         
@@ -135,34 +174,19 @@ namespace vocodec
             vcd->finalWindowSize = 5000;
             
             //10 distortion tanh
-            vcd->distortionMode = 0;
             vcd->distOS_ratio = 4;
             
             // distortion wave folder
-            
-            vcd->foldMode = 0;
  
             //13 bitcrusher
             
-            vcd->crusherStereo = 0;
-            
             //delay
-            vcd->delayShaper = 0;
-            vcd->capFeedback = 0;
 
             //reverb
-            vcd->freeze = 0;
                         
             //Living String
             
-            vcd->ignoreFreqKnobs = 0;
-            vcd->levMode = 0;
-            vcd->independentStrings = 0;
-            
             //Living String Synth
-            
-            vcd->voicePluck = 0;
-            vcd->levModeStr = 0;
             vcd->samplesPerMs = 1;
             
             // CLASSIC SUBTRACTIVE SYNTH
@@ -180,9 +204,7 @@ namespace vocodec
             }
 
             vcd->feedback_output = 0.0f;
-            vcd->tremoloStereo = 0;
-            vcd->Rsound = 0;
-
+            
             vcd->overtoneSnap = 1.0f;
             for (int i = 0; i < 6; ++i)
             {
@@ -551,7 +573,7 @@ namespace vocodec
             tTalkboxFloat_setWarpOn(&vcd->vocoder, 1);
             tNoise_init(&vcd->vocoderNoise, WhiteNoise, &vcd->leaf);
             tZeroCrossingCounter_init(&vcd->zerox, 16, &vcd->leaf);
-            tSimplePoly_setNumVoices(&vcd->poly, vcd->numVoices);
+            tSimplePoly_setNumVoices(&vcd->poly, vcd->vocoderParams.numVoices);
             tExpSmooth_init(&vcd->noiseRamp, 0.0f, 0.005f, &vcd->leaf);
             
             //tilt filter
@@ -569,10 +591,9 @@ namespace vocodec
                 tRosenbergGlottalPulse_init(&vcd->glottal[i], &vcd->leaf);
                 tRosenbergGlottalPulse_setOpenLengthAndPulseLength(&vcd->glottal[i], 0.3f, 0.4f);
             }
-            setLED_A(vcd, vcd->numVoices == 1);
-            setLED_B(vcd, vcd->internalExternal);
-            vcd->vocFreezeLPC = 0;
-            setLED_C(vcd, vcd->vocFreezeLPC);
+            setLED_A(vcd, vcd->vocoderParams.numVoices == 1);
+            setLED_B(vcd, vcd->vocoderParams.internalExternal);
+            setLED_C(vcd, vcd->vocoderParams.freeze);
             vcd->leaf.clearOnAllocation = 0;
         }
         
@@ -580,23 +601,23 @@ namespace vocodec
         {
             if (vcd->buttonActionsSFX[ButtonA][ActionPress] == 1)
             {
-                vcd->numVoices = (vcd->numVoices > 1) ? 1 : NUM_VOC_VOICES;
-                tSimplePoly_setNumVoices(&vcd->poly, vcd->numVoices);
+                vcd->vocoderParams.numVoices = (vcd->vocoderParams.numVoices > 1) ? 1 : NUM_VOC_VOICES;
+                tSimplePoly_setNumVoices(&vcd->poly, vcd->vocoderParams.numVoices);
                 vcd->buttonActionsSFX[ButtonA][ActionPress] = 0;
-                setLED_A(vcd, vcd->numVoices == 1);
+                setLED_A(vcd, vcd->vocoderParams.numVoices == 1);
             }
             if (vcd->buttonActionsSFX[ButtonB][ActionPress] == 1)
             {
-                vcd->internalExternal = !vcd->internalExternal;
+                vcd->vocoderParams.internalExternal = !vcd->vocoderParams.internalExternal;
                 vcd->buttonActionsSFX[ButtonB][ActionPress] = 0;
-                setLED_B(vcd, vcd->internalExternal);
+                setLED_B(vcd, vcd->vocoderParams.internalExternal);
             }
             if (vcd->buttonActionsSFX[ButtonC][ActionPress] == 1)
             {
-                vcd->vocFreezeLPC = !vcd->vocFreezeLPC;
-                tTalkboxFloat_setFreeze(&vcd->vocoder, vcd->vocFreezeLPC);
+                vcd->vocoderParams.freeze = !vcd->vocoderParams.freeze;
+                tTalkboxFloat_setFreeze(&vcd->vocoder, vcd->vocoderParams.freeze);
                 vcd->buttonActionsSFX[ButtonC][ActionPress] = 0;
-                setLED_C(vcd, vcd->vocFreezeLPC);
+                setLED_C(vcd, vcd->vocoderParams.freeze);
             }
             
             vcd->displayValues[0] = vcd->presetKnobValues[Vocoder][0]; //vocoder volume
@@ -642,7 +663,7 @@ namespace vocodec
             float noiseRampVal = 0.0f;
             float sample = 0.0f;
             
-            if (vcd->internalExternal == 1)
+            if (vcd->vocoderParams.internalExternal == 1)
             {
                 sample = input[0];
             }
@@ -650,7 +671,7 @@ namespace vocodec
             {
                 zerocross = tZeroCrossingCounter_tick(&vcd->zerox, input[1]);
                 
-                if (!vcd->vocChFreeze)
+                if (!vcd->vocoderParams.freeze)
                 {
                     tExpSmooth_setDest(&vcd->noiseRamp, zerocross > ((vcd->displayValues[4])-0.1f));
                 }
@@ -803,7 +824,7 @@ namespace vocodec
             tNoise_init(&vcd->breathNoise, WhiteNoise, &vcd->leaf);
             tNoise_init(&vcd->vocoderNoise, WhiteNoise, &vcd->leaf);
             tZeroCrossingCounter_init(&vcd->zerox, 256, &vcd->leaf);
-            tSimplePoly_setNumVoices(&vcd->poly, vcd->numVoices);
+            tSimplePoly_setNumVoices(&vcd->poly, vcd->vocoderChParams.numVoices);
             tExpSmooth_init(&vcd->noiseRamp, 0.0f, 0.05f, &vcd->leaf);
             tHighpass_init(&vcd->noiseHP, 5000.0f, &vcd->leaf);
             tHighpass_init(&vcd->chVocFinalHP1, 20.0f, &vcd->leaf);
@@ -816,10 +837,9 @@ namespace vocodec
                 tRosenbergGlottalPulse_setOpenLength(&vcd->glottal[i], 0.3f);
                 tRosenbergGlottalPulse_setPulseLength(&vcd->glottal[i], 0.4f);
             }
-            vcd->vocChFreeze = 0;
-            setLED_A(vcd, vcd->numVoices == 1);
-            setLED_B(vcd, vcd->internalExternal);
-            setLED_C(vcd, vcd->vocChFreeze);
+            setLED_A(vcd, vcd->vocoderChParams.numVoices == 1);
+            setLED_B(vcd, vcd->vocoderChParams.internalExternal);
+            setLED_C(vcd, vcd->vocoderChParams.freeze);
         }
         
         void SFXVocoderChFrame(Vocodec* vcd)
@@ -827,23 +847,23 @@ namespace vocodec
             
             if (vcd->buttonActionsSFX[ButtonA][ActionPress] == 1)
             {
-                vcd->numVoices = (vcd->numVoices > 1) ? 1 : NUM_VOC_VOICES;
-                tSimplePoly_setNumVoices(&vcd->poly, vcd->numVoices);
+                vcd->vocoderChParams.numVoices = (vcd->vocoderChParams.numVoices > 1) ? 1 : NUM_VOC_VOICES;
+                tSimplePoly_setNumVoices(&vcd->poly, vcd->vocoderChParams.numVoices);
                 vcd->buttonActionsSFX[ButtonA][ActionPress] = 0;
-                setLED_A(vcd, vcd->numVoices == 1);
+                setLED_A(vcd, vcd->vocoderChParams.numVoices == 1);
             }
             if (vcd->buttonActionsSFX[ButtonB][ActionPress] == 1)
             {
-                vcd->internalExternal = !vcd->internalExternal;
+                vcd->vocoderChParams.internalExternal = !vcd->vocoderChParams.internalExternal;
                 vcd->buttonActionsSFX[ButtonB][ActionPress] = 0;
-                setLED_B(vcd, vcd->internalExternal);
+                setLED_B(vcd, vcd->vocoderChParams.internalExternal);
             }
             
             if (vcd->buttonActionsSFX[ButtonC][ActionPress] == 1)
             {
-                vcd->vocChFreeze = !vcd->vocChFreeze;
+                vcd->vocoderChParams.freeze = !vcd->vocoderChParams.freeze;
                 vcd->buttonActionsSFX[ButtonC][ActionPress] = 0;
-                setLED_C(vcd, vcd->vocChFreeze);
+                setLED_C(vcd, vcd->vocoderChParams.freeze);
             }
         
             vcd->displayValues[0] = vcd->presetKnobValues[VocoderCh][0]; //vocoder volume
@@ -1035,7 +1055,7 @@ namespace vocodec
             //a little treble emphasis
             input[1] = tVZFilter_tick(&vcd->vocodec_highshelf, input[1]);
             
-            if (vcd->internalExternal == 1)
+            if (vcd->vocoderChParams.internalExternal == 1)
             {
                 sample = input[0];
             }
@@ -1043,7 +1063,7 @@ namespace vocodec
             {
                 float zerocross = tZeroCrossingCounter_tick(&vcd->zerox, input[1]);
                 
-                if (!vcd->vocChFreeze)
+                if (!vcd->vocoderChParams.freeze)
                 {
                     tExpSmooth_setDest(&vcd->noiseRamp,zerocross > ((vcd->displayValues[4])-0.1f));
                 }
@@ -1082,7 +1102,7 @@ namespace vocodec
             {
                 int oddEven = i % 2;
                 float tempSamp = input[1];
-                if (!vcd->vocChFreeze)
+                if (!vcd->vocoderChParams.freeze)
                 {
                     tempSamp = tVZFilter_tickEfficient(&vcd->analysisBands[i][0], tempSamp);
                     tempSamp = tVZFilter_tickEfficient(&vcd->analysisBands[i][1], tempSamp);
@@ -1144,6 +1164,10 @@ namespace vocodec
             tExpSmooth_init(&vcd->smoother1, 0.0f, 0.01f, &vcd->leaf);
             tExpSmooth_init(&vcd->smoother2, 0.0f, 0.01f, &vcd->leaf);
             tExpSmooth_init(&vcd->smoother3, 0.0f, 0.01f, &vcd->leaf);
+            
+            setLED_A(vcd, 0);
+            setLED_B(vcd, 0);
+            setLED_C(vcd, 0);
         }
         
         void SFXPitchShiftFrame(Vocodec* vcd)
@@ -1243,8 +1267,9 @@ namespace vocodec
             calculateNoteArray(vcd);
             tExpSmooth_init(&vcd->neartune_smoother, 1.0f, .007f, &vcd->leaf);
             tRamp_init(&vcd->nearWetRamp, 20.0f, 1, &vcd->leaf);
-            setLED_A(vcd, vcd->autotuneChromatic);
-            setLED_C(vcd, vcd->autotuneLock);
+            setLED_A(vcd, vcd->neartuneParams.useChromatic);
+            setLED_B(vcd, 0);
+            setLED_C(vcd, vcd->neartuneParams.lock);
             vcd->lastSnap = 1.0f;
         }
         
@@ -1252,7 +1277,7 @@ namespace vocodec
         {
             
             if ((tSimplePoly_getNumActiveVoices(&vcd->poly) != 0) ||
-                (vcd->autotuneChromatic == 1) || (vcd->autotuneLock == 1))
+                (vcd->neartuneParams.useChromatic == 1) || (vcd->neartuneParams.lock == 1))
             {
                 tRamp_setDest(&vcd->nearWetRamp, 1.0f);
             }
@@ -1263,17 +1288,17 @@ namespace vocodec
             
             if (vcd->buttonActionsSFX[ButtonA][ActionPress])
             {
-                vcd->autotuneChromatic = !vcd->autotuneChromatic;
+                vcd->neartuneParams.useChromatic = !vcd->neartuneParams.useChromatic;
                 vcd->buttonActionsSFX[ButtonA][ActionPress] = 0;
-                setLED_A(vcd, vcd->autotuneChromatic);
+                setLED_A(vcd, vcd->neartuneParams.useChromatic);
             }
             
             if (vcd->buttonActionsSFX[ButtonC][ActionPress])
             {
-                vcd->autotuneLock = !vcd->autotuneLock;
+                vcd->neartuneParams.lock = !vcd->neartuneParams.lock;
                 vcd->buttonActionsSFX[ButtonC][ActionPress] = 0;
-                setLED_C(vcd, vcd->autotuneLock);
-                if (vcd->autotuneLock)
+                setLED_C(vcd, vcd->neartuneParams.lock);
+                if (vcd->neartuneParams.lock)
                 {
                     for (int i = 0; i < 12; i++)
                     {
@@ -1372,7 +1397,9 @@ namespace vocodec
         {
             tAutotune_initToPool(&vcd->autotunePoly, NUM_AUTOTUNE, 1024, 512, &vcd->mediumPool);
             tSimplePoly_setNumVoices(&vcd->poly, NUM_AUTOTUNE);
-            
+            setLED_A(vcd, 0);
+            setLED_B(vcd, 0);
+            setLED_C(vcd, 0);
             //tAutotune_init(&autotunePoly, NUM_AUTOTUNE, 2048, 1024); //old settings
         }
         
@@ -1429,9 +1456,12 @@ namespace vocodec
             tBuffer_initToPool(&vcd->buff, vcd->leaf.sampleRate * 172.0f, &vcd->largePool);
             tBuffer_setRecordMode(&vcd->buff, RecordOneShot);
             tSampler_init(&vcd->sampler, &vcd->buff, &vcd->leaf);
-            tSampler_setMode(&vcd->sampler, (PlayMode)(vcd->bpMode + 1));
+            tSampler_setMode(&vcd->sampler, (PlayMode)(vcd->samplerBPParams.playMode));
             tExpSmooth_init(&vcd->startSmooth, 0.0f, 0.01f, &vcd->leaf);
             tExpSmooth_init(&vcd->lengthSmooth, 0.0f, 0.01f, &vcd->leaf);
+            setLED_A(vcd, 0);
+            setLED_B(vcd, vcd->samplerBPParams.playMode == PlayBackAndForth);
+            setLED_C(vcd, 0);
         }
         
         void SFXSamplerBPFrame(Vocodec* vcd)
@@ -1447,16 +1477,16 @@ namespace vocodec
             
             if (vcd->buttonActionsSFX[ButtonC][ActionPress])
             {
-                if (vcd->samplePlaying)
+                if (vcd->samplerBPParams.samplePlaying)
                 {
-                    vcd->samplePlaying = 0;
+                    vcd->samplerBPParams.samplePlaying = 0;
                     tSampler_stop(&vcd->sampler);
                     vcd->displayValues[1] =
                     LEAF_clip(0.0f, knobs[1] * vcd->sampleLength, vcd->sampleLength * (1.0f - knobs[0]));
                 }
                 else
                 {
-                    vcd->samplePlaying = 1;
+                    vcd->samplerBPParams.samplePlaying = 1;
                     tSampler_play(&vcd->sampler);
                 }
                 vcd->buttonActionsSFX[ButtonC][ActionPress] = 0;
@@ -1464,10 +1494,11 @@ namespace vocodec
             
             if (vcd->buttonActionsSFX[ButtonB][ActionPress])
             {
-                vcd->bpMode = !vcd->bpMode;
-                tSampler_setMode(&vcd->sampler, (PlayMode)(vcd->bpMode + 1));
+                if (vcd->samplerBPParams.playMode == PlayLoop) vcd->samplerBPParams.playMode = PlayBackAndForth;
+                else vcd->samplerBPParams.playMode = PlayLoop;
+                tSampler_setMode(&vcd->sampler, (PlayMode)(vcd->samplerBPParams.playMode));
                 vcd->buttonActionsSFX[ButtonB][ActionPress] = 0;
-                setLED_B(vcd, vcd->bpMode);
+                setLED_B(vcd, vcd->samplerBPParams.playMode);
             }
             
             if (vcd->buttonActionsSFX[ButtonA][ActionPress])
@@ -1480,7 +1511,7 @@ namespace vocodec
             if (vcd->buttonActionsSFX[ButtonA][ActionRelease])
             {
                 tBuffer_stop(&vcd->buff);
-                if (vcd->samplePlaying) tSampler_play(&vcd->sampler);
+                if (vcd->samplerBPParams.samplePlaying) tSampler_play(&vcd->sampler);
                 vcd->buttonActionsSFX[ButtonA][ActionRelease] = 0;
                 setLED_A(vcd, 0);
             }
@@ -1559,7 +1590,9 @@ namespace vocodec
             {
                 vcd->waitingForDeactivation[i] = -1;
             }
-            setLED_B(vcd, vcd->controlAllKeys);
+            setLED_A(vcd, 0);
+            setLED_B(vcd, vcd->samplerKParams.controlAllKeys);
+            setLED_C(vcd, 0);
             vcd->samp_thresh = 0.02f;
         }
         
@@ -1587,60 +1620,63 @@ namespace vocodec
             if (vcd->buttonActionsSFX[ButtonB][ActionPress])
             {
                 vcd->buttonActionsSFX[ButtonB][ActionPress] = 0;
-                vcd->controlAllKeys = !vcd->controlAllKeys;
-                setLED_B(vcd, vcd->controlAllKeys);
+                vcd->samplerKParams.controlAllKeys = !vcd->samplerKParams.controlAllKeys;
+                setLED_B(vcd, vcd->samplerKParams.controlAllKeys);
             }
             
             if (vcd->buttonActionsSFX[ButtonC][ActionPress])
             {
                 vcd->buttonActionsSFX[ButtonC][ActionPress] = 0;
-                if (!vcd->controlAllKeys)
+                if (!vcd->samplerKParams.controlAllKeys)
                 {
-                    
-                    float currentPower = 0.0f;
-                    float previousPower = 0.0f;
                     int buffLength = tBuffer_getRecordedLength(&vcd->keyBuff[currentSamplerKey]);
-                    if (vcd->detectedAttackPos[currentSamplerKey] > 0)
+                    if (buffLength > 0)
                     {
-                        vcd->detectedAttackPos[currentSamplerKey] += 4800;
-                        previousPower = tBuffer_get(&vcd->keyBuff[currentSamplerKey], (vcd->detectedAttackPos[currentSamplerKey] -1) % buffLength);
-                    }
-                    
-                    int foundAttack = 0;
-                    int i = 0;
-                    while(foundAttack == 0)
-                    {
-                        //starts at previous detected attack position, and wraps around to read the whole buffer
-                        float testSample = tBuffer_get(&vcd->keyBuff[currentSamplerKey], (i + vcd->detectedAttackPos[currentSamplerKey]) % buffLength);
-                        currentPower = testSample*testSample;
+                        int foundAttack = 0;
+                        int i = 0;
+                        float currentPower = 0.0f;
+                        float previousPower = 0.0f;
                         
-                        if ((currentPower > vcd->samp_thresh) && (currentPower > (previousPower + 0.0005f)))
+                        if (vcd->detectedAttackPos[currentSamplerKey] > 0)
                         {
-                            //found one!
-                            
-                            //back up a few samples to catch the full attack
-                            int thePos = (i + vcd->detectedAttackPos[currentSamplerKey] - 480) % buffLength;
-                            if (thePos < 0)
-                            {
-                                thePos = 0;
-                            }
-                            vcd->samplePlayStarts[currentSamplerKey] = thePos;
-                            vcd->detectedAttackPos[currentSamplerKey] = thePos;
-                            foundAttack = 1;
-                            OLEDclearLine(vcd, SecondLine);
-                            OLEDwriteString(vcd, "ATKDETECT ", 10, 0, SecondLine);
-                            OLEDwriteFloat(vcd, (vcd->samplePlayStarts[currentSamplerKey] / (float)buffLength) * (buffLength * vcd->leaf.invSampleRate), OLEDgetCursor(vcd), SecondLine);
+                            vcd->detectedAttackPos[currentSamplerKey] += 4800;
+                            previousPower = tBuffer_get(&vcd->keyBuff[currentSamplerKey], (vcd->detectedAttackPos[currentSamplerKey] -1) % buffLength);
                         }
-                        i++;
                         
-                        //if finished searching the whole buffer
-                        if (i >= buffLength)
+                        while(foundAttack == 0)
                         {
-                            // didn't find one, put it back at the start
-                            vcd->detectedAttackPos[currentSamplerKey] = 0;
-                            OLEDclearLine(vcd, SecondLine);
-                            OLEDwriteString(vcd, "NO ATK FOUND ", 10, 0, SecondLine);
-                            foundAttack = 1;
+                            //starts at previous detected attack position, and wraps around to read the whole buffer
+                            float testSample = tBuffer_get(&vcd->keyBuff[currentSamplerKey], (i + vcd->detectedAttackPos[currentSamplerKey]) % buffLength);
+                            currentPower = testSample*testSample;
+                            
+                            if ((currentPower > vcd->samp_thresh) && (currentPower > (previousPower + 0.0005f)))
+                            {
+                                //found one!
+                                
+                                //back up a few samples to catch the full attack
+                                int thePos = (i + vcd->detectedAttackPos[currentSamplerKey] - 480) % buffLength;
+                                if (thePos < 0)
+                                {
+                                    thePos = 0;
+                                }
+                                vcd->samplePlayStarts[currentSamplerKey] = thePos;
+                                vcd->detectedAttackPos[currentSamplerKey] = thePos;
+                                foundAttack = 1;
+                                OLEDclearLine(vcd, SecondLine);
+                                OLEDwriteString(vcd, "ATKDETECT ", 10, 0, SecondLine);
+                                OLEDwriteFloat(vcd, (vcd->samplePlayStarts[currentSamplerKey] / (float)buffLength) * (buffLength * vcd->leaf.invSampleRate), OLEDgetCursor(vcd), SecondLine);
+                            }
+                            i++;
+                            
+                            //if finished searching the whole buffer
+                            if (i >= buffLength)
+                            {
+                                // didn't find one, put it back at the start
+                                vcd->detectedAttackPos[currentSamplerKey] = 0;
+                                OLEDclearLine(vcd, SecondLine);
+                                OLEDwriteString(vcd, "NO ATK FOUND ", 10, 0, SecondLine);
+                                foundAttack = 1;
+                            }
                         }
                     }
                 }
@@ -1710,7 +1746,7 @@ namespace vocodec
             
             int currentSamplerKey = vcd->currentSamplerKeyGlobal;
             
-            if (!vcd->controlAllKeys)
+            if (!vcd->samplerKParams.controlAllKeys)
             {
                 int recordedLength = tBuffer_getRecordedLength(&vcd->keyBuff[currentSamplerKey]);
                 vcd->sampleLength = recordedLength * vcd->leaf.invSampleRate;
@@ -1942,30 +1978,32 @@ namespace vocodec
             tEnvelopeFollower_init(&vcd->envfollow, 0.00001f, 0.9999f, &vcd->leaf);
             tExpSmooth_init(&vcd->cfxSmooth, 0.0f, 0.01f, &vcd->leaf);
             
-            setLED_A(vcd, vcd->samplerMode == PlayBackAndForth);
-            setLED_B(vcd, vcd->triggerChannel);
+            setLED_A(vcd, vcd->samplerAutoParams.playMode == PlayBackAndForth);
+            setLED_B(vcd, vcd->samplerAutoParams.triggerChannel);
             vcd->currentSampler = 1;
             vcd->sample_countdown = 0;
             vcd->randLengthVal = vcd->leaf.random() * 10000.0f;
             vcd->randRateVal = (vcd->leaf.random() - 0.5f) * 4.0f;
             
-            setLED_C(vcd, vcd->pitchQuantization);
+            setLED_A(vcd, 0);
+            setLED_B(vcd, 0);
+            setLED_C(vcd, vcd->samplerAutoParams.quantizeRate);
         }
         
         void SFXSamplerAutoFrame(Vocodec* vcd)
         {
             if (vcd->buttonActionsSFX[ButtonC][ActionPress] == 1)
             {
-                vcd->pitchQuantization = !vcd->pitchQuantization;
+                vcd->samplerAutoParams.quantizeRate = !vcd->samplerAutoParams.quantizeRate;
                 vcd->buttonActionsSFX[ButtonC][ActionPress] = 0;
-                setLED_C(vcd, vcd->pitchQuantization);
+                setLED_C(vcd, vcd->samplerAutoParams.quantizeRate);
             }
         }
         
         void SFXSamplerAutoTick(Vocodec* vcd, float* input)
         {
             float sample = 0.0f;
-            if (vcd->triggerChannel > 0)
+            if (vcd->samplerAutoParams.triggerChannel > 0)
             {
                 vcd->currentPower = tEnvelopeFollower_tick(&vcd->envfollow, input[0]);
             }
@@ -1983,7 +2021,7 @@ namespace vocodec
             vcd->displayValues[1] = window_size;
             
             float rate;
-            if (vcd->pitchQuantization)
+            if (vcd->samplerAutoParams.quantizeRate)
             {
                 rate = roundf((knobs[2] - 0.5f) * 14.0f);
                 if (rate < 0.0f) rate = 1.0f / fabsf(rate-1.0f);
@@ -2004,7 +2042,7 @@ namespace vocodec
             
             float randRateAmount;
             
-            if (vcd->pitchQuantization)
+            if (vcd->samplerAutoParams.quantizeRate)
             {
                 randRateAmount = roundf(knobs[6] * 8.0f);
             }
@@ -2024,7 +2062,7 @@ namespace vocodec
             if ((vcd->currentPower > (vcd->samp_thresh)) && (vcd->currentPower > (vcd->previousPower + 0.001f)) && (vcd->samp_triggered == 0) && (vcd->sample_countdown == 0) && (vcd->fadeDone == 1))
             {
                 vcd->randLengthVal = (vcd->leaf.random() - 0.5f) * randLengthAmount * 2.0f;
-                if (vcd->pitchQuantization) vcd->randRateVal = roundf(vcd->leaf.random() * randRateAmount) + 1.0f;
+                if (vcd->samplerAutoParams.quantizeRate) vcd->randRateVal = roundf(vcd->leaf.random() * randRateAmount) + 1.0f;
                 else vcd->randRateVal = (vcd->leaf.random() - 0.5f) * randRateAmount * 2.0f;
                 
                 vcd->samp_triggered = 1;
@@ -2058,7 +2096,7 @@ namespace vocodec
                 vcd->fadeDone = 0;
             }
             
-            if (vcd->pitchQuantization)
+            if (vcd->samplerAutoParams.quantizeRate)
             {
                 tSampler_setRate(&vcd->asSampler[0], rate * vcd->randRateVal);
                 tSampler_setRate(&vcd->asSampler[1], rate * vcd->randRateVal);
@@ -2074,28 +2112,28 @@ namespace vocodec
             
             if (vcd->buttonActionsSFX[ButtonA][ActionPress])
             {
-                if (vcd->samplerMode == PlayLoop)
+                if (vcd->samplerAutoParams.playMode == PlayLoop)
                 {
                     tSampler_setMode(&vcd->asSampler[0], PlayBackAndForth);
                     tSampler_setMode(&vcd->asSampler[1], PlayBackAndForth);
-                    vcd->samplerMode = PlayBackAndForth;
+                    vcd->samplerAutoParams.playMode = PlayBackAndForth;
                     setLED_A(vcd, 1);
                     vcd->buttonActionsSFX[ButtonA][ActionPress] = 0;
                 }
-                else if (vcd->samplerMode == PlayBackAndForth)
+                else if (vcd->samplerAutoParams.playMode == PlayBackAndForth)
                 {
                     tSampler_setMode(&vcd->asSampler[0], PlayLoop);
                     tSampler_setMode(&vcd->asSampler[1], PlayLoop);
-                    vcd->samplerMode = PlayLoop;
+                    vcd->samplerAutoParams.playMode = PlayLoop;
                     setLED_A(vcd, 0);
                     vcd->buttonActionsSFX[ButtonA][ActionPress] = 0;
                 }
             }
             if (vcd->buttonActionsSFX[ButtonB][ActionPress])
             {
-                vcd->triggerChannel = (vcd->triggerChannel > 0) ? 0 : 1;
+                vcd->samplerAutoParams.triggerChannel = (vcd->samplerAutoParams.triggerChannel > 0) ? 0 : 1;
                 vcd->buttonActionsSFX[ButtonB][ActionPress] = 0;
-                setLED_B(vcd, vcd->triggerChannel);
+                setLED_B(vcd, vcd->samplerAutoParams.triggerChannel);
             }
             
             float fade = tExpSmooth_tick(&vcd->cfxSmooth);
@@ -2133,7 +2171,9 @@ namespace vocodec
             tVZFilter_setSampleRate(&vcd->shelf1, vcd->leaf.sampleRate * vcd->distOS_ratio);
             tVZFilter_setSampleRate(&vcd->shelf2, vcd->leaf.sampleRate * vcd->distOS_ratio);
             tVZFilter_setSampleRate(&vcd->bell1, vcd->leaf.sampleRate * vcd->distOS_ratio);
-            setLED_A(vcd, vcd->distortionMode);
+            setLED_A(vcd, vcd->distortionParams.mode);
+            setLED_B(vcd, 0);
+            setLED_C(vcd, 0);
             
             vcd->leaf.clearOnAllocation = 0;
         }
@@ -2142,9 +2182,9 @@ namespace vocodec
         {
             if (vcd->buttonActionsSFX[ButtonA][ActionPress])
             {
-                vcd->distortionMode = !vcd->distortionMode;
+                vcd->distortionParams.mode = !vcd->distortionParams.mode;
                 vcd->buttonActionsSFX[ButtonA][ActionPress] = 0;
-                setLED_A(vcd, vcd->distortionMode);
+                setLED_A(vcd, vcd->distortionParams.mode);
             }
             vcd->displayValues[1] = (vcd->presetKnobValues[Distortion][1] * 30.0f) - 15.0f;
             vcd->displayValues[2] = (vcd->presetKnobValues[Distortion][2] * 34.0f) - 17.0f;
@@ -2167,7 +2207,7 @@ namespace vocodec
             tOversampler_upsample(&vcd->oversampler, sample, vcd->oversamplerArray);
             for (int i = 0; i < vcd->distOS_ratio; i++)
             {
-                if (vcd->distortionMode > 0)
+                if (vcd->distortionParams.mode > 0)
                     vcd->oversamplerArray[i] = LEAF_shaper(vcd->oversamplerArray[i], 1.0f);
                 else vcd->oversamplerArray[i] = tanhf(vcd->oversamplerArray[i]);
                 vcd->oversamplerArray[i] = tVZFilter_tick(&vcd->shelf1, vcd->oversamplerArray[i]); //put it through the low shelf
@@ -2198,7 +2238,9 @@ namespace vocodec
             tLockhartWavefolder_init(&vcd->wavefolder2, &vcd->leaf);
             tHighpass_init(&vcd->wfHP, 10.0f, &vcd->leaf);
             tOversampler_init(&vcd->oversampler, 2, 0, &vcd->leaf);
-            setLED_A(vcd, vcd->foldMode);
+            setLED_A(vcd, vcd->waveFolderParams.mode);
+            setLED_B(vcd, 0);
+            setLED_C(vcd, 0);
             vcd->leaf.clearOnAllocation = 0;
         }
         
@@ -2206,9 +2248,9 @@ namespace vocodec
         {
             if (vcd->buttonActionsSFX[ButtonA][ActionPress])
             {
-                vcd->foldMode = !vcd->foldMode;
+                vcd->waveFolderParams.mode = !vcd->waveFolderParams.mode;
                 vcd->buttonActionsSFX[ButtonA][ActionPress] = 0;
-                setLED_A(vcd, vcd->foldMode);
+                setLED_A(vcd, vcd->waveFolderParams.mode);
             }
             
             //knobParams[3] = (smoothedADC[3] * 2.0f) - 1.0f;
@@ -2232,7 +2274,7 @@ namespace vocodec
             
             sample = sample * gain;
             //sample = sample + knobParams[1];
-            if (vcd->foldMode == 0)
+            if (vcd->waveFolderParams.mode == 0)
             {
                 tOversampler_upsample(&vcd->oversampler, sample, vcd->oversamplerArray);
                 for (int i = 0; i < 2; i++)
@@ -2300,16 +2342,18 @@ namespace vocodec
         {
             tCrusher_init(&vcd->crush, &vcd->leaf);
             tCrusher_init(&vcd->crush2, &vcd->leaf);
-            setLED_A(vcd, vcd->crusherStereo);
+            setLED_A(vcd, vcd->bitcrusherParams.stereo);
+            setLED_B(vcd, 0);
+            setLED_C(vcd, 0);
         }
         
         void SFXBitcrusherFrame(Vocodec* vcd)
         {
             if (vcd->buttonActionsSFX[ButtonA][ActionPress])
             {
-                vcd->crusherStereo = !vcd->crusherStereo;
+                vcd->bitcrusherParams.stereo = !vcd->bitcrusherParams.stereo;
                 vcd->buttonActionsSFX[ButtonA][ActionPress] = 0;
-                setLED_A(vcd, vcd->crusherStereo);
+                setLED_A(vcd, vcd->bitcrusherParams.stereo);
             }
         }
         
@@ -2341,7 +2385,7 @@ namespace vocodec
                 volumeComp = (1.0f / (vcd->displayValues[3] + 1.0f));
             }
             sample = tanhf(tCrusher_tick(&vcd->crush, input[1] * vcd->displayValues[5])) * vcd->displayValues[4] * volumeComp;
-            if (vcd->crusherStereo)
+            if (vcd->bitcrusherParams.stereo)
             {
                 input[1] = tanhf(tCrusher_tick(&vcd->crush2, input[0] * vcd->displayValues[5])) * vcd->displayValues[4] * volumeComp;
             }
@@ -2373,10 +2417,9 @@ namespace vocodec
             
             tHighpass_init(&vcd->delayShaperHp, 20.0f, &vcd->leaf);
             tFeedbackLeveler_init(&vcd->feedbackControl, .99f, 0.01f, 0.125f, 0, &vcd->leaf);
-            vcd->delayShaper = 0;
-            vcd->capFeedback = 1;
-            vcd->freeze = 0;
-            setLED_A(vcd, vcd->delayShaper);
+            setLED_A(vcd, vcd->delayParams.shaper);
+            setLED_B(vcd, vcd->delayParams.uncapFeedback);
+            setLED_C(vcd, vcd->delayParams.freeze);
             vcd->leaf.clearOnAllocation = 0;
         }
         
@@ -2384,21 +2427,22 @@ namespace vocodec
         {
             if (vcd->buttonActionsSFX[ButtonA][ActionPress])
             {
-                vcd->delayShaper = !vcd->delayShaper;
+                vcd->delayParams.shaper = !vcd->delayParams.shaper;
                 vcd->buttonActionsSFX[ButtonA][ActionPress] = 0;
-                setLED_A(vcd, vcd->delayShaper);
+                setLED_A(vcd, vcd->delayParams.shaper);
             }
             if (vcd->buttonActionsSFX[ButtonB][ActionPress])
             {
-                vcd->capFeedback = !vcd->capFeedback;
+                vcd->delayParams.uncapFeedback = !vcd->delayParams.uncapFeedback;
                 vcd->buttonActionsSFX[ButtonB][ActionPress] = 0;
+                setLED_B(vcd, vcd->delayParams.uncapFeedback);
             }
             
             if (vcd->buttonActionsSFX[ButtonC][ActionPress])
             {
-                vcd->freeze = !vcd->freeze;
+                vcd->delayParams.freeze = !vcd->delayParams.freeze;
                 vcd->buttonActionsSFX[ButtonC][ActionPress] = 0;
-                setLED_C(vcd, vcd->freeze);
+                setLED_C(vcd, vcd->delayParams.freeze);
             }
         }
 
@@ -2414,7 +2458,11 @@ namespace vocodec
                                       20000.0f);
             vcd->displayValues[2] = cutoff1;
             vcd->displayValues[3] = cutoff2;
-            vcd->displayValues[4] = vcd->capFeedback ? LEAF_clip(0.0f, vcd->presetKnobValues[Delay][4] * 1.1f, 0.9f) : vcd->presetKnobValues[Delay][4] * 1.1f;
+            
+            vcd->displayValues[4] = vcd->delayParams.uncapFeedback ?
+            vcd->presetKnobValues[Delay][4] * 1.1f :
+            LEAF_clip(0.0f, vcd->presetKnobValues[Delay][4] * 1.1f, 0.9f);
+            
             vcd->displayValues[5] = vcd->presetKnobValues[Delay][5];
             
             tSVF_setFreq(&vcd->delayHP, vcd->displayValues[2]);
@@ -2426,7 +2474,7 @@ namespace vocodec
             
             float input1, input2;
             
-            if (vcd->delayShaper == 0)
+            if (vcd->delayParams.shaper == 0)
             {
                 input1 = tFeedbackLeveler_tick(&vcd->feedbackControl, tanhf(input[1] + (vcd->delayFB1 * vcd->displayValues[4])));
                 input2 = tFeedbackLeveler_tick(&vcd->feedbackControl, tanhf(input[1] + (vcd->delayFB2 * vcd->displayValues[4])));
@@ -2439,7 +2487,7 @@ namespace vocodec
             tTapeDelay_setDelay(&vcd->delay, vcd->displayValues[0]);
             tTapeDelay_setDelay(&vcd->delay2, vcd->displayValues[1]);
             
-            if (!vcd->freeze)
+            if (!vcd->delayParams.freeze)
             {
                 vcd->delayFB1 = tTapeDelay_tick(&vcd->delay, input1);
                 vcd->delayFB2 = tTapeDelay_tick(&vcd->delay2, input2);
@@ -2484,17 +2532,19 @@ namespace vocodec
             tDattorroReverb_initToPool(&vcd->reverb, &vcd->mediumPool);
             tExpSmooth_init(&vcd->sizeSmoother, 0.5f, 0.001f, &vcd->leaf);
             tDattorroReverb_setMix(&vcd->reverb, 1.0f);
-            vcd->freeze = 0;
-            vcd->capFeedback = 1;
             vcd->leaf.clearOnAllocation = 0;
+            setLED_A(vcd, 0);
+            setLED_B(vcd, vcd->reverbParams.uncapFeedback);
+            setLED_C(vcd, vcd->reverbParams.freeze);
         }
         
         void SFXReverbFrame(Vocodec* vcd)
         {
             if (vcd->buttonActionsSFX[ButtonB][ActionPress])
             {
-                vcd->capFeedback = !vcd->capFeedback;
+                vcd->reverbParams.uncapFeedback = !vcd->reverbParams.uncapFeedback;
                 vcd->buttonActionsSFX[ButtonB][ActionPress] = 0;
+                setLED_B(vcd, vcd->reverbParams.uncapFeedback);
             }
             vcd->displayValues[1] = faster_mtof(vcd->presetKnobValues[Reverb][1]*129.0f);
             tDattorroReverb_setFeedbackFilter(&vcd->reverb, vcd->displayValues[1]);
@@ -2510,10 +2560,10 @@ namespace vocodec
             float sample = 0.0f;
             if (vcd->buttonActionsSFX[ButtonC][ActionPress])
             {
-                vcd->freeze = !vcd->freeze;
+                vcd->reverbParams.freeze = !vcd->reverbParams.freeze;
                 vcd->buttonActionsSFX[ButtonC][ActionPress] = 0;
-                tDattorroReverb_setFreeze(&vcd->reverb, vcd->freeze);
-                setLED_C(vcd, vcd->freeze);
+                tDattorroReverb_setFreeze(&vcd->reverb, vcd->reverbParams.freeze);
+                setLED_C(vcd, vcd->reverbParams.freeze);
             }
             
             //tDattorroReverb_setInputDelay(&reverb, smoothedADC[1] * 200.f);
@@ -2522,7 +2572,11 @@ namespace vocodec
             tExpSmooth_setDest(&vcd->sizeSmoother, (vcd->displayValues[0] * 0.9f) + 0.1f);
             float tempSize = tExpSmooth_tick(&vcd->sizeSmoother);
             tDattorroReverb_setSize(&vcd->reverb, tempSize);
-            vcd->displayValues[4] = vcd->capFeedback ? LEAF_clip(0.0f, vcd->presetKnobValues[Reverb][4], 0.5f) : vcd->presetKnobValues[Reverb][4];
+            
+            vcd->displayValues[4] = vcd->reverbParams.uncapFeedback ?
+            vcd->presetKnobValues[Reverb][4] :
+            LEAF_clip(0.0f, vcd->presetKnobValues[Reverb][4], 0.5f);
+            
             tDattorroReverb_setFeedbackGain(&vcd->reverb, vcd->displayValues[4]);
             tDattorroReverb_tickStereo(&vcd->reverb, input[1], stereo);
             sample = tanhf(stereo[0]) * 0.99f;
@@ -2549,8 +2603,10 @@ namespace vocodec
             tSVF_init(&vcd->lowpass2, SVFTypeLowpass, 18000.0f, 0.75f, &vcd->leaf);
             tSVF_init(&vcd->highpass2, SVFTypeHighpass, 40.0f, 0.75f, &vcd->leaf);
             tSVF_init(&vcd->bandpass2, SVFTypeBandpass, 2000.0f, 1.0f, &vcd->leaf);
-            vcd->freeze = 0;
             vcd->leaf.clearOnAllocation = 0;
+            setLED_A(vcd, 0);
+            setLED_B(vcd, 0);
+            setLED_C(vcd, vcd->reverb2Params.freeze);
         }
         
         void SFXReverb2Frame(Vocodec* vcd)
@@ -2563,7 +2619,7 @@ namespace vocodec
             float stereoOuts[2];
             float sample = 0.0f;
             vcd->displayValues[0] = vcd->presetKnobValues[Reverb2][0] * 4.0f;
-            if (!vcd->freeze)
+            if (!vcd->reverb2Params.freeze)
             {
                 tNReverb_setT60(&vcd->reverb2, vcd->displayValues[0]);
             }
@@ -2587,17 +2643,17 @@ namespace vocodec
             
             if (vcd->buttonActionsSFX[ButtonC][ActionPress])
             {
-                vcd->freeze = !vcd->freeze;
+                vcd->reverb2Params.freeze = !vcd->reverb2Params.freeze;
                 vcd->buttonActionsSFX[ButtonC][ActionPress] = 0;
-                setLED_C(vcd, vcd->freeze);
+                setLED_C(vcd, vcd->reverb2Params.freeze);
             }
-            
-            if (vcd->buttonActionsSFX[ButtonA][ActionPress])
-            {
-                vcd->freeze = !vcd->freeze;
-                vcd->buttonActionsSFX[ButtonA][ActionPress] = 0;
-                setLED_C(vcd, vcd->freeze);
-            }
+//
+//            if (vcd->buttonActionsSFX[ButtonA][ActionPress])
+//            {
+//                vcd->freeze = !vcd->freeze;
+//                vcd->buttonActionsSFX[ButtonA][ActionPress] = 0;
+//                setLED_C(vcd, vcd->freeze);
+//            }
             
             tNReverb_tickStereo(&vcd->reverb2, input[1], stereoOuts);
             float leftOut = tSVF_tick(&vcd->lowpass, stereoOuts[0]);
@@ -2628,19 +2684,17 @@ namespace vocodec
         //Living String
         void SFXLivingStringAlloc(Vocodec* vcd)
         {
-            vcd->levMode = 0;
             tSimplePoly_setNumVoices(&vcd->poly, NUM_STRINGS);
             for (int i = 0; i < NUM_STRINGS; i++)
             {
                 vcd->myDetune[i] = (vcd->leaf.random() * 0.3f) - 0.15f;
                 //tComplexLivingString_init(&theString[i],  myFreq, 0.4f, 0.0f, 16000.0f, .999f, .5f, .5f, 0.1f, 0);
-                tComplexLivingString_initToPool(&vcd->theString[i], 440.f, 0.8f, 0.3f, 0.f, 9000.f, 1.0f, 0.3f, 0.01f, 0.125f, vcd->levMode, &vcd->mediumPool);
+                tComplexLivingString_initToPool(&vcd->theString[i], 440.f, 0.8f, 0.3f, 0.f, 9000.f, 1.0f, 0.3f, 0.01f, 0.125f, vcd->livingStringParams.feedback, &vcd->mediumPool);
                 tExpSmooth_init(&vcd->stringGains[i], 0.0f, 0.002f, &vcd->leaf);
             }
-            vcd->ignoreFreqKnobs = 0;
-            setLED_A(vcd, vcd->ignoreFreqKnobs);
-            setLED_B(vcd, vcd->independentStrings);
-            setLED_C(vcd, vcd->levMode);
+            setLED_A(vcd, vcd->livingStringParams.ignoreFreqKnobs);
+            setLED_B(vcd, vcd->livingStringParams.independentStrings);
+            setLED_C(vcd, vcd->livingStringParams.feedback);
             
         }
         
@@ -2648,25 +2702,25 @@ namespace vocodec
         {
             if (vcd->buttonActionsSFX[ButtonA][ActionPress] == 1)
             {
-                vcd->ignoreFreqKnobs = !vcd->ignoreFreqKnobs;
+                vcd->livingStringParams.ignoreFreqKnobs = !vcd->livingStringParams.ignoreFreqKnobs;
                 vcd->buttonActionsSFX[ButtonA][ActionPress] = 0;
-                setLED_A(vcd, vcd->ignoreFreqKnobs);
+                setLED_A(vcd, vcd->livingStringParams.ignoreFreqKnobs);
             }
             if (vcd->buttonActionsSFX[ButtonC][ActionPress] == 1)
             {
-                vcd->levMode = !vcd->levMode;
+                vcd->livingStringParams.feedback = !vcd->livingStringParams.feedback;
                 for (int i = 0; i < NUM_STRINGS; i++)
                 {
-                    tComplexLivingString_setLevMode(&vcd->theString[i], vcd->levMode);
+                    tComplexLivingString_setLevMode(&vcd->theString[i], vcd->livingStringParams.feedback);
                 }
                 vcd->buttonActionsSFX[ButtonC][ActionPress] = 0;
-                setLED_C(vcd, vcd->levMode);
+                setLED_C(vcd, vcd->livingStringParams.feedback);
             }
             if (vcd->buttonActionsSFX[ButtonB][ActionPress] == 1)
             {
-                vcd->independentStrings = !vcd->independentStrings;
+                vcd->livingStringParams.independentStrings = !vcd->livingStringParams.independentStrings;
                 vcd->buttonActionsSFX[ButtonB][ActionPress] = 0;
-                setLED_B(vcd, vcd->independentStrings);
+                setLED_B(vcd, vcd->livingStringParams.independentStrings);
             }
             vcd->displayValues[0] = LEAF_midiToFrequency((vcd->presetKnobValues[LivingString][0] * 90.0f)); //freq
             vcd->displayValues[1] = vcd->presetKnobValues[LivingString][1]; //detune
@@ -2677,9 +2731,9 @@ namespace vocodec
             vcd->displayValues[6] = ((tanhf((vcd->presetKnobValues[LivingString][6] * 8.0f) - 4.0f)) * 0.5f) + 0.5f;//prep Index
             vcd->displayValues[7] = vcd->presetKnobValues[LivingString][7];// let ring
             
-            if (!vcd->independentStrings)
+            if (!vcd->livingStringParams.independentStrings)
             {
-                if (!vcd->ignoreFreqKnobs)
+                if (!vcd->livingStringParams.ignoreFreqKnobs)
                 {
                     
                     
@@ -2770,12 +2824,11 @@ namespace vocodec
         //Living String Synth
         void SFXLivingStringSynthAlloc(Vocodec* vcd)
         {
-            vcd->levMode = 1;
             vcd->leaf.clearOnAllocation = 0;
-            tSimplePoly_setNumVoices(&vcd->poly, NUM_STRINGS);
+            tSimplePoly_setNumVoices(&vcd->poly, vcd->livingStringSynthParams.numVoices);
             for (int i = 0; i < NUM_STRINGS; i++)
             {
-                tComplexLivingString_initToPool(&vcd->theString[i], 440.f, 0.2f, 0.3f, 0.f, 9000.f, 1.0f, 0.0f, 0.01f, 0.125f, vcd->levModeStr, &vcd->mediumPool);
+                tComplexLivingString_initToPool(&vcd->theString[i], 440.f, 0.2f, 0.3f, 0.f, 9000.f, 1.0f, 0.0f, 0.01f, 0.125f, vcd->livingStringSynthParams.feedback, &vcd->mediumPool);
                 tSlide_init(&vcd->stringOutEnvs[i], 10.0f, 1000.0f, &vcd->leaf);
                 tSlide_init(&vcd->stringInEnvs[i], 12.0f, 1000.0f, &vcd->leaf);
                 tADSR4_init(&vcd->pluckEnvs[i], 4.0f, 70.0f, 0.0f, 5.0f, vcd->decayExpBuffer, DECAY_EXP_BUFFER_SIZE, &vcd->leaf);
@@ -2783,9 +2836,9 @@ namespace vocodec
             }
             tVZFilter_init(&vcd->pluckFilt, BandpassPeak, 2000.0f, 4.0f, &vcd->leaf);
             tNoise_init(&vcd->stringPluckNoise, WhiteNoise, &vcd->leaf);
-            setLED_A(vcd, vcd->numVoices == 1);
-            setLED_B(vcd, vcd->voicePluck);
-            setLED_C(vcd, vcd->levModeStr);
+            setLED_A(vcd, vcd->livingStringSynthParams.numVoices == 1);
+            setLED_B(vcd, vcd->livingStringSynthParams.audioIn);
+            setLED_C(vcd, vcd->livingStringSynthParams.feedback);
             vcd->samplesPerMs = vcd->leaf.sampleRate / 1000.0f;
         }
         
@@ -2793,28 +2846,28 @@ namespace vocodec
         {
             if (vcd->buttonActionsSFX[ButtonA][ActionPress] == 1)
             {
-                vcd->numVoices = (vcd->numVoices > 1) ? 1 : NUM_STRINGS;
-                tSimplePoly_setNumVoices(&vcd->poly, vcd->numVoices);
+                vcd->livingStringSynthParams.numVoices = (vcd->livingStringSynthParams.numVoices > 1) ? 1 : NUM_STRINGS;
+                tSimplePoly_setNumVoices(&vcd->poly, vcd->livingStringSynthParams.numVoices);
                 vcd->buttonActionsSFX[ButtonA][ActionPress] = 0;
-                setLED_A(vcd, vcd->numVoices == 1);
+                setLED_A(vcd, vcd->livingStringSynthParams.numVoices == 1);
             }
             if (vcd->buttonActionsSFX[ButtonB][ActionPress] == 1)
             {
-                vcd->voicePluck = !vcd->voicePluck;
+                vcd->livingStringSynthParams.audioIn = !vcd->livingStringSynthParams.audioIn;
                 
                 vcd->buttonActionsSFX[ButtonB][ActionPress] = 0;
-                setLED_B(vcd, vcd->voicePluck);
+                setLED_B(vcd, vcd->livingStringSynthParams.audioIn);
             }
             
             if (vcd->buttonActionsSFX[ButtonC][ActionPress] == 1)
             {
-                vcd->levModeStr = !vcd->levModeStr;
+                vcd->livingStringSynthParams.feedback = !vcd->livingStringSynthParams.feedback;
                 for (int i = 0; i < NUM_STRINGS; i++)
                 {
-                    tComplexLivingString_setLevMode(&vcd->theString[i], vcd->levModeStr);
+                    tComplexLivingString_setLevMode(&vcd->theString[i], vcd->livingStringSynthParams.feedback);
                 }
                 vcd->buttonActionsSFX[ButtonC][ActionPress] = 0;
-                setLED_C(vcd, vcd->levModeStr);
+                setLED_C(vcd, vcd->livingStringSynthParams.feedback);
             }
             
             
@@ -2848,7 +2901,7 @@ namespace vocodec
                 tComplexLivingString_setFreq(&vcd->theString[i], vcd->freq[i]);
                 //tComplexLivingString_setDampFreq(&theString[i], LEAF_clip(40.0f, freq[i] + displayValues[3], 23000.0f));
                 float voiceOn = (tSimplePoly_getVelocity(&vcd->poly, i) > 0);
-                if (vcd->levModeStr)
+                if (vcd->livingStringSynthParams.feedback)
                 {
                     tComplexLivingString_setTargetLev(&vcd->theString[i], voiceOn * vcd->displayValues[8]);
                 }
@@ -2883,7 +2936,7 @@ namespace vocodec
             {
                 
                 //float pluck = tNoise_tick(&stringPluckNoise);
-                inputSample = (input[1] * vcd->voicePluck) + (pluck * tADSR4_tick(&vcd->pluckEnvs[i]));
+                inputSample = (input[1] * vcd->livingStringSynthParams.audioIn) + (pluck * tADSR4_tick(&vcd->pluckEnvs[i]));
                 //inputSample = (input[1] * voicePluck) + (tVZFilter_tick(&pluckFilt, (tNoise_tick(&stringPluckNoise))) * tADSR4_tick(&pluckEnvs[i]));
                 sample += tComplexLivingString_tick(&vcd->theString[i], (inputSample * tSlide_tickNoInput(&vcd->stringOutEnvs[i]))) * tSlide_tickNoInput(&vcd->stringOutEnvs[i]);
             }
@@ -2911,8 +2964,7 @@ namespace vocodec
         void SFXClassicSynthAlloc(Vocodec* vcd)
         {
             vcd->leaf.clearOnAllocation = 1;
-            tSimplePoly_setNumVoices(&vcd->poly, vcd->numVoices);
-            
+            tSimplePoly_setNumVoices(&vcd->poly, vcd->classicSynthParams.numVoices);
             
             float* knobs = vcd->presetKnobValues[ClassicSynth];
             
@@ -2973,20 +3025,21 @@ namespace vocodec
             tCycle_init(&vcd->pwmLFO2, &vcd->leaf);
             tCycle_setFreq(&vcd->pwmLFO1, 63.0f);
             tCycle_setFreq(&vcd->pwmLFO2, 72.11f);
-            
-            setLED_A(vcd, vcd->numVoices == 1);
             vcd->leaf.clearOnAllocation = 0;
             //            cycleCountVals[0][2] = 2;
+            setLED_A(vcd, vcd->classicSynthParams.numVoices == 1);
+            setLED_B(vcd, 0);
+            setLED_C(vcd, 0);
         }
         
         void SFXClassicSynthFrame(Vocodec* vcd)
         {
             if (vcd->buttonActionsSFX[ButtonA][ActionPress] == 1)
             {
-                vcd->numVoices = (vcd->numVoices > 1) ? 1 : NUM_VOC_VOICES;
-                tSimplePoly_setNumVoices(&vcd->poly, vcd->numVoices);
+                vcd->classicSynthParams.numVoices = (vcd->classicSynthParams.numVoices > 1) ? 1 : NUM_VOC_VOICES;
+                tSimplePoly_setNumVoices(&vcd->poly, vcd->classicSynthParams.numVoices);
                 vcd->buttonActionsSFX[ButtonA][ActionPress] = 0;
-                setLED_A(vcd, vcd->numVoices == 1);
+                setLED_A(vcd, vcd->classicSynthParams.numVoices == 1);
             }
             if (vcd->buttonActionsSFX[ButtonB][ActionPress] == 1)
             {
@@ -3015,77 +3068,77 @@ namespace vocodec
                         break;
                     case 4:
                         vcd->displayValues[4] = (knobs[4] * 2.0f) + 0.4f; //filter Q
-                        for (int i = 0; i < vcd->numVoices; i++)
+                        for (int i = 0; i < vcd->classicSynthParams.numVoices; i++)
                         {
                             tEfficientSVF_setQ(&vcd->synthLP[i], vcd->displayValues[4]);
                         }
                         break;
                     case 5:
                         vcd->displayValues[5] = vcd->expBuffer[(int)(knobs[5] * vcd->expBufferSizeMinusOne)] * 8192.0f; //att
-                        for (int i = 0; i < vcd->numVoices; i++)
+                        for (int i = 0; i < vcd->classicSynthParams.numVoices; i++)
                         {
                             tADSR4_setAttack(&vcd->polyEnvs[i], vcd->displayValues[5]);
                         }
                         break;
                     case 6:
                         vcd->displayValues[6] = vcd->expBuffer[(int)(knobs[6] * vcd->expBufferSizeMinusOne)] * 8192.0f; //dec
-                        for (int i = 0; i < vcd->numVoices; i++)
+                        for (int i = 0; i < vcd->classicSynthParams.numVoices; i++)
                         {
                             tADSR4_setDecay(&vcd->polyEnvs[i], vcd->displayValues[6]);
                         }
                         break;
                     case 7:
                         vcd->displayValues[7] = knobs[7]; //sus
-                        for (int i = 0; i < vcd->numVoices; i++)
+                        for (int i = 0; i < vcd->classicSynthParams.numVoices; i++)
                         {
                             tADSR4_setSustain(&vcd->polyEnvs[i], vcd->displayValues[7]);
                         }
                         break;
                     case 8:
                         vcd->displayValues[8] = vcd->expBuffer[(int)(knobs[8] * vcd->expBufferSizeMinusOne)] * 8192.0f; //rel
-                        for (int i = 0; i < vcd->numVoices; i++)
+                        for (int i = 0; i < vcd->classicSynthParams.numVoices; i++)
                         {
                             tADSR4_setRelease(&vcd->polyEnvs[i], vcd->displayValues[8]);
                         }
                         break;
                     case 9:
                         vcd->displayValues[9] = knobs[9]; //leak
-                        for (int i = 0; i < vcd->numVoices; i++)
+                        for (int i = 0; i < vcd->classicSynthParams.numVoices; i++)
                         {
                             tADSR4_setLeakFactor(&vcd->polyEnvs[i], ((1.0f - vcd->displayValues[9]) * 0.00005f) + 0.99995f);
                         }
                         break;
                     case 10:
                         vcd->displayValues[10] = vcd->expBuffer[(int)(knobs[10] * vcd->expBufferSizeMinusOne)] * 8192.0f; //att
-                        for (int i = 0; i < vcd->numVoices; i++)
+                        for (int i = 0; i < vcd->classicSynthParams.numVoices; i++)
                         {
                             tADSR4_setAttack(&vcd->polyFiltEnvs[i], vcd->displayValues[10]);
                         }
                         break;
                     case 11:
                         vcd->displayValues[11] = vcd->expBuffer[(int)(knobs[11] * vcd->expBufferSizeMinusOne)] * 8192.0f; //dec
-                        for (int i = 0; i < vcd->numVoices; i++)
+                        for (int i = 0; i < vcd->classicSynthParams.numVoices; i++)
                         {
                             tADSR4_setDecay(&vcd->polyFiltEnvs[i], vcd->displayValues[11]);
                         }
                         break;
                     case 12:
                         vcd->displayValues[12] = knobs[12]; //sus
-                        for (int i = 0; i < vcd->numVoices; i++)
+                        for (int i = 0; i < vcd->classicSynthParams.numVoices; i++)
                         {
                             tADSR4_setSustain(&vcd->polyFiltEnvs[i], vcd->displayValues[12]);
                         }
                         break;
                     case 13:
                         vcd->displayValues[13] = vcd->expBuffer[(int)(knobs[13] * vcd->expBufferSizeMinusOne)] * 8192.0f; //rel
-                        for (int i = 0; i < vcd->numVoices; i++)
+                        for (int i = 0; i < vcd->classicSynthParams.numVoices; i++)
                         {
                             tADSR4_setRelease(&vcd->polyFiltEnvs[i], vcd->displayValues[13]);
                         }
                         break;
                     case 14:
                         vcd->displayValues[14] = knobs[14]; //leak
-                        for (int i = 0; i < vcd->numVoices; i++)
+                        for (int i = 0; i < vcd->classicSynthParams.numVoices; i++)
                         {
                             tADSR4_setLeakFactor(&vcd->polyFiltEnvs[i], ((1.0f - vcd->displayValues[14]) * 0.00005f) + 0.99995f);
                         }
@@ -3103,7 +3156,7 @@ namespace vocodec
             float tempLFO1 = (tCycle_tick(&vcd->pwmLFO1) * 0.25f) + 0.5f; // pulse length
             float tempLFO2 = ((tCycle_tick(&vcd->pwmLFO2) * 0.25f) + 0.5f) * tempLFO1; // open length
             
-            for (int i = 0; i < vcd->numVoices; i++)
+            for (int i = 0; i < vcd->classicSynthParams.numVoices; i++)
             {
                 float myMidiNote = tSimplePoly_getPitch(&vcd->poly, i);
                 
@@ -3125,7 +3178,7 @@ namespace vocodec
                 tempFreq2 = LEAF_clip(0.0f, tempFreq2, 4095.0f);
                 vcd->filtFreqs[i] = (uint16_t) tempFreq2;
                 
-                if (vcd->numVoices > 1)
+                if (vcd->classicSynthParams.numVoices > 1)
                 {
                     if (vcd->poly->voices[i][0] == -2)
                     {
@@ -3208,13 +3261,15 @@ namespace vocodec
             }
             tCycle_init(&vcd->tremolo, &vcd->leaf);
             tCycle_setFreq(&vcd->tremolo, 3.0f);
-            tSimplePoly_setNumVoices(&vcd->poly, NUM_VOC_VOICES);
-            
-            setLED_A(vcd, vcd->numVoices == 1);
-            setLED_C(vcd, vcd->tremoloStereo == 1);
-            OLEDclearLine(vcd, SecondLine);
-            OLEDwriteString(vcd, vcd->soundNames[vcd->Rsound], 6, 0, SecondLine);
+            tSimplePoly_setNumVoices(&vcd->poly, vcd->rhodesParams.numVoices);
             vcd->leaf.clearOnAllocation = 0;
+            
+            setLED_A(vcd, vcd->rhodesParams.numVoices == 1);
+            setLED_B(vcd, 0);
+            setLED_C(vcd, vcd->rhodesParams.tremoloStereo);
+            OLEDclearLine(vcd, SecondLine);
+            OLEDwriteString(vcd, vcd->soundNames[vcd->rhodesParams.sound], 6, 0, SecondLine);
+            
             
         }
         
@@ -3222,21 +3277,21 @@ namespace vocodec
         {
             if (vcd->buttonActionsSFX[ButtonA][ActionPress] == 1)
             {
-                vcd->numVoices = (vcd->numVoices > 1) ? 1 : NUM_VOC_VOICES;
-                tSimplePoly_setNumVoices(&vcd->poly, vcd->numVoices);
+                vcd->rhodesParams.numVoices = (vcd->rhodesParams.numVoices > 1) ? 1 : NUM_VOC_VOICES;
+                tSimplePoly_setNumVoices(&vcd->poly, vcd->rhodesParams.numVoices);
                 vcd->buttonActionsSFX[ButtonA][ActionPress] = 0;
-                setLED_A(vcd, vcd->numVoices == 1);
+                setLED_A(vcd, vcd->rhodesParams.numVoices == 1);
             }
             if (vcd->buttonActionsSFX[ButtonB][ActionPress] == 1)
             {
                 vcd->buttonActionsSFX[ButtonB][ActionPress] = 0;
-                vcd->Rsound = (vcd->Rsound + 1 ) % 5; // switch to another rhodes preset sound
+                vcd->rhodesParams.sound = (vcd->rhodesParams.sound + 1 ) % 5; // switch to another rhodes preset sound
             }
             if (vcd->buttonActionsSFX[ButtonC][ActionPress] == 1)
             {
-                vcd->tremoloStereo = !vcd->tremoloStereo;
+                vcd->rhodesParams.tremoloStereo = !vcd->rhodesParams.tremoloStereo;
                 vcd->buttonActionsSFX[ButtonC][ActionPress] = 0;
-                setLED_C(vcd, vcd->tremoloStereo == 1);
+                setLED_C(vcd, vcd->rhodesParams.tremoloStereo == 1);
                 
             }
             
@@ -3386,10 +3441,10 @@ namespace vocodec
                 vcd->prevDisplayValues[k] = vcd->displayValues[k];
             }
             
-            for (int i = 0; i < vcd->numVoices; i++)
+            for (int i = 0; i < vcd->rhodesParams.numVoices; i++)
             {
                 calculateFreq(vcd, i);
-                if (vcd->numVoices > 1)
+                if (vcd->rhodesParams.numVoices > 1)
                 {
                     if (vcd->poly->voices[i][0] == -2)
                     {
@@ -3421,11 +3476,11 @@ namespace vocodec
                 }
             }
             
-            for (int i = 0; i < vcd->numVoices; i++)
+            for (int i = 0; i < vcd->rhodesParams.numVoices; i++)
             {
                 float myFrequency = vcd->freq[i];
                 float sample = 0.0f;
-                int r = vcd->Rsound;
+                int r = vcd->rhodesParams.sound;
                 tCycle_setFreq(&vcd->FM_sines[i][5], (myFrequency * vcd->FM_freqRatios[r][5]) + (vcd->FM_indices[r][5] * vcd->feedback_output * vcd->displayValues[0]));
                 
                 vcd->feedback_output = tCycle_tick(&vcd->FM_sines[i][5]);
@@ -3452,7 +3507,7 @@ namespace vocodec
             rightSample *= 0.4f;
             float tremoloSignal = ((tCycle_tick(&vcd->tremolo) * 0.5f) + 0.5f) * vcd->displayValues[1];
             
-            if (vcd->tremoloStereo)
+            if (vcd->rhodesParams.tremoloStereo)
             {
                 leftSample *= (tremoloSignal + (1.0f - vcd->displayValues[1]));
                 rightSample *= ((1.0f-tremoloSignal) + (1.0f - vcd->displayValues[1]));
@@ -3528,7 +3583,7 @@ namespace vocodec
             int index = 0;
             int* chord;
             
-            if (vcd->autotuneChromatic > 0)
+            if (vcd->neartuneParams.useChromatic > 0)
             {
                 chord = vcd->chromaticArray;
             }
@@ -3563,7 +3618,7 @@ namespace vocodec
             int* chord;
             float output = 0.0f;
             
-            if (vcd->autotuneChromatic > 0)
+            if (vcd->neartuneParams.useChromatic > 0)
             {
                 chord = vcd->chromaticArray;
             }
@@ -3571,7 +3626,7 @@ namespace vocodec
             {
                 chord = vcd->chordArray;
             }
-            if (vcd->autotuneLock > 0)
+            if (vcd->neartuneParams.lock > 0)
             {
                 chord = vcd->lockArray;
             }
@@ -3685,7 +3740,7 @@ namespace vocodec
                 
                 if (vcd->currentPreset == AutotuneMono)
                 {
-                    if (vcd->autotuneLock)
+                    if (vcd->neartuneParams.lock)
                     {
                         vcd->lockArray[key%12]++;
                     }

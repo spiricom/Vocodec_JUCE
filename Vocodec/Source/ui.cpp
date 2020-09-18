@@ -697,17 +697,17 @@ namespace vocodec
             const char* writeString = "";
             if (vcd->buttonActionsUI[ButtonA][ActionPress] == 1)
             {
-                writeString = (vcd->numVoices > 1) ? "POLY" : "MONO";
+                writeString = (vcd->vocoderParams.numVoices > 1) ? "POLY" : "MONO";
                 vcd->buttonActionsUI[ButtonA][ActionPress] = 0;
             }
             if (vcd->buttonActionsUI[ButtonB][ActionPress] == 1)
             {
-                writeString = vcd->internalExternal ? "EXTERNAL" : "INTERNAL";
+                writeString = vcd->vocoderParams.internalExternal ? "EXTERNAL" : "INTERNAL";
                 vcd->buttonActionsUI[ButtonB][ActionPress] = 0;
             }
             if (vcd->buttonActionsUI[ButtonC][ActionPress] == 1)
             {
-                writeString = vcd->vocFreezeLPC ? "FROZEN" : "UNFROZEN";
+                writeString = vcd->vocoderParams.freeze ? "FROZEN" : "UNFROZEN";
                 vcd->buttonActionsUI[ButtonC][ActionPress] = 0;
             }
             return writeString;
@@ -718,17 +718,17 @@ namespace vocodec
             const char* writeString = "";
             if (vcd->buttonActionsUI[ButtonA][ActionPress] == 1)
             {
-                writeString = (vcd->numVoices > 1) ? "POLY" : "MONO";
+                writeString = (vcd->vocoderChParams.numVoices > 1) ? "POLY" : "MONO";
                 vcd->buttonActionsUI[ButtonA][ActionPress] = 0;
             }
             if (vcd->buttonActionsUI[ButtonB][ActionPress] == 1)
             {
-                writeString = vcd->internalExternal ? "EXTERNAL" : "INTERNAL";
+                writeString = vcd->vocoderChParams.internalExternal ? "EXTERNAL" : "INTERNAL";
                 vcd->buttonActionsUI[ButtonB][ActionPress] = 0;
             }
             if (vcd->buttonActionsUI[ButtonC][ActionPress] == 1)
             {
-                writeString = vcd->vocChFreeze ? "FROZEN" : "UNFROZEN";
+                writeString = vcd->vocoderChParams.freeze ? "FROZEN" : "UNFROZEN";
                 vcd->buttonActionsUI[ButtonC][ActionPress] = 0;
             }
             return writeString;
@@ -745,13 +745,13 @@ namespace vocodec
             const char* writeString = "";
             if (vcd->buttonActionsUI[ButtonA][ActionPress])
             {
-                writeString = vcd->autotuneChromatic ? "AUTOCHROM ON" : "AUTOCHROM OFF";
+                writeString = vcd->neartuneParams.useChromatic ? "AUTOCHROM ON" : "AUTOCHROM OFF";
                 vcd->buttonActionsUI[ButtonA][ActionPress] = 0;
             }
             
             if (vcd->buttonActionsUI[ButtonC][ActionPress])
             {
-                writeString = vcd->autotuneLock ? "CHORD LOCK ON" : "CHORD LOCK OFF";
+                writeString = vcd->neartuneParams.lock ? "CHORD LOCK ON" : "CHORD LOCK OFF";
                 vcd->buttonActionsUI[ButtonC][ActionPress] = 0;
             }
             
@@ -772,14 +772,14 @@ namespace vocodec
             {
                 OLEDclearLine(vcd, SecondLine);
                 OLEDwriteFloat(vcd, vcd->sampleLength, 0, SecondLine);
-                OLEDwriteString(vcd, vcd->samplePlaying ? "PLAYING" : "STOPPED", 7, 48, SecondLine);
+                OLEDwriteString(vcd, vcd->samplerBPParams.samplePlaying ? "PLAYING" : "STOPPED", 7, 48, SecondLine);
                 vcd->buttonActionsUI[ButtonC][ActionPress] = 0;
             }
             
             if (vcd->buttonActionsUI[ButtonB][ActionPress])
             {
                 OLEDclearLine(vcd, SecondLine);
-                OLEDwriteString(vcd, vcd->bpMode ? "BACKANDFORTH" : "FORWARD     ", 12, 0, SecondLine);
+                OLEDwriteString(vcd, vcd->samplerBPParams.playMode ? "BACKANDFORTH" : "FORWARD     ", 12, 0, SecondLine);
                 vcd->buttonActionsUI[ButtonB][ActionPress] = 0;
             }
             if (vcd->buttonActionsUI[ButtonA][ActionHoldContinuous])
@@ -793,7 +793,7 @@ namespace vocodec
             {
                 OLEDclearLine(vcd, SecondLine);
                 OLEDwriteFloat(vcd, vcd->sampleLength, 0, SecondLine);
-                OLEDwriteString(vcd, vcd->samplePlaying ? "PLAYING" : "STOPPED", 7, 48, SecondLine);
+                OLEDwriteString(vcd, vcd->samplerBPParams.samplePlaying ? "PLAYING" : "STOPPED", 7, 48, SecondLine);
                 vcd->buttonActionsUI[ButtonA][ActionRelease] = 0;
             }
             return writeString;
@@ -816,7 +816,7 @@ namespace vocodec
             
             if (vcd->buttonActionsUI[ButtonB][ActionPress])
             {
-                writeString = vcd->controlAllKeys ? "MOD ALL" : "MOD SINGLE";
+                writeString = vcd->samplerKParams.controlAllKeys ? "MOD ALL" : "MOD SINGLE";
                 vcd->buttonActionsUI[ButtonB][ActionPress] = 0;
             }
             return writeString;
@@ -827,11 +827,11 @@ namespace vocodec
             const char* writeString = "";
             if (vcd->buttonActionsUI[ButtonA][ActionPress])
             {
-                if (vcd->samplerMode == PlayLoop)
+                if (vcd->samplerAutoParams.playMode == PlayLoop)
                 {
                     writeString = "LOOP";
                 }
-                else if (vcd->samplerMode == PlayBackAndForth)
+                else if (vcd->samplerAutoParams.playMode == PlayBackAndForth)
                 {
                     writeString = "BACK'N'FORTH";
                 }
@@ -839,12 +839,12 @@ namespace vocodec
             }
             if (vcd->buttonActionsUI[ButtonB][ActionPress])
             {
-                writeString = vcd->triggerChannel ? "CH2 TRIG" : "CH1 TRIG";
+                writeString = vcd->samplerAutoParams.triggerChannel ? "CH2 TRIG" : "CH1 TRIG";
                 vcd->buttonActionsUI[ButtonB][ActionPress] = 0;
             }
             if (vcd->buttonActionsUI[ButtonC][ActionPress])
             {
-                writeString = vcd->pitchQuantization ? "QUANT SPEED" : "CONT SPEED";
+                writeString = vcd->samplerAutoParams.quantizeRate ? "QUANT SPEED" : "CONT SPEED";
                 vcd->buttonActionsUI[ButtonC][ActionPress] = 0;
             }
             return writeString;
@@ -855,7 +855,7 @@ namespace vocodec
             const char* writeString = "";
             if (vcd->buttonActionsUI[ButtonA][ActionPress])
             {
-                writeString = vcd->distortionMode ? "SHAPER" : "TANH";
+                writeString = vcd->distortionParams.mode ? "SHAPER" : "TANH";
                 vcd->buttonActionsUI[ButtonA][ActionPress] = 0;
             }
             return writeString;
@@ -866,7 +866,7 @@ namespace vocodec
             const char* writeString = "";
             if (vcd->buttonActionsUI[ButtonA][ActionPress])
             {
-                writeString = vcd->foldMode ? "TWO IN SERIES" : "OVERSAMPLED";
+                writeString = vcd->waveFolderParams.mode ? "TWO IN SERIES" : "OVERSAMPLED";
                 vcd->buttonActionsUI[ButtonA][ActionPress] = 0;
             }
             return writeString;
@@ -878,7 +878,7 @@ namespace vocodec
             
             if (vcd->buttonActionsUI[ButtonA][ActionPress])
             {
-                writeString = vcd->crusherStereo ? "STEREO" : "MONO";
+                writeString = vcd->bitcrusherParams.stereo ? "STEREO" : "MONO";
                 vcd->buttonActionsUI[ButtonA][ActionPress] = 0;
             }
             return writeString;
@@ -889,12 +889,12 @@ namespace vocodec
             const char* writeString = "";
             if (vcd->buttonActionsUI[ButtonA][ActionPress])
             {
-                writeString = vcd->delayShaper ? "SHAPER ON" : "SHAPER OFF";
+                writeString = vcd->delayParams.shaper ? "SHAPER ON" : "SHAPER OFF";
                 vcd->buttonActionsUI[ButtonA][ActionPress] = 0;
             }
             if (vcd->buttonActionsUI[ButtonB][ActionPress])
             {
-                writeString = vcd->capFeedback ? "FB CAP" : "FB UNCAP";
+                writeString = vcd->delayParams.uncapFeedback ? "FB UNCAP" : "FB CAP";
                 vcd->buttonActionsUI[ButtonB][ActionPress] = 0;
             }
             return writeString;
@@ -905,12 +905,12 @@ namespace vocodec
             const char* writeString = "";
             if (vcd->buttonActionsUI[ButtonC][ActionPress])
             {
-                writeString = vcd->freeze ? "FREEZE" : "UNFREEZE";
+                writeString = vcd->reverbParams.freeze ? "FROZEN" : "UNFROZEN";
                 vcd->buttonActionsUI[ButtonC][ActionPress] = 0;
             }
             if (vcd->buttonActionsUI[ButtonB][ActionPress])
             {
-                writeString = vcd->capFeedback ? "FB CAP" : "FB UNCAP";
+                writeString = vcd->reverbParams.uncapFeedback ? "FB UNCAP" : "FB CAP";
                 vcd->buttonActionsUI[ButtonB][ActionPress] = 0;
             }
             return writeString;
@@ -921,7 +921,7 @@ namespace vocodec
             const char* writeString = "";
             if (vcd->buttonActionsUI[ButtonC][ActionPress])
             {
-                writeString = vcd->freeze ? "FREEZE" : "UNFREEZE";
+                writeString = vcd->reverb2Params.freeze ? "FROZEN" : "UNFROZEN";
                 vcd->buttonActionsUI[ButtonC][ActionPress] = 0;
             }
             return writeString;
@@ -932,18 +932,18 @@ namespace vocodec
             const char* writeString = "";
             if (vcd->buttonActionsUI[ButtonA][ActionPress] == 1)
             {
-                writeString = (vcd->ignoreFreqKnobs > 0) ? "MIDI PITCH" : "KNOB PITCH";
+                writeString = (vcd->livingStringParams.ignoreFreqKnobs > 0) ? "MIDI PITCH" : "KNOB PITCH";
                 vcd->buttonActionsUI[ButtonA][ActionPress] = 0;
             }
             if (vcd->buttonActionsUI[ButtonC][ActionPress] == 1)
             {
-                writeString = (vcd->levMode > 0) ? "FB MODE" : "DECAY MODE";
+                writeString = (vcd->livingStringParams.feedback > 0) ? "FB MODE" : "DECAY MODE";
                 vcd->buttonActionsUI[ButtonC][ActionPress] = 0;
             }
             
             if (vcd->buttonActionsUI[ButtonB][ActionPress] == 1)
             {
-                writeString = (vcd->independentStrings > 0) ? "INDIV CONTROL" : "KNOB1=>ALL";
+                writeString = (vcd->livingStringParams.independentStrings > 0) ? "INDIV CONTROL" : "KNOB1=>ALL";
                 vcd->buttonActionsUI[ButtonB][ActionPress] = 0;
             }
             return writeString;
@@ -954,17 +954,17 @@ namespace vocodec
             const char* writeString = "";
             if (vcd->buttonActionsUI[ButtonA][ActionPress] == 1)
             {
-                writeString = (vcd->numVoices > 1) ? "POLY" : "MONO";
+                writeString = (vcd->livingStringSynthParams.numVoices > 1) ? "POLY" : "MONO";
                 vcd->buttonActionsUI[ButtonA][ActionPress] = 0;
             }
             if (vcd->buttonActionsUI[ButtonB][ActionPress] == 1)
             {
-                writeString = (vcd->voicePluck > 0) ? "AUDIO IN" : "NO AUDIO IN";
+                writeString = (vcd->livingStringSynthParams.audioIn > 0) ? "AUDIO IN" : "NO AUDIO IN";
                 vcd->buttonActionsUI[ButtonB][ActionPress] = 0;
             }
             if (vcd->buttonActionsUI[ButtonC][ActionPress] == 1)
             {
-                writeString = (vcd->levModeStr > 0) ? "FB MODE" : "DECAY MODE";
+                writeString = (vcd->livingStringSynthParams.feedback > 0) ? "FB MODE" : "DECAY MODE";
                 vcd->buttonActionsUI[ButtonC][ActionPress] = 0;
             }
             return writeString;
@@ -975,7 +975,7 @@ namespace vocodec
             const char* writeString = "";
             if (vcd->buttonActionsUI[ButtonA][ActionPress] == 1)
             {
-                writeString = (vcd->numVoices > 1) ? "POLY" : "MONO";
+                writeString = (vcd->classicSynthParams.numVoices > 1) ? "POLY" : "MONO";
                 vcd->buttonActionsUI[ButtonA][ActionPress] = 0;
             }
             if (vcd->buttonActionsUI[ButtonB][ActionPress])
@@ -991,21 +991,19 @@ namespace vocodec
             const char* writeString = "";
             if (vcd->buttonActionsUI[ButtonA][ActionPress] == 1)
             {
-                writeString = (vcd->numVoices > 1) ? "POLY" : "MONO";
+                writeString = (vcd->rhodesParams.numVoices > 1) ? "POLY" : "MONO";
                 vcd->buttonActionsUI[ButtonA][ActionPress] = 0;
             }
             if (vcd->buttonActionsUI[ButtonB][ActionPress] == 1)
             {
                 vcd->buttonActionsUI[ButtonB][ActionPress] = 0;
                 OLEDclearLine(vcd, SecondLine);
-                OLEDwriteString(vcd, vcd->soundNames[vcd->Rsound], 6, 0, SecondLine);
+                OLEDwriteString(vcd, vcd->soundNames[vcd->rhodesParams.sound], 6, 0, SecondLine);
             }
             if (vcd->buttonActionsUI[ButtonC][ActionPress] == 1)
             {
+                writeString = (vcd->rhodesParams.numVoices > 1) ? "STEREO TREM" : "MONO TREM";
                 vcd->buttonActionsUI[ButtonC][ActionPress] = 0;
-                OLEDclearLine(vcd, SecondLine);
-                OLEDwriteString(vcd, "STEREO TREMO", 12, 0, SecondLine);
-                OLEDwriteInt(vcd, vcd->tremoloStereo, 1, 110, SecondLine);
             }
             return writeString;
         }
