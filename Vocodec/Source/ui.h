@@ -37,6 +37,8 @@ namespace vocodec
 
         void decrementPage(Vocodec* vcd);
 
+        void checkPage(Vocodec* vcd);
+
         void resetKnobValues(Vocodec* vcd);
 
         void setKnobValues(Vocodec* vcd, float* values);

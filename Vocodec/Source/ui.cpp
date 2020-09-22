@@ -406,7 +406,7 @@ namespace vocodec
 //                    vcd->previousPreset = vcd->currentPreset;
                     if (vcd->currentPreset <= 0) vcd->currentPreset = (VocodecPresetType)((int)PresetNil - 1);
                     else vcd->currentPreset = (VocodecPresetType)((int)vcd->currentPreset - 1);
-                    
+                    checkPage(vcd);
                     vcd->loadingPreset = 1;
                     OLED_writePreset(vcd);
                     writeCurrentPresetToFlash(vcd);
@@ -417,8 +417,7 @@ namespace vocodec
 //                    vcd->previousPreset = vcd->currentPreset;
                     if (vcd->currentPreset >= PresetNil - 1) vcd->currentPreset = (VocodecPresetType)0;
                     else vcd->currentPreset = (VocodecPresetType)((int)vcd->currentPreset + 1);
-                    
-                    
+                    checkPage(vcd);
                     vcd->loadingPreset = 1;
                     OLED_writePreset(vcd);
                     writeCurrentPresetToFlash(vcd);
@@ -626,6 +625,13 @@ namespace vocodec
         {
             if (vcd->knobPage == 0) vcd->knobPage = vcd->numPages[vcd->currentPreset] - 1;
             else vcd->knobPage--;
+            setKnobValues(vcd, vcd->presetKnobValues[vcd->currentPreset] + (vcd->knobPage * KNOB_PAGE_SIZE));
+        }
+
+        void checkPage(Vocodec* vcd)
+        {
+            if (vcd->knobPage >= vcd->numPages[vcd->currentPreset])
+                vcd->knobPage = vcd->numPages[vcd->currentPreset] - 1;
             setKnobValues(vcd, vcd->presetKnobValues[vcd->currentPreset] + (vcd->knobPage * KNOB_PAGE_SIZE));
         }
         

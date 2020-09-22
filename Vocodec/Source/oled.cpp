@@ -270,6 +270,8 @@ namespace vocodec
             //OLEDwriteString(modeNames[currentPreset], 12, 24, FirstLine);
             OLEDwriteString(vcd, tempString, myLength, 0, FirstLine);
             GFXsetFont(&vcd->theGFX, &EuphemiaCAS7pt7b);
+            OLEDwriteString(vcd, "P", 1, 110, FirstLine);
+            OLEDwriteInt(vcd, vcd->knobPage, 1, 120, FirstLine);
             OLEDwriteString(vcd, vcd->modeNamesDetails[vcd->currentPreset], (int)strlen(vcd->modeNamesDetails[vcd->currentPreset]), 0, SecondLine);
             //save new preset to flash memory
         }

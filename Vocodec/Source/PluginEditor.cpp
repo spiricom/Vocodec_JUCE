@@ -281,10 +281,20 @@ void VocodecAudioProcessorEditor::updateKnobs()
 {
     for (int i = 1; i < NUM_KNOBS - 1; ++i)
     {
-        int paramId = (processor.vcd.currentPreset * NUM_PRESET_KNOB_VALUES) + (i - 1);
+        int whichParam = (processor.vcd.knobPage * KNOB_PAGE_SIZE) + (i - 1);
+        int paramId = (processor.vcd.currentPreset * NUM_PRESET_KNOB_VALUES) + whichParam;
         if (processor.pluginParams.contains(paramId))
+        {
+            dials[i]->setAlpha(1.0f);
+            dials[i]->setEnabled(true);
             if (dials[i]->getValue() != processor.pluginParams[paramId]->get())
                 dials[i]->setValue(processor.pluginParams[paramId]->get(), dontSendNotification);
+        }
+        else
+        {
+            dials[i]->setAlpha(0.4f);
+            dials[i]->setEnabled(false);
+        }
     }
     if (dials[6]->getValue() != processor.dryWetMix->get())
         dials[6]->setValue(processor.dryWetMix->get(), dontSendNotification);

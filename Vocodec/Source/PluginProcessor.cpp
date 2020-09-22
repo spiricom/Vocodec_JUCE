@@ -284,6 +284,7 @@ void VocodecAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBloc
     if (vcd.currentPreset == vocodec::PresetNil)
     {
         vcd.currentPreset = vocodec::Vocoder;
+        vocodec::OLED_writePreset(&vcd);
     }
     vcd.previousPreset = vocodec::PresetNil;
     vcd.loadingPreset = 1;
@@ -428,11 +429,11 @@ void VocodecAudioProcessor::getStateInformation (MemoryBlock& destData)
 {
     std::unique_ptr<juce::XmlElement> xml(new juce::XmlElement("Vocodec"));
     xml->setAttribute("preset", vcd.currentPreset);
-    xml->setAttribute(dryWetMix->getName(20), *dryWetMix);
+    xml->setAttribute(dryWetMix->getName(50), *dryWetMix);
     for (auto param : pluginParams)
-        xml->setAttribute(param->getName(20).removeCharacters(StringRef(" /<>")), *param);
+        xml->setAttribute(param->getName(50).removeCharacters(StringRef(" /<>")), *param);
     for (auto param : choiceParams)
-        xml->setAttribute(param->getName(20).removeCharacters(StringRef(" /<>")), param->getIndex());
+        xml->setAttribute(param->getName(50).removeCharacters(StringRef(" /<>")), param->getIndex());
     copyXmlToBinary(*xml, destData);
 }
 
@@ -445,7 +446,7 @@ void VocodecAudioProcessor::setStateInformation (const void* data, int sizeInByt
         vcd.currentPreset = (vocodec::VocodecPresetType) xmlState->getIntAttribute("preset", 0);
         vcd.loadingPreset = 1;
 
-        String name = dryWetMix->getName(20);
+        String name = dryWetMix->getName(50);
         dryWetMix->setValueNotifyingHost((float)xmlState->getDoubleAttribute(name, 1.0f));
 
         for (int p = 0; p < int(vocodec::PresetNil); ++p)
@@ -455,7 +456,8 @@ void VocodecAudioProcessor::setStateInformation (const void* data, int sizeInByt
                 int paramId = (p * NUM_PRESET_KNOB_VALUES) + v;
                 if (pluginParams.contains(paramId))
                 {
-                    name = pluginParams[paramId]->getName(20).removeCharacters(StringRef(" /<>"));
+                    name = pluginParams[paramId]->getName(50);
+                    name = name.removeCharacters(StringRef(" /<>"));
                     pluginParams[paramId]->setValueNotifyingHost((float)xmlState->getDoubleAttribute(name, vcd.defaultPresetKnobValues[p][v]));
                 }
             }
@@ -463,7 +465,8 @@ void VocodecAudioProcessor::setStateInformation (const void* data, int sizeInByt
         
         for (auto param : choiceParams)
         {
-            name = param->getName(20).removeCharacters(StringRef(" /<>"));
+            name = param->getName(50);
+            name = name.removeCharacters(StringRef(" /<>"));
             *param = xmlState->getIntAttribute(name, 0);
         }
     }

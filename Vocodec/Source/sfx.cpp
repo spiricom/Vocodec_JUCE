@@ -193,6 +193,12 @@ namespace vocodec
 
             
             ///FM RHODES ELECTRIC PIANO SYNTH
+
+            vcd->soundNames[0] = "DARK  ";
+            vcd->soundNames[1] = "LIGHT ";
+            vcd->soundNames[2] = "BASS  ";
+            vcd->soundNames[3] = "PAD   ";
+            vcd->soundNames[4] = "CUSTOM";
             
             for (int i = 0; i < 5; ++i)
             {
@@ -2158,6 +2164,7 @@ namespace vocodec
             tSampler_free(&vcd->asSampler[1]);
             tEnvelopeFollower_free(&vcd->envfollow);
             tExpSmooth_free(&vcd->cfxSmooth);
+            setLED_1(vcd, 0);
         }
         
         //10 distortion tanh
@@ -3240,11 +3247,6 @@ namespace vocodec
         void SFXRhodesAlloc(Vocodec* vcd)
         {
             vcd->leaf.clearOnAllocation = 1;
-            vcd->soundNames[0] = "DARK  ";
-            vcd->soundNames[1] = "LIGHT ";
-            vcd->soundNames[2] = "BASS  ";
-            vcd->soundNames[3] = "PAD   ";
-            vcd->soundNames[4] = "CUSTOM";
             
             for (int i = 0; i < NUM_VOC_VOICES; i++)
             {
