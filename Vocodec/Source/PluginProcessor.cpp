@@ -25,8 +25,9 @@ VocodecAudioProcessor::VocodecAudioProcessor()
 #endif
                   ),
 #endif
-pluginParamPrefixes(StringArray(cPluginParamPrefixes)),
-pluginParamNames(StringArray(cPluginParamNames))
+pluginParamPrefixes(cPluginParamPrefixes),
+pluginParamNames(cPluginParamNames),
+choiceParamNames(cChoiceParamNames)
 {
     SFX_init(&vcd, &ADC_values);
     vcd.currentPreset = vocodec::PresetNil;
@@ -56,6 +57,135 @@ pluginParamNames(StringArray(cPluginParamNames))
             }
         }
     }
+                         
+    choiceParams.set("vocoder_numVoices",
+                     new AudioParameterChoice("vocoder_numVoices", "vocoder_numVoices",
+                                              StringArray("Poly", "Mono"), 0));
+    choiceParams.set("vocoder_internalExternal",
+                     new AudioParameterChoice("vocoder_internalExternal", "vocoder_internalExternal",
+                                              StringArray("Internal", "External"), 0));
+    choiceParams.set("vocoder_freeze",
+                     new AudioParameterChoice("vocoder_freeze", "vocoder_freeze",
+                                              StringArray("Normal", "Frozen"), 0));
+    
+    choiceParams.set("vocoderCh_numVoices",
+                     new AudioParameterChoice("vocoderCh_numVoices", "vocoderCh_numVoices",
+                                              StringArray("Poly", "Mono"), 0));
+    choiceParams.set("vocoderCh_internalExternal",
+                     new AudioParameterChoice("vocoderCh_internalExternal", "vocoderCh_internalExternal",
+                                              StringArray("Internal", "External"), 0));
+    choiceParams.set("vocoderCh_freeze",
+                     new AudioParameterChoice("vocoderCh_freeze", "vocoderCh_freeze",
+                                              StringArray("Normal", "Frozen"), 0));
+    
+    //    "pitchShift_"/
+    
+    choiceParams.set("autotuneMono_useChromatic",
+                     new AudioParameterChoice("autotuneMono_useChromatic", "autotuneMono_useChromatic",
+                                              StringArray("Off", "On"), 0));
+    choiceParams.set("autotuneMono_lock",
+                     new AudioParameterChoice("autotuneMono_lock", "autotuneMono_lock",
+                                              StringArray("Unlocked", "Locked"), 0));
+    
+    //    "autotunePoly_",
+    
+    choiceParams.set("samplerButtonPress_playMode",
+                     new AudioParameterChoice("samplerButtonPress_playMode", "samplerButtonPress_playMode",
+                                              StringArray("Loop", "Back'n'Forth"), 0));
+    choiceParams.set("samplerButtonPress_paused",
+                     new AudioParameterChoice("samplerButtonPress_paused",
+                                              "samplerButtonPress_paused",
+                                              StringArray("Playing", "Paused"), 0));
+    
+    choiceParams.set("samplerKeyboard_controlAllKeys",
+                     new AudioParameterChoice("samplerKeyboard_controlAllKeys",
+                                              "samplerKeyboard_controlAllKeys",
+                                              StringArray("Single Key", "All Keys"), 0));
+    
+    choiceParams.set("samplerAutoGrab_playMode",
+                     new AudioParameterChoice("samplerAutoGrab_playMode", "samplerAutoGrab_playMode",
+                                              StringArray("Loop", "Back'n'Forth"), 0));
+    choiceParams.set("samplerAutoGrab_triggerChannel",
+                     new AudioParameterChoice("samplerAutoGrab_triggerChannel", "samplerAutoGrab_triggerChannel",
+                                              StringArray("1", "2"), 0));
+    choiceParams.set("samplerAutoGrab_quantizeRate",
+                     new AudioParameterChoice("samplerAutoGrab_quantizeRate", "samplerAutoGrab_quantizeRate",
+                                              StringArray("Continuous", "Quantized"), 0));
+    
+    choiceParams.set("distortion_mode",
+                     new AudioParameterChoice("distortion_mode", "distortion_mode",
+                                              StringArray("Shaper", "TanH"), 0));
+    
+    choiceParams.set("waveFolder_mode",
+                     new AudioParameterChoice("waveFolder_mode", "waveFolder_mode",
+                                              StringArray("Series", "Oversampled"), 0));
+    
+    choiceParams.set("bitCrusher_stereo",
+                     new AudioParameterChoice("bitCrusher_stereo", "bitCrusher_stereo",
+                                              StringArray("Mono", "Stereo"), 0));
+    
+    choiceParams.set("delay_shaper",
+                     new AudioParameterChoice("delay_shaper", "delay_shaper",
+                                              StringArray("Off", "On"), 0));
+    choiceParams.set("delay_uncapFeedback",
+                     new AudioParameterChoice("delay_uncapFeedback", "delay_uncapFeedback",
+                                              StringArray("Capped", "Uncapped"), 0));
+    choiceParams.set("delay_freeze",
+                     new AudioParameterChoice("delay_freeze", "delay_freeze",
+                                              StringArray("Normal", "Frozen"), 0));
+    
+    choiceParams.set("reverb_uncapFeedback",
+                     new AudioParameterChoice("reverb_uncapFeedback", "reverb_uncapFeedback",
+                                              StringArray("Capped", "Uncapped"), 0));
+    choiceParams.set("reverb_freeze",
+                     new AudioParameterChoice("reverb_freeze", "reverb_freeze",
+                                              StringArray("Normal", "Frozen"), 0));
+    
+    choiceParams.set("reverb2_freeze",
+                     new AudioParameterChoice("reverb2_freeze", "reverb2_freeze",
+                                              StringArray("Normal", "Frozen"), 0));
+    
+    choiceParams.set("livingString_ignoreFreqKnobs",
+                     new AudioParameterChoice("livingString_ignoreFreqKnobs", "livingString_ignoreFreqKnobs",
+                                              StringArray("Use Knobs", "Use MIDI"), 0));
+    choiceParams.set("livingString_independentStrings",
+                     new AudioParameterChoice("livingString_independentStrings",
+                                              "livingString_independentStrings",
+                                              StringArray("Proportional", "Independent"), 0));
+    choiceParams.set("livingString_feedback",
+                     new AudioParameterChoice("livingString_feedback", "livingString_feedback",
+                                              StringArray("Off", "On"), 0));
+    
+    choiceParams.set("livingStringSynth_numVoices",
+                     new AudioParameterChoice("livingStringSynth_numVoices", "livingStringSynth_numVoices",
+                                              StringArray("Poly", "Mono"), 0));
+    choiceParams.set("livingStringSynth_audioIn",
+                     new AudioParameterChoice("livingStringSynth_audioIn", "livingStringSynth_audioIn",
+                                              StringArray("Off", "On"), 0));
+    choiceParams.set("livingStringSynth_feedback",
+                     new AudioParameterChoice("livingStringSynth_feedback", "livingStringSynth_feedback",
+                                              StringArray("Off", "On"), 0));
+    
+    choiceParams.set("classicSynth_numVoices",
+                     new AudioParameterChoice("classicSynth_numVoices", "classicSynth_numVoices",
+                                              StringArray("Poly", "Mono"), 0));
+    
+    choiceParams.set("rhodes_numVoices",
+                     new AudioParameterChoice("rhodes_numVoices", "rhodes_numVoices",
+                                              StringArray("Poly", "Mono"), 0));
+    choiceParams.set("rhodes_sound",
+                     new AudioParameterChoice("rhodes_sound", "rhodes_sound",
+                                              StringArray(String(vcd.soundNames[0]),
+                                                          String(vcd.soundNames[1]),
+                                                          String(vcd.soundNames[2]),
+                                                          String(vcd.soundNames[3]),
+                                                          String(vcd.soundNames[4])), 0));
+    choiceParams.set("rhodes_tremoloStereo",
+                     new AudioParameterChoice("rhodes_tremoloStereo", "rhodes_tremoloStereo",
+                                              StringArray("Off", "On"), 0));
+    
+    for (auto paramName : choiceParamNames)
+        addParameter(choiceParams[paramName]);
 }
 
 VocodecAudioProcessor::~VocodecAudioProcessor()
@@ -197,6 +327,8 @@ void VocodecAudioProcessor::processBlock (AudioBuffer<float>& buffer, MidiBuffer
     
     if (processingFalseBlock) return;
     
+    updateAllValues();
+    
     vocodec::VocodecPresetType currentPreset = vcd.currentPreset;
     
     if (vcd.loadingPreset)
@@ -218,19 +350,6 @@ void VocodecAudioProcessor::processBlock (AudioBuffer<float>& buffer, MidiBuffer
         
         vcd.previousPreset = currentPreset;
         vcd.loadingPreset = 0;
-    }
-    
-    for (int p = 0; p < int(vocodec::PresetNil); ++p)
-    {
-        for (int v = 0; v < vcd.numPages[p] * KNOB_PAGE_SIZE; ++v)
-        {
-            String name = String(vcd.knobParamNames[p][v]);
-            if (!name.isEmpty())
-            {
-                int paramId = (p * NUM_PRESET_KNOB_VALUES) + v;
-                vcd.presetKnobValues[p][v] = pluginParams[paramId]->get();
-            }
-        }
     }
     
     vocodec::buttonCheck(&vcd);
@@ -288,6 +407,8 @@ void VocodecAudioProcessor::processBlock (AudioBuffer<float>& buffer, MidiBuffer
         audioOutput[1] = tEnvelopeFollower_tick(&outputFollower[1], audio[1]);
     }
     
+    updateChoiceParams();
+    
     vocodec::OLED_process(&vcd);
 }
 
@@ -310,6 +431,8 @@ void VocodecAudioProcessor::getStateInformation (MemoryBlock& destData)
     xml->setAttribute(dryWetMix->getName(20), *dryWetMix);
     for (auto param : pluginParams)
         xml->setAttribute(param->getName(20).removeCharacters(StringRef(" /<>")), *param);
+    for (auto param : choiceParams)
+        xml->setAttribute(param->getName(20).removeCharacters(StringRef(" /<>")), param->getIndex());
     copyXmlToBinary(*xml, destData);
 }
 
@@ -336,6 +459,12 @@ void VocodecAudioProcessor::setStateInformation (const void* data, int sizeInByt
                     pluginParams[paramId]->setValueNotifyingHost((float)xmlState->getDoubleAttribute(name, vcd.defaultPresetKnobValues[p][v]));
                 }
             }
+        }
+        
+        for (auto param : choiceParams)
+        {
+            name = param->getName(20).removeCharacters(StringRef(" /<>"));
+            *param = xmlState->getIntAttribute(name, 0);
         }
     }
 }
@@ -380,6 +509,9 @@ void VocodecAudioProcessor::hiResTimerCallback()
     if (processingInactiveCount > processingInactiveThreshold)
     {
         processingFalseBlock = true;
+        
+        updateAllValues();
+        
         vocodec::VocodecPresetType currentPreset = vcd.currentPreset;
         
         if (vcd.loadingPreset)
@@ -403,26 +535,145 @@ void VocodecAudioProcessor::hiResTimerCallback()
             vcd.loadingPreset = 0;
         }
         
-        for (int p = 0; p < int(vocodec::PresetNil); ++p)
-        {
-            for (int v = 0; v < vcd.numPages[p] * KNOB_PAGE_SIZE; ++v)
-            {
-                String name = String(vcd.knobParamNames[p][v]);
-                if (!name.isEmpty())
-                {
-                    int paramId = (p * NUM_PRESET_KNOB_VALUES) + v;
-                    vcd.presetKnobValues[p][v] = pluginParams[paramId]->get();
-                }
-            }
-        }
-        
         vocodec::buttonCheck(&vcd);
         vocodec::adcCheck(&vcd);
         vcd.frameFunctions[currentPreset](&vcd);
         float audio[2] = { 0.0f, 0.0f };
         vcd.tickFunctions[currentPreset](&vcd, audio);
+        
+        updateChoiceParams();
+        
         vocodec::OLED_process(&vcd);
     }
     else processingInactiveCount++;
     processingFalseBlock = false;
+}
+
+void VocodecAudioProcessor::updateChoiceParams()
+{
+    *choiceParams["vocoder_numVoices"] = vcd.vocoderParams.numVoices > 1 ? 0 : 1;
+    *choiceParams["vocoder_internalExternal"] = vcd.vocoderParams.internalExternal;
+    *choiceParams["vocoder_freeze"] = vcd.vocoderParams.freeze;
+    
+    *choiceParams["vocoderCh_numVoices"] = vcd.vocoderChParams.numVoices > 1 ? 0 : 1;
+    *choiceParams["vocoderCh_internalExternal"] = vcd.vocoderChParams.internalExternal;
+    *choiceParams["vocoderCh_freeze"] = vcd.vocoderChParams.freeze;
+
+    //    "pitchShift_"/
+
+    *choiceParams["autotuneMono_useChromatic"] = vcd.neartuneParams.useChromatic;
+    *choiceParams["autotuneMono_lock"] = vcd.neartuneParams.lock;
+
+    //    "autotunePoly_",
+
+    *choiceParams["samplerButtonPress_playMode"] = vcd.samplerBPParams.playMode == PlayLoop ? 0 : 1;
+    *choiceParams["samplerButtonPress_paused"] = vcd.samplerBPParams.paused;
+
+    *choiceParams["samplerKeyboard_controlAllKeys"] = vcd.samplerKParams.controlAllKeys;
+
+    *choiceParams["samplerAutoGrab_playMode"] = vcd.samplerAutoParams.playMode == PlayLoop ? 0 : 1;
+    *choiceParams["samplerAutoGrab_triggerChannel"] = vcd.samplerAutoParams.triggerChannel;
+    *choiceParams["samplerAutoGrab_quantizeRate"] = vcd.samplerAutoParams.quantizeRate;
+
+    *choiceParams["distortion_mode"] = vcd.distortionParams.mode;
+
+    *choiceParams["waveFolder_mode"] = vcd.waveFolderParams.mode;
+
+    *choiceParams["bitCrusher_stereo"] = vcd.bitcrusherParams.stereo;
+
+    *choiceParams["delay_shaper"] = vcd.delayParams.shaper;
+    *choiceParams["delay_uncapFeedback"] = vcd.delayParams.uncapFeedback;
+    *choiceParams["delay_freeze"] = vcd.delayParams.freeze;
+
+    *choiceParams["reverb_uncapFeedback"] = vcd.reverbParams.uncapFeedback;
+    *choiceParams["reverb_freeze"] = vcd.reverbParams.freeze;
+
+    *choiceParams["reverb2_freeze"] = vcd.reverb2Params.freeze;
+
+    *choiceParams["livingString_ignoreFreqKnobs"] = vcd.livingStringParams.ignoreFreqKnobs;
+    *choiceParams["livingString_independentStrings"] = vcd.livingStringParams.independentStrings;
+    *choiceParams["livingString_feedback"] = vcd.livingStringParams.feedback;
+
+    *choiceParams["livingStringSynth_numVoices"] = vcd.livingStringSynthParams.numVoices > 1 ? 0 : 1;
+    *choiceParams["livingStringSynth_audioIn"] = vcd.livingStringSynthParams.audioIn;
+    *choiceParams["livingString_feedback"] = vcd.livingStringSynthParams.feedback;
+
+    *choiceParams["classicSynth_numVoices"] = vcd.classicSynthParams.numVoices > 1 ? 0 : 1;
+
+    *choiceParams["rhodes_numVoices"] = vcd.rhodesParams.numVoices > 1 ? 0 : 1;
+    *choiceParams["rhodes_sound"] = vcd.rhodesParams.sound;
+    *choiceParams["rhodes_tremoloStereo"] = vcd.rhodesParams.tremoloStereo;
+}
+
+void VocodecAudioProcessor::updateChoiceValues()
+{
+    vcd.vocoderParams.numVoices = choiceParams["vocoder_numVoices"]->getIndex() > 0 ? 1 : NUM_VOC_VOICES;
+    vcd.vocoderParams.internalExternal = choiceParams["vocoder_internalExternal"]->getIndex();
+    vcd.vocoderParams.freeze = choiceParams["vocoder_freeze"]->getIndex();
+    
+    vcd.vocoderChParams.numVoices = choiceParams["vocoderCh_numVoices"]->getIndex() > 0 ? 1 : NUM_VOC_VOICES;
+    vcd.vocoderChParams.internalExternal = choiceParams["vocoderCh_internalExternal"]->getIndex();
+    vcd.vocoderChParams.freeze = choiceParams["vocoderCh_freeze"]->getIndex();
+    
+    //    "pitchShift_"/
+    
+    vcd.neartuneParams.useChromatic = choiceParams["autotuneMono_useChromatic"]->getIndex();
+    vcd.neartuneParams.lock = choiceParams["autotuneMono_lock"]->getIndex();
+    
+    //    "autotunePoly_",
+    
+    vcd.samplerBPParams.playMode = choiceParams["samplerButtonPress_playMode"]->getIndex() > 0 ? PlayLoop : PlayBackAndForth;
+    vcd.samplerBPParams.paused = choiceParams["samplerButtonPress_paused"]->getIndex();
+    
+    vcd.samplerKParams.controlAllKeys = choiceParams["samplerKeyboard_controlAllKeys"]->getIndex();
+    
+    vcd.samplerAutoParams.playMode = choiceParams["samplerAutoGrab_playMode"]->getIndex() > 0 ? PlayLoop : PlayBackAndForth;
+    vcd.samplerAutoParams.triggerChannel = choiceParams["samplerAutoGrab_triggerChannel"]->getIndex();
+    vcd.samplerAutoParams.quantizeRate = choiceParams["samplerAutoGrab_quantizeRate"]->getIndex();
+    
+    vcd.distortionParams.mode = choiceParams["distortion_mode"]->getIndex();
+    
+    vcd.waveFolderParams.mode = choiceParams["waveFolder_mode"]->getIndex();
+    
+    vcd.bitcrusherParams.stereo = choiceParams["bitCrusher_stereo"]->getIndex();
+    
+    vcd.delayParams.shaper = choiceParams["delay_shaper"]->getIndex();
+    vcd.delayParams.uncapFeedback = choiceParams["delay_uncapFeedback"]->getIndex();
+    vcd.delayParams.freeze = choiceParams["delay_freeze"]->getIndex();
+    
+    vcd.reverbParams.uncapFeedback = choiceParams["reverb_uncapFeedback"]->getIndex();
+    vcd.reverbParams.freeze = choiceParams["reverb_freeze"]->getIndex();
+    
+    vcd.reverb2Params.freeze = choiceParams["reverb2_freeze"]->getIndex();
+    
+    vcd.livingStringParams.ignoreFreqKnobs = choiceParams["livingString_ignoreFreqKnobs"]->getIndex();
+    vcd.livingStringParams.independentStrings = choiceParams["livingString_independentStrings"]->getIndex();
+    vcd.livingStringParams.feedback = choiceParams["livingString_feedback"]->getIndex();
+    
+    vcd.livingStringSynthParams.numVoices = choiceParams["livingStringSynth_numVoices"]->getIndex() > 0 ? 1 : NUM_STRINGS;
+    vcd.livingStringSynthParams.audioIn = choiceParams["livingStringSynth_audioIn"]->getIndex();
+    vcd.livingStringSynthParams.feedback = choiceParams["livingString_feedback"]->getIndex();
+    
+    vcd.classicSynthParams.numVoices = choiceParams["classicSynth_numVoices"]->getIndex() > 0 ? 1 : NUM_VOC_VOICES;
+    
+    vcd.rhodesParams.numVoices = choiceParams["rhodes_numVoices"]->getIndex() > 0 ? 1 : NUM_VOC_VOICES;
+    vcd.rhodesParams.sound = choiceParams["rhodes_sound"]->getIndex();
+    vcd.rhodesParams.tremoloStereo = choiceParams["rhodes_tremoloStereo"]->getIndex();
+}
+
+void VocodecAudioProcessor::updateAllValues()
+{
+    for (int p = 0; p < int(vocodec::PresetNil); ++p)
+    {
+        for (int v = 0; v < vcd.numPages[p] * KNOB_PAGE_SIZE; ++v)
+        {
+            String name = String(vcd.knobParamNames[p][v]);
+            if (!name.isEmpty())
+            {
+                int paramId = (p * NUM_PRESET_KNOB_VALUES) + v;
+                vcd.presetKnobValues[p][v] = pluginParams[paramId]->get();
+            }
+        }
+    }
+    updateChoiceValues();
 }

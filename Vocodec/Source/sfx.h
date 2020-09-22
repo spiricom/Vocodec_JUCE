@@ -171,7 +171,7 @@ namespace vocodec
         typedef struct _SamplerBPButtonParams
         {
             PlayMode playMode;
-            int samplePlaying;
+            int paused;
         } SamplerBPButtonParams;
         
         typedef struct _SamplerKButtonParams

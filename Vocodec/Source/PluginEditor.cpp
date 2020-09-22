@@ -74,6 +74,10 @@ screen(p)
     addAndMakeVisible(*resizer);
     resizer->setAlwaysOnTop(true);
     
+    versionLabel.setText("v" + String(ProjectInfo::versionString), dontSendNotification);
+    versionLabel.setColour(Label::ColourIds::textColourId, Colours::lightgrey);
+    addAndMakeVisible(versionLabel);
+    
     vocodec::OLED_writePreset(&processor.vcd);
     
     currentKnobPreset = processor.vcd.currentPreset;
@@ -152,6 +156,8 @@ void VocodecAudioProcessorEditor::resized()
     float r = 600.0f / 716.0f;
     constrain->setSizeLimits(200, 200/r, 800*r, 800);
     resizer->setBounds(getWidth()-16, getHeight()-16, 16, 16);
+    
+    versionLabel.setBounds(0, height * 0.96f, width * 0.2f, height * 0.04f);
 }
 
 void VocodecAudioProcessorEditor::sliderValueChanged(Slider* slider)

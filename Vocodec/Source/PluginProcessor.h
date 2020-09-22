@@ -71,11 +71,18 @@ public:
     
     void hiResTimerCallback() override;
     
+    void updateChoiceParams();
+    void updateChoiceValues();
+    void updateAllValues();
+    
     StringArray pluginParamPrefixes;
     StringArray pluginParamNames;
+    StringArray choiceParamNames;
+
     
-    HashMap<int, AudioParameterFloat*> pluginParams;
     AudioParameterFloat* dryWetMix;
+    HashMap<int, AudioParameterFloat*> pluginParams;
+    HashMap<String, AudioParameterChoice*> choiceParams;
     
     float audioInput[2], audioOutput[2];
     

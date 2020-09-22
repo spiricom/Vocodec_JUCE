@@ -58,6 +58,8 @@ private:
     
     VocodecScreen screen;
     
+    Label versionLabel;
+    
     vocodec::VocodecPresetType currentKnobPreset;
     bool sliderActive[NUM_ADC_CHANNELS];
     

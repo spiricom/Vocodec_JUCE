@@ -772,7 +772,7 @@ namespace vocodec
             {
                 OLEDclearLine(vcd, SecondLine);
                 OLEDwriteFloat(vcd, vcd->sampleLength, 0, SecondLine);
-                OLEDwriteString(vcd, vcd->samplerBPParams.samplePlaying ? "PLAYING" : "STOPPED", 7, 48, SecondLine);
+                OLEDwriteString(vcd, vcd->samplerBPParams.paused ? "STOPPED" : "PLAYING", 7, 48, SecondLine);
                 vcd->buttonActionsUI[ButtonC][ActionPress] = 0;
             }
             
@@ -793,7 +793,7 @@ namespace vocodec
             {
                 OLEDclearLine(vcd, SecondLine);
                 OLEDwriteFloat(vcd, vcd->sampleLength, 0, SecondLine);
-                OLEDwriteString(vcd, vcd->samplerBPParams.samplePlaying ? "PLAYING" : "STOPPED", 7, 48, SecondLine);
+                OLEDwriteString(vcd, vcd->samplerBPParams.paused ? "STOPPED" : "PLAYING", 7, 48, SecondLine);
                 vcd->buttonActionsUI[ButtonA][ActionRelease] = 0;
             }
             return writeString;
@@ -1002,7 +1002,7 @@ namespace vocodec
             }
             if (vcd->buttonActionsUI[ButtonC][ActionPress] == 1)
             {
-                writeString = (vcd->rhodesParams.numVoices > 1) ? "STEREO TREM" : "MONO TREM";
+                writeString = (vcd->rhodesParams.tremoloStereo > 1) ? "STEREO TREM" : "MONO TREM";
                 vcd->buttonActionsUI[ButtonC][ActionPress] = 0;
             }
             return writeString;

@@ -209,3 +209,58 @@ const std::initializer_list<const char*> cPluginParamNames = {
     "rhodes_randDecay",
     "rhodes_randSust"
 };
+
+const std::initializer_list<const char*> cChoiceParamNames = {
+    "vocoder_numVoices",
+    "vocoder_internalExternal",
+    "vocoder_freeze",
+    
+    "vocoderCh_numVoices",
+    "vocoderCh_internalExternal",
+    "vocoderCh_freeze",
+    
+//    "pitchShift_"/
+    
+    "autotuneMono_useChromatic",
+    "autotuneMono_lock",
+    
+//    "autotunePoly_",
+
+    "samplerButtonPress_playMode",
+    "samplerButtonPress_paused",
+    
+    "samplerKeyboard_controlAllKeys",
+    
+    "samplerAutoGrab_playMode",
+    "samplerAutoGrab_triggerChannel",
+    "samplerAutoGrab_quantizeRate",
+    
+    "distortion_mode",
+    
+    "waveFolder_mode",
+    
+    "bitCrusher_stereo",
+    
+    "delay_shaper",
+    "delay_uncapFeedback",
+    "delay_freeze",
+    
+    "reverb_uncapFeedback",
+    "reverb_freeze",
+    
+    "reverb2_freeze",
+    
+    "livingString_ignoreFreqKnobs",
+    "livingString_independentStrings",
+    "livingString_feedback",
+    
+    "livingStringSynth_numVoices",
+    "livingStringSynth_audioIn",
+    "livingStringSynth_feedback",
+    
+    "classicSynth_numVoices",
+    
+    "rhodes_numVoices",
+    "rhodes_sound",
+    "rhodes_tremoloStereo",
+};

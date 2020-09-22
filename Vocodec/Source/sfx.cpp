@@ -64,7 +64,7 @@ namespace vocodec
             vcd->autotuneParams._ = 0;
             
             vcd->samplerBPParams.playMode = PlayLoop;
-            vcd->samplerBPParams.samplePlaying = 0;
+            vcd->samplerBPParams.paused = 0;
 
             vcd->samplerKParams.controlAllKeys = 0;
             
@@ -1477,16 +1477,16 @@ namespace vocodec
             
             if (vcd->buttonActionsSFX[ButtonC][ActionPress])
             {
-                if (vcd->samplerBPParams.samplePlaying)
+                if (!vcd->samplerBPParams.paused)
                 {
-                    vcd->samplerBPParams.samplePlaying = 0;
+                    vcd->samplerBPParams.paused = 1;
                     tSampler_stop(&vcd->sampler);
                     vcd->displayValues[1] =
                     LEAF_clip(0.0f, knobs[1] * vcd->sampleLength, vcd->sampleLength * (1.0f - knobs[0]));
                 }
                 else
                 {
-                    vcd->samplerBPParams.samplePlaying = 1;
+                    vcd->samplerBPParams.paused = 0;
                     tSampler_play(&vcd->sampler);
                 }
                 vcd->buttonActionsSFX[ButtonC][ActionPress] = 0;
@@ -1511,7 +1511,7 @@ namespace vocodec
             if (vcd->buttonActionsSFX[ButtonA][ActionRelease])
             {
                 tBuffer_stop(&vcd->buff);
-                if (vcd->samplerBPParams.samplePlaying) tSampler_play(&vcd->sampler);
+                if (!vcd->samplerBPParams.paused) tSampler_play(&vcd->sampler);
                 vcd->buttonActionsSFX[ButtonA][ActionRelease] = 0;
                 setLED_A(vcd, 0);
             }
