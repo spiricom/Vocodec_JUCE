@@ -1498,7 +1498,7 @@ namespace vocodec
                 else vcd->samplerBPParams.playMode = PlayLoop;
                 tSampler_setMode(&vcd->sampler, (PlayMode)(vcd->samplerBPParams.playMode));
                 vcd->buttonActionsSFX[ButtonB][ActionPress] = 0;
-                setLED_B(vcd, vcd->samplerBPParams.playMode);
+                setLED_B(vcd, vcd->samplerBPParams.playMode == PlayBackAndForth);
             }
             
             if (vcd->buttonActionsSFX[ButtonA][ActionPress])

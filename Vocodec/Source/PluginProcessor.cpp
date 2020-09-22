@@ -259,7 +259,7 @@ void VocodecAudioProcessor::changeProgramName (int index, const String& newName)
 void VocodecAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlock)
 {
     processingInactiveCount = 0;
-    processingInactiveThreshold = 4 * (samplesPerBlock / sampleRate) * 1000;
+    processingInactiveThreshold = 10 * (samplesPerBlock / sampleRate) * 1000;
     
     LEAF_init(&vcd.leaf, sampleRate, samplesPerBlock, small_memory, SMALL_MEM_SIZE,
               []() {return (float)rand() / RAND_MAX; });
@@ -566,12 +566,12 @@ void VocodecAudioProcessor::updateChoiceParams()
 
     //    "autotunePoly_",
 
-    *choiceParams["samplerButtonPress_playMode"] = vcd.samplerBPParams.playMode == PlayLoop ? 0 : 1;
+    *choiceParams["samplerButtonPress_playMode"] = (vcd.samplerBPParams.playMode == PlayLoop) ? 0 : 1;
     *choiceParams["samplerButtonPress_paused"] = vcd.samplerBPParams.paused;
 
     *choiceParams["samplerKeyboard_controlAllKeys"] = vcd.samplerKParams.controlAllKeys;
 
-    *choiceParams["samplerAutoGrab_playMode"] = vcd.samplerAutoParams.playMode == PlayLoop ? 0 : 1;
+    *choiceParams["samplerAutoGrab_playMode"] = (vcd.samplerAutoParams.playMode == PlayLoop) ? 0 : 1;
     *choiceParams["samplerAutoGrab_triggerChannel"] = vcd.samplerAutoParams.triggerChannel;
     *choiceParams["samplerAutoGrab_quantizeRate"] = vcd.samplerAutoParams.quantizeRate;
 
@@ -622,12 +622,12 @@ void VocodecAudioProcessor::updateChoiceValues()
     
     //    "autotunePoly_",
     
-    vcd.samplerBPParams.playMode = choiceParams["samplerButtonPress_playMode"]->getIndex() > 0 ? PlayLoop : PlayBackAndForth;
+    vcd.samplerBPParams.playMode = choiceParams["samplerButtonPress_playMode"]->getIndex() > 0 ? PlayBackAndForth : PlayLoop;
     vcd.samplerBPParams.paused = choiceParams["samplerButtonPress_paused"]->getIndex();
     
     vcd.samplerKParams.controlAllKeys = choiceParams["samplerKeyboard_controlAllKeys"]->getIndex();
     
-    vcd.samplerAutoParams.playMode = choiceParams["samplerAutoGrab_playMode"]->getIndex() > 0 ? PlayLoop : PlayBackAndForth;
+    vcd.samplerAutoParams.playMode = choiceParams["samplerAutoGrab_playMode"]->getIndex() > 0 ? PlayBackAndForth : PlayLoop;
     vcd.samplerAutoParams.triggerChannel = choiceParams["samplerAutoGrab_triggerChannel"]->getIndex();
     vcd.samplerAutoParams.quantizeRate = choiceParams["samplerAutoGrab_quantizeRate"]->getIndex();
     
