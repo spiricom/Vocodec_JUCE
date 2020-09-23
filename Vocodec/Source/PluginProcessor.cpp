@@ -327,6 +327,7 @@ void VocodecAudioProcessor::processBlock (AudioBuffer<float>& buffer, MidiBuffer
     processingInactiveCount = 0;
     
     if (processingFalseBlock) return;
+    processingBlock = true;
     
     updateAllValues();
     
@@ -411,6 +412,7 @@ void VocodecAudioProcessor::processBlock (AudioBuffer<float>& buffer, MidiBuffer
     updateChoiceParams();
     
     vocodec::OLED_process(&vcd);
+    processingBlock = false;
 }
 
 //==============================================================================
@@ -509,6 +511,7 @@ void VocodecAudioProcessor::handleNoteOff(MidiKeyboardState*, int midiChannel, i
 
 void VocodecAudioProcessor::hiResTimerCallback()
 {
+    if (processingBlock) return;
     if (processingInactiveCount > processingInactiveThreshold)
     {
         processingFalseBlock = true;

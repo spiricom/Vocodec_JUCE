@@ -103,6 +103,7 @@ private:
     int processingInactiveCount;
     int processingInactiveThreshold;
     bool processingFalseBlock = false;
+    bool processingBlock = false;
     
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (VocodecAudioProcessor)
