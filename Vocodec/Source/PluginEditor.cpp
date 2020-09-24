@@ -27,6 +27,12 @@ screen(p)
     screen.setOpaque(true);
     screen.onChange = [this] { presetChanged(); };
     
+    Typeface::Ptr tp = Typeface::createSystemTypefaceFor(BinaryData::EuphemiaCAS_ttf,
+                                                         BinaryData::EuphemiaCAS_ttfSize);
+    
+    euphemia = Font(tp);
+    euphemia.setItalic(true);
+    
     for (int i = 0; i < NUM_KNOBS; i++) {
         //        knobs.add(new DrawableImage());
         dials.add(new Slider());
@@ -37,14 +43,27 @@ screen(p)
         dials[i]->setTextBoxStyle(Slider::NoTextBox, false, 0, 0);
         addAndMakeVisible(dials[i]);
         dials[i]->addListener(this);
-        dials[i]->setRange(0, 1);
+        dials[i]->setRange(0., 1.);
         dials[i]->setOpaque(true);
+        
+        dialLabels.add(new Label());
+//        dialLabels[i]->setMultiLine(true);
+//        dialLabels[i]->setReadOnly(true);
+        dialLabels[i]->setFont(euphemia);
+//        dialLabels[i]->setInterceptsMouseClicks(false, false);
+        dialLabels[i]->setJustificationType(Justification::centredTop);
+//        dialLabels[i]->setBorder(BorderSize<int>(-3, 0, 0, 0));
+        dialLabels[i]->setLookAndFeel(&vocodecLAF);
+        addAndMakeVisible(dialLabels[i]);
     }
-    dials[6]->setValue(1);
+    dials[0]->setRange(0., 4.);
+    dials[0]->setSkewFactorFromMidPoint(1.0f);
+    dials[0]->setDoubleClickReturnValue(true, 1.0f);
+    dialLabels[0]->setJustificationType(Justification::topLeft);
+    dialLabels[0]->setText("INPUT\nGAIN", dontSendNotification);
     
     Path path;
     path.addEllipse(0, 0, 30, 30);
-    
     
     for (int i = 0; i < NUM_BUTTONS; i++)
     {
@@ -88,7 +107,10 @@ screen(p)
 VocodecAudioProcessorEditor::~VocodecAudioProcessorEditor()
 {
     for (int i = 0; i < NUM_KNOBS; i++)
+    {
         dials[i]->setLookAndFeel(nullptr);
+        dialLabels[i]->setLookAndFeel(nullptr);
+    }
 }
 
 //==============================================================================
@@ -118,6 +140,8 @@ void VocodecAudioProcessorEditor::resized()
     const float knobSize = 57.0f*s;
     const float bigLightSize = 23.0f*s;
     const float smallLightSize = 15.0f*s;
+    const float labelWidth = 130.0f*s;
+    const float labelHeight = 20.0f*s;
     
     buttons[vocodec::ButtonA]       ->setBounds(543*s, 356*s, buttonSize, buttonSize);
     buttons[vocodec::ButtonB]       ->setBounds(543*s, 415*s, buttonSize, buttonSize);
@@ -146,6 +170,7 @@ void VocodecAudioProcessorEditor::resized()
     lights[vocodec::VocodecLightOut2Meter]   ->setBounds(538*s, 503*s, smallLightSize);
     lights[vocodec::VocodecLightOut2Clip]    ->setBounds(558*s, 503*s, smallLightSize);
     
+    dials[0]                        ->setBounds(85*s, 60*s, knobSize, knobSize);
     dials[1]                        ->setBounds(175*s, 205*s, knobSize, knobSize);
     dials[2]                        ->setBounds(385*s, 205*s, knobSize, knobSize);
     dials[3]                        ->setBounds(250*s, 345*s, knobSize, knobSize);
@@ -153,23 +178,39 @@ void VocodecAudioProcessorEditor::resized()
     dials[5]                        ->setBounds(175*s, 500*s, knobSize, knobSize);
     dials[6]                        ->setBounds(380*s, 500*s, knobSize, knobSize);
     
+    dialLabels[0]                   ->setBounds(40*s, 110*s, 100*s, 50*s);
+    dialLabels[1]                   ->setBounds(138*s, 185*s, labelWidth, labelHeight);
+    dialLabels[2]                   ->setBounds(348*s, 185*s, labelWidth, labelHeight);
+    dialLabels[3]                   ->setBounds(213*s, 325*s, labelWidth, labelHeight);
+    dialLabels[4]                   ->setBounds(408*s, 325*s, labelWidth, labelHeight);
+    dialLabels[5]                   ->setBounds(138*s, 480*s, labelWidth, labelHeight);
+    dialLabels[6]                   ->setBounds(343*s, 480*s, labelWidth, labelHeight);
+    
+    for (auto label : dialLabels)
+        label->setFont(euphemia.withHeight(height * 0.025f));
+    
+    versionLabel.setBounds(0, height * 0.97f, width * 0.2f, height * 0.03f);
+    versionLabel.setFont(euphemia.withHeight(height * 0.025f));
+    
     float r = 600.0f / 716.0f;
     constrain->setSizeLimits(200, 200/r, 800*r, 800);
     resizer->setBounds(getWidth()-16, getHeight()-16, 16, 16);
-    
-    versionLabel.setBounds(0, height * 0.96f, width * 0.2f, height * 0.04f);
 }
 
 void VocodecAudioProcessorEditor::sliderValueChanged(Slider* slider)
 {
     if (slider == nullptr) return;
     
-    int whichKnob = dials.indexOf(slider) - 1;
-    if (whichKnob < 0) return;
-    
     float sliderValue;
     sliderValue = slider->getValue();
     
+    int whichKnob = dials.indexOf(slider) - 1;
+    if (whichKnob < 0)
+    {
+        *processor.inputGain = sliderValue;
+        return;
+    }
+
     // Set ADC_values so that we can take advantage of hardware UI internals
     (*processor.vcd.ADC_values)[whichKnob] = (uint16_t) (sliderValue * TWO_TO_10) << 6;
     sliderActive[whichKnob] = true;
@@ -272,6 +313,17 @@ void VocodecAudioProcessorEditor::timerCallback()
             // Set ADC_values so that we can take advantage of hardware UI internals
             (*processor.vcd.ADC_values)[i] = (uint16_t) (dials[i+1]->getValue() * TWO_TO_10) << 6;
         }
+        if (i < 5)
+        {
+            int whichParam = (processor.vcd.knobPage * KNOB_PAGE_SIZE) + i;
+            int paramId = (processor.vcd.currentPreset * NUM_PRESET_KNOB_VALUES) + whichParam;
+            if (processor.pluginParams.contains(paramId))
+            {
+                String name = processor.pluginParams[paramId]->getName(50).fromFirstOccurrenceOf("_", false, false).replace("_", " ");
+                dialLabels[i+1]->setText(name, dontSendNotification);
+            }
+            else dialLabels[i+1]->setText("", dontSendNotification);
+        }
     }
     
     screen.timerCallback();
@@ -296,6 +348,8 @@ void VocodecAudioProcessorEditor::updateKnobs()
             dials[i]->setEnabled(false);
         }
     }
+    if (dials[0]->getValue() != processor.inputGain->get())
+        dials[0]->setValue(processor.inputGain->get(), dontSendNotification);
     if (dials[6]->getValue() != processor.dryWetMix->get())
         dials[6]->setValue(processor.dryWetMix->get(), dontSendNotification);
 }

@@ -37,6 +37,9 @@ choiceParamNames(cChoiceParamNames)
     I2C_HandleTypeDef* dummyArg = nullptr;
     vocodec::OLED_init(&vcd, dummyArg);
     
+    inputGain = new AudioParameterFloat("inputGain", "inputGain",
+                                        0.0f, 4.0f, 1.0f);
+    addParameter(inputGain);
     dryWetMix = new AudioParameterFloat("dryWetMix", "dryWetMix",
                                         0.0f, 1.0f, 1.0f);
     addParameter(dryWetMix);
@@ -383,8 +386,14 @@ void VocodecAudioProcessor::processBlock (AudioBuffer<float>& buffer, MidiBuffer
         rightChannel = buffer.getWritePointer(1);
     }
     
+    float gain = inputGain->get();
+    float mix = dryWetMix->get();
     for (int i = 0; i < buffer.getNumSamples(); i++)
     {
+        
+        leftChannel[i] *= gain;
+        rightChannel[i] *= gain;
+        
         audioInput[0] = tEnvelopeFollower_tick(&inputFollower[0], leftChannel[i]);
         audioInput[1] = tEnvelopeFollower_tick(&inputFollower[1], rightChannel[i]);
         
@@ -394,7 +403,6 @@ void VocodecAudioProcessor::processBlock (AudioBuffer<float>& buffer, MidiBuffer
         
         vcd.tickFunctions[currentPreset](&vcd, audio);
         
-        float mix = dryWetMix->get();
         audio[0] = LEAF_interpolation_linear(leftChannel[i], audio[0], mix);
         
         buffer.setSample(0, i, audio[0]);
@@ -431,6 +439,7 @@ void VocodecAudioProcessor::getStateInformation (MemoryBlock& destData)
 {
     std::unique_ptr<juce::XmlElement> xml(new juce::XmlElement("Vocodec"));
     xml->setAttribute("preset", vcd.currentPreset);
+    xml->setAttribute(inputGain->getName(50), *inputGain);
     xml->setAttribute(dryWetMix->getName(50), *dryWetMix);
     for (auto param : pluginParams)
         xml->setAttribute(param->getName(50).removeCharacters(StringRef(" /<>")), *param);
@@ -447,8 +456,11 @@ void VocodecAudioProcessor::setStateInformation (const void* data, int sizeInByt
     {
         vcd.currentPreset = (vocodec::VocodecPresetType) xmlState->getIntAttribute("preset", 0);
         vcd.loadingPreset = 1;
+        
+        String name = inputGain->getName(50);
+        inputGain->setValueNotifyingHost((float)xmlState->getDoubleAttribute(name, 1.0f));
 
-        String name = dryWetMix->getName(50);
+        name = dryWetMix->getName(50);
         dryWetMix->setValueNotifyingHost((float)xmlState->getDoubleAttribute(name, 1.0f));
 
         for (int p = 0; p < int(vocodec::PresetNil); ++p)

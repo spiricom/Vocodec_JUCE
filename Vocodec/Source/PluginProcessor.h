@@ -79,7 +79,7 @@ public:
     StringArray pluginParamNames;
     StringArray choiceParamNames;
 
-    
+    AudioParameterFloat* inputGain;
     AudioParameterFloat* dryWetMix;
     HashMap<int, AudioParameterFloat*> pluginParams;
     HashMap<String, AudioParameterChoice*> choiceParams;

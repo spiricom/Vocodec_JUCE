@@ -42,9 +42,7 @@ public:
     void updateKnobs();
 
     OwnedArray<Slider> dials;
-    
     OwnedArray<VocodecButton> buttons;
-    
     OwnedArray<VocodecLight> lights;
     
 private:
@@ -53,12 +51,15 @@ private:
     
     std::unique_ptr<ComponentBoundsConstrainer> constrain;
     std::unique_ptr<ResizableCornerComponent> resizer;
-
     std::unique_ptr<Drawable> panel;
+    
+    OwnedArray<Label> dialLabels;
     
     VocodecScreen screen;
     
     Label versionLabel;
+    
+    Font euphemia;
     
     vocodec::VocodecPresetType currentKnobPreset;
     bool sliderActive[NUM_ADC_CHANNELS];

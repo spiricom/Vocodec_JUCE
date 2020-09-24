@@ -28,6 +28,12 @@ public:
         
         setColour(PopupMenu::backgroundColourId, Colour(10, 10, 10));
         setColour(PopupMenu::textColourId, Colours::white);
+        
+        setColour(Label::textColourId, Colours::gold.withBrightness(0.95f));
+        
+        setColour(TextEditor::textColourId, Colours::gold);
+        setColour(TextEditor::backgroundColourId, Colours::transparentWhite);
+        setColour(TextEditor::outlineColourId, Colours::transparentWhite);
     }
     
     ~VocodecLookAndFeel()
