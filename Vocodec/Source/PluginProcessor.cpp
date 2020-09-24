@@ -439,8 +439,8 @@ void VocodecAudioProcessor::getStateInformation (MemoryBlock& destData)
 {
     std::unique_ptr<juce::XmlElement> xml(new juce::XmlElement("Vocodec"));
     xml->setAttribute("preset", vcd.currentPreset);
-    xml->setAttribute(inputGain->getName(50), *inputGain);
-    xml->setAttribute(dryWetMix->getName(50), *dryWetMix);
+    xml->setAttribute(inputGain->getName(50), inputGain->get());
+    xml->setAttribute(dryWetMix->getName(50), dryWetMix->get());
     for (auto param : pluginParams)
         xml->setAttribute(param->getName(50).removeCharacters(StringRef(" /<>")), *param);
     for (auto param : choiceParams)
@@ -458,10 +458,13 @@ void VocodecAudioProcessor::setStateInformation (const void* data, int sizeInByt
         vcd.loadingPreset = 1;
         
         String name = inputGain->getName(50);
-        inputGain->setValueNotifyingHost((float)xmlState->getDoubleAttribute(name, 1.0f));
+        float value = (float)xmlState->getDoubleAttribute(name, 1.0f);
+        value = inputGain->getNormalisableRange().convertTo0to1(value);
+        inputGain->setValueNotifyingHost(value);
 
         name = dryWetMix->getName(50);
-        dryWetMix->setValueNotifyingHost((float)xmlState->getDoubleAttribute(name, 1.0f));
+        value = (float)xmlState->getDoubleAttribute(name, 1.0f);
+        dryWetMix->setValueNotifyingHost(value);
 
         for (int p = 0; p < int(vocodec::PresetNil); ++p)
         {
