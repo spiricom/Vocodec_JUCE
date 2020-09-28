@@ -54,6 +54,7 @@ private:
     std::unique_ptr<Drawable> panel;
     
     OwnedArray<Label> dialLabels;
+    Label gainLabel;
     
     VocodecScreen screen;
     

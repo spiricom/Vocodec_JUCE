@@ -62,6 +62,9 @@ screen(p)
     dialLabels[0]->setJustificationType(Justification::topLeft);
     dialLabels[0]->setText("INPUT\nGAIN", dontSendNotification);
     
+    gainLabel.setText(String(processor.inputGain->get(), 2, false), dontSendNotification);
+    addAndMakeVisible(gainLabel);
+    
     Path path;
     path.addEllipse(0, 0, 30, 30);
     
@@ -188,6 +191,9 @@ void VocodecAudioProcessorEditor::resized()
     
     for (auto label : dialLabels)
         label->setFont(euphemia.withHeight(height * 0.025f));
+    
+    gainLabel.setBounds(95*s, 120*s, 80*s, 25*s);
+    gainLabel.setFont(euphemia.withHeight(height * 0.025f));
     
     versionLabel.setBounds(0, height * 0.97f, width * 0.2f, height * 0.03f);
     versionLabel.setFont(euphemia.withHeight(height * 0.025f));
@@ -325,6 +331,8 @@ void VocodecAudioProcessorEditor::timerCallback()
             else dialLabels[i+1]->setText("", dontSendNotification);
         }
     }
+    
+    gainLabel.setText(String(processor.inputGain->get(), 2, false), dontSendNotification);
     
     screen.timerCallback();
 }
