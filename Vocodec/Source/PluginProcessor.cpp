@@ -500,6 +500,7 @@ AudioProcessor* JUCE_CALLTYPE createPluginFilter()
 
 void VocodecAudioProcessor::handleIncomingMidiMessage(MidiInput* source, const MidiMessage& message)
 {
+    if (vcd.loadingPreset) return;
     const ScopedValueSetter<bool> scopedInputFlag(isAddingFromMidiInput, true);
     if (message.isNoteOn()) {
         vocodec::noteOn(&vcd, message.getNoteNumber(), message.getVelocity());
