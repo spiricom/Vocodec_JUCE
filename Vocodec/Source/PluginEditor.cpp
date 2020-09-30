@@ -23,6 +23,8 @@ screen(p)
 {
     panel = Drawable::createFromImageData(BinaryData::panel_svg, BinaryData::panel_svgSize);
     
+    setWantsKeyboardFocus(true);
+    
     addAndMakeVisible(screen);
     screen.setOpaque(true);
     screen.onChange = [this] { presetChanged(); };

@@ -397,24 +397,26 @@ void VocodecAudioProcessor::processBlock (AudioBuffer<float>& buffer, MidiBuffer
         audioInput[0] = tEnvelopeFollower_tick(&inputFollower[0], leftChannel[i]);
         audioInput[1] = tEnvelopeFollower_tick(&inputFollower[1], rightChannel[i]);
         
+        // In the hardware code, the channels are flipped, so [1] will be left and [0] will be right
         float audio [2];
-        audio[0] = leftChannel[i];
-        audio[1] = rightChannel[i];
+        audio[1] = leftChannel[i];
+        audio[0] = rightChannel[i];
         
         vcd.tickFunctions[currentPreset](&vcd, audio);
         
-        audio[0] = LEAF_interpolation_linear(leftChannel[i], audio[0], mix);
+        audio[1] = LEAF_interpolation_linear(leftChannel[i], audio[1], mix);
         
         buffer.setSample(0, i, audio[0]);
         
         if(buffer.getNumChannels() > 1)
         {
-			audio[1] = LEAF_interpolation_linear(rightChannel[i], audio[1], mix);
-            buffer.setSample(1, i, audio[1]);
+			audio[0] = LEAF_interpolation_linear(rightChannel[i], audio[0], mix);
+            buffer.setSample(1, i, audio[0]);
         }
         
-        audioOutput[0] = tEnvelopeFollower_tick(&outputFollower[0], audio[0]);
-        audioOutput[1] = tEnvelopeFollower_tick(&outputFollower[1], audio[1]);
+        // Flip the channels back on the output
+        audioOutput[0] = tEnvelopeFollower_tick(&outputFollower[0], audio[1]);
+        audioOutput[1] = tEnvelopeFollower_tick(&outputFollower[1], audio[0]);
     }
     
     updateChoiceParams();
@@ -559,8 +561,6 @@ void VocodecAudioProcessor::hiResTimerCallback()
         vocodec::buttonCheck(&vcd);
         vocodec::adcCheck(&vcd);
         vcd.frameFunctions[currentPreset](&vcd);
-        float audio[2] = { 0.0f, 0.0f };
-        vcd.tickFunctions[currentPreset](&vcd, audio);
         
         updateChoiceParams();
         
@@ -617,7 +617,7 @@ void VocodecAudioProcessor::updateChoiceParams()
 
     *choiceParams["livingStringSynth_numVoices"] = vcd.livingStringSynthParams.numVoices > 1 ? 0 : 1;
     *choiceParams["livingStringSynth_audioIn"] = vcd.livingStringSynthParams.audioIn;
-    *choiceParams["livingString_feedback"] = vcd.livingStringSynthParams.feedback;
+    *choiceParams["livingStringSynth_feedback"] = vcd.livingStringSynthParams.feedback;
 
     *choiceParams["classicSynth_numVoices"] = vcd.classicSynthParams.numVoices > 1 ? 0 : 1;
 
@@ -673,7 +673,7 @@ void VocodecAudioProcessor::updateChoiceValues()
     
     vcd.livingStringSynthParams.numVoices = choiceParams["livingStringSynth_numVoices"]->getIndex() > 0 ? 1 : NUM_STRINGS;
     vcd.livingStringSynthParams.audioIn = choiceParams["livingStringSynth_audioIn"]->getIndex();
-    vcd.livingStringSynthParams.feedback = choiceParams["livingString_feedback"]->getIndex();
+    vcd.livingStringSynthParams.feedback = choiceParams["livingStringSynth_feedback"]->getIndex();
     
     vcd.classicSynthParams.numVoices = choiceParams["classicSynth_numVoices"]->getIndex() > 0 ? 1 : NUM_VOC_VOICES;
     

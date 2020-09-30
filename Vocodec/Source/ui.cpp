@@ -785,7 +785,7 @@ namespace vocodec
             if (vcd->buttonActionsUI[ButtonB][ActionPress])
             {
                 OLEDclearLine(vcd, SecondLine);
-                OLEDwriteString(vcd, vcd->samplerBPParams.playMode ? "BACKANDFORTH" : "FORWARD     ", 12, 0, SecondLine);
+                OLEDwriteString(vcd, vcd->samplerBPParams.playMode == PlayLoop ? "FORWARD     " : "BACKANDFORTH", 12, 0, SecondLine);
                 vcd->buttonActionsUI[ButtonB][ActionPress] = 0;
             }
             if (vcd->buttonActionsUI[ButtonA][ActionHoldContinuous])
@@ -903,6 +903,11 @@ namespace vocodec
                 writeString = vcd->delayParams.uncapFeedback ? "FB UNCAP" : "FB CAP";
                 vcd->buttonActionsUI[ButtonB][ActionPress] = 0;
             }
+            if (vcd->buttonActionsUI[ButtonC][ActionPress])
+            {
+                writeString = vcd->delayParams.freeze ? "FROZEN" : "UNFROZEN";
+                vcd->buttonActionsUI[ButtonC][ActionPress] = 0;
+            }
             return writeString;
         }
         
@@ -1008,7 +1013,7 @@ namespace vocodec
             }
             if (vcd->buttonActionsUI[ButtonC][ActionPress] == 1)
             {
-                writeString = (vcd->rhodesParams.tremoloStereo > 1) ? "STEREO TREM" : "MONO TREM";
+                writeString = (vcd->rhodesParams.tremoloStereo > 0) ? "STEREO TREM" : "MONO TREM";
                 vcd->buttonActionsUI[ButtonC][ActionPress] = 0;
             }
             return writeString;
