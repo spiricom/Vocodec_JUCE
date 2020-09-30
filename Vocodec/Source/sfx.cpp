@@ -2255,9 +2255,6 @@ namespace vocodec
             LEAF_crossfade((fade * 2.0f) - 1.0f, volumes);
             sample = (tSampler_tick(&vcd->asSampler[0]) * volumes[1]) + (tSampler_tick(&vcd->asSampler[1]) * volumes[0]);
             
-            if (isnan(sample))
-                sample *= 0.9999f;
-            
             vcd->previousPower = vcd->currentPower;
             input[0] = sample * 0.99f;
             input[1] = sample * 0.99f;
