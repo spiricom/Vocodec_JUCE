@@ -379,7 +379,7 @@ namespace vocodec
             vcd->defaultPresetKnobValues[Reverb2][4] = 0.5f; // peak gain
             
             vcd->defaultPresetKnobValues[LivingString][0] = 0.3f; // freq 1
-            vcd->defaultPresetKnobValues[LivingString][1] = 0.1f; // detune
+            vcd->defaultPresetKnobValues[LivingString][1] = 0.0f; // detune
             vcd->defaultPresetKnobValues[LivingString][2] = 0.3f; // decay
             vcd->defaultPresetKnobValues[LivingString][3] = 0.9f; // damping
             vcd->defaultPresetKnobValues[LivingString][4] = 0.5f; // pick pos
@@ -1906,7 +1906,6 @@ namespace vocodec
             
             else
             {
-                
                 for (int i = 0; i < NUM_SAMPLER_VOICES; i++)
                 {
                     vcd->displayValues[0] = knobs[0];
@@ -1987,7 +1986,6 @@ namespace vocodec
                         
                     }
                 }
-                
             }
             
             
@@ -2513,13 +2511,13 @@ namespace vocodec
             sample = tanhf(tCrusher_tick(&vcd->crush, input[1] * vcd->displayValues[5])) * vcd->displayValues[4] * volumeComp;
             if (vcd->bitcrusherParams.stereo)
             {
-                input[1] = tanhf(tCrusher_tick(&vcd->crush2, input[0] * vcd->displayValues[5])) * vcd->displayValues[4] * volumeComp;
+                input[0] = tanhf(tCrusher_tick(&vcd->crush2, input[0] * vcd->displayValues[5])) * vcd->displayValues[4] * volumeComp;
             }
             else
             {
-                input[1] = sample;
+                input[0] = sample;
             }
-            input[0] = sample;
+            input[1] = sample;
         }
         
         void SFXBitcrusherFree(Vocodec* vcd)
@@ -2589,6 +2587,7 @@ namespace vocodec
             vcd->displayValues[5] = vcd->presetKnobValues[Delay][5];
         }
 
+        // Add stereo param so in1 -> out1 and in2 -> out2 instead of in1 -> out1 & out2 (like bitcrusher)?
         void SFXDelayTick(Vocodec* vcd, float* input)
         {
             vcd->displayValues[0] = vcd->presetKnobValues[Delay][0] * 30000.0f;
@@ -2708,6 +2707,7 @@ namespace vocodec
             LEAF_clip(0.0f, vcd->presetKnobValues[Reverb][4], 0.5f);
         }
         
+        // Add stereo param so in1 + in2 -> out1 & out2 instead of in1 -> out1 & out2 ?
         void SFXReverbTick(Vocodec* vcd, float* input)
         {
             float stereo[2];
@@ -2946,9 +2946,8 @@ namespace vocodec
             float sample = 0.0f;
             for (int i = 0; i < NUM_STRINGS; i++)
             {
-                float tick = tComplexLivingString_tick(&vcd->theString[i], input[1]);
+                float tick = tComplexLivingString_tick(&vcd->theString[i], tanhf(input[1]));
                 sample += tick * tExpSmooth_tick(&vcd->stringGains[i]);
-                
             }
             sample *= 0.1625f;
             input[0] = sample;
@@ -3080,7 +3079,7 @@ namespace vocodec
             {
                 
                 //float pluck = tNoise_tick(&stringPluckNoise);
-                inputSample = (input[1] * vcd->livingStringSynthParams.audioIn) + (pluck * tADSR4_tick(&vcd->pluckEnvs[i]));
+                inputSample = tanhf((input[1] * vcd->livingStringSynthParams.audioIn) + (pluck * tADSR4_tick(&vcd->pluckEnvs[i])));
                 //inputSample = (input[1] * voicePluck) + (tVZFilter_tick(&pluckFilt, (tNoise_tick(&stringPluckNoise))) * tADSR4_tick(&pluckEnvs[i]));
                 sample += tComplexLivingString_tick(&vcd->theString[i], (inputSample * tSlide_tickNoInput(&vcd->stringOutEnvs[i]))) * tSlide_tickNoInput(&vcd->stringOutEnvs[i]);
             }
@@ -4024,16 +4023,18 @@ namespace vocodec
                     if (tBuffer_isActive(&vcd->keyBuff[key-LOWEST_SAMPLER_KEY]) == 1)
                     {
                         tBuffer_stop(&vcd->keyBuff[key-LOWEST_SAMPLER_KEY]);
-                        UISamplerKButtons(vcd, ButtonUp, ActionPress);
+//                        UISamplerKButtons(vcd, ButtonUp, ActionPress);
                     }
                     else
                     {
                         tExpSmooth_setDest(&vcd->kSamplerGains[key-LOWEST_SAMPLER_KEY], 0.0f);
                     }
                     vcd->samplerKeyHeld[key-LOWEST_SAMPLER_KEY] = 0;
-                    UISamplerKButtons(vcd, ButtonC, ActionHoldContinuous);
+//                    UISamplerKButtons(vcd, ButtonC, ActionHoldContinuous);
                     tSampler_stop(&vcd->keySampler[key-LOWEST_SAMPLER_KEY]);
-                    vcd->waitingForDeactivation[voice] = key;
+                    
+                    if (voice >= 0)
+                        vcd->waitingForDeactivation[voice] = key;
                 }
             }
             else if (vcd->currentPreset == LivingStringSynth)

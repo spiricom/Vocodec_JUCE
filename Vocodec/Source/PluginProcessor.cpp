@@ -406,7 +406,7 @@ void VocodecAudioProcessor::processBlock (AudioBuffer<float>& buffer, MidiBuffer
         
         audio[1] = LEAF_interpolation_linear(leftChannel[i], audio[1], mix);
         
-        buffer.setSample(0, i, audio[0]);
+        buffer.setSample(0, i, audio[1]);
         
         if(buffer.getNumChannels() > 1)
         {
@@ -505,7 +505,7 @@ void VocodecAudioProcessor::handleIncomingMidiMessage(MidiInput* source, const M
     if (message.isNoteOn()) {
         vocodec::noteOn(&vcd, message.getNoteNumber(), message.getVelocity());
     }
-    else {
+    else if (message.isNoteOff()) {
         vocodec::noteOff(&vcd, message.getNoteNumber(), message.getVelocity());
     }
     keyboardState.processNextMidiEvent(message);
