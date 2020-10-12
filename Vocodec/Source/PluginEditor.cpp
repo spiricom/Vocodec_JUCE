@@ -63,6 +63,7 @@ screen(p)
     dials[0]->setDoubleClickReturnValue(true, 1.0f);
     dialLabels[0]->setJustificationType(Justification::topLeft);
     dialLabels[0]->setText("INPUT\nGAIN", dontSendNotification);
+    dialLabels[4]->setJustificationType(Justification::topRight);
     
     gainLabel.setText(String(processor.inputGain->get(), 2, false), dontSendNotification);
     addAndMakeVisible(gainLabel);
@@ -91,7 +92,7 @@ screen(p)
     processor.vcd.lightStates[vocodec::VocodecLightOut1Meter] = true;
     processor.vcd.lightStates[vocodec::VocodecLightOut2Meter] = true;
 
-    setSize(600, 716);
+    setSize(600 * processor.editorScale, 716 * processor.editorScale);
     
     constrain->setFixedAspectRatio(600.0f / 716.0f);
     
@@ -130,6 +131,9 @@ void VocodecAudioProcessorEditor::paint (Graphics& g)
     panelArea.reduce(getWidth()*0.025f, getHeight()*0.01f);
     panelArea.removeFromBottom(getHeight()*0.03f);
     panel->drawWithin(g, panelArea, RectanglePlacement::centred, 1.0f);
+    
+    g.fillRect(getWidth() * 0.25f, getHeight() * 0.25f, getWidth() * 0.6f, getHeight() * 0.5f);
+    g.fillRect(getWidth() * 0.25f, getHeight() * 0.75f, getWidth() * 0.2f, getHeight() * 0.15f);
 }
 
 void VocodecAudioProcessorEditor::resized()
@@ -140,6 +144,8 @@ void VocodecAudioProcessorEditor::resized()
     screen.setBounds(width*0.347f, height*0.096f, width*0.306f, height*0.105f);
     
     float s = width / 600.0f;
+    
+    processor.editorScale = s;
     
     const float buttonSize = 24.0f*s;
     const float knobSize = 57.0f*s;
@@ -184,15 +190,21 @@ void VocodecAudioProcessorEditor::resized()
     dials[6]                        ->setBounds(380*s, 500*s, knobSize, knobSize);
     
     dialLabels[0]                   ->setBounds(40*s, 110*s, 100*s, 50*s);
-    dialLabels[1]                   ->setBounds(138*s, 185*s, labelWidth, labelHeight);
-    dialLabels[2]                   ->setBounds(348*s, 185*s, labelWidth, labelHeight);
-    dialLabels[3]                   ->setBounds(213*s, 325*s, labelWidth, labelHeight);
-    dialLabels[4]                   ->setBounds(408*s, 325*s, labelWidth, labelHeight);
-    dialLabels[5]                   ->setBounds(138*s, 480*s, labelWidth, labelHeight);
-    dialLabels[6]                   ->setBounds(343*s, 480*s, labelWidth, labelHeight);
+//    dialLabels[1]                   ->setBounds(138*s, 185*s, labelWidth, labelHeight);
+//    dialLabels[2]                   ->setBounds(348*s, 185*s, labelWidth, labelHeight);
+//    dialLabels[3]                   ->setBounds(213*s, 325*s, labelWidth, labelHeight);
+//    dialLabels[4]                   ->setBounds(408*s, 325*s, labelWidth, labelHeight);
+//    dialLabels[5]                   ->setBounds(138*s, 480*s, labelWidth, labelHeight);
+//    dialLabels[6]                   ->setBounds(343*s, 480*s, labelWidth, labelHeight);
+    dialLabels[1]                   ->setBounds(138*s, 270*s, labelWidth, labelHeight);
+    dialLabels[2]                   ->setBounds(348*s, 270*s, labelWidth, labelHeight);
+    dialLabels[3]                   ->setBounds(213*s, 410*s, labelWidth, labelHeight);
+    dialLabels[4]                   ->setBounds(373*s, 410*s, labelWidth, labelHeight);
+    dialLabels[5]                   ->setBounds(138*s, 570*s, labelWidth, labelHeight);
+    dialLabels[6]                   ->setBounds(343*s, 570*s, labelWidth, labelHeight);
     
     for (auto label : dialLabels)
-        label->setFont(euphemia.withHeight(height * 0.025f));
+        label->setFont(euphemia.withHeight(height * 0.027f));
     
     gainLabel.setBounds(95*s, 120*s, 80*s, 25*s);
     gainLabel.setFont(euphemia.withHeight(height * 0.025f));

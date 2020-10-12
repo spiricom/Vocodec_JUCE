@@ -90,6 +90,8 @@ public:
     
     vocodec::Vocodec vcd;
     
+    float editorScale;
+    
 private:
     
     char small_memory[SMALL_MEM_SIZE];

@@ -440,13 +440,19 @@ AudioProcessorEditor* VocodecAudioProcessor::createEditor()
 void VocodecAudioProcessor::getStateInformation (MemoryBlock& destData)
 {
     std::unique_ptr<juce::XmlElement> xml(new juce::XmlElement("Vocodec"));
+    
     xml->setAttribute("preset", vcd.currentPreset);
+    
     xml->setAttribute(inputGain->getName(50), inputGain->get());
     xml->setAttribute(dryWetMix->getName(50), dryWetMix->get());
+    
     for (auto param : pluginParams)
         xml->setAttribute(param->getName(50).removeCharacters(StringRef(" /<>")), *param);
     for (auto param : choiceParams)
         xml->setAttribute(param->getName(50).removeCharacters(StringRef(" /<>")), param->getIndex());
+    
+    xml->setAttribute("editorScale", editorScale);
+    
     copyXmlToBinary(*xml, destData);
 }
 
@@ -488,6 +494,8 @@ void VocodecAudioProcessor::setStateInformation (const void* data, int sizeInByt
             name = name.removeCharacters(StringRef(" /<>"));
             *param = xmlState->getIntAttribute(name, 0);
         }
+        
+        editorScale = xmlState->getDoubleAttribute("editorScale", 1.0);
     }
 }
 
