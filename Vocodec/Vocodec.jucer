@@ -7,7 +7,7 @@
               pluginName="Vocodec" pluginDesc="A vocal effects pedal." pluginManufacturerCode="Vcdc"
               pluginCode="vc8r" aaxIdentifier="com.snyderphonics.Vocodec" pluginAUExportPrefix="VocodecAU"
               bundleIdentifier="com.snyderphonics.Vocodec" pluginAUMainType="'aumf'"
-              version="0.2.0">
+              version="0.2.1">
   <MAINGROUP id="uEka6H" name="Vocodec">
     <GROUP id="{B405E64B-4792-254D-5BDE-97BC1F91F9E6}" name="Source">
       <GROUP id="{F62A9309-7BE1-5B65-A806-641EB05C4C88}" name="Resources-Vocoder">

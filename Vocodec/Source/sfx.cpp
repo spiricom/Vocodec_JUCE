@@ -1131,8 +1131,8 @@ namespace vocodec
         {
             
             tFormantShifter_init(&vcd->fs, 7, &vcd->leaf);
-            tRetune_initToPool(&vcd->retune, NUM_RETUNE, 1024, 512, &vcd->mediumPool);
-            tRetune_initToPool(&vcd->retune2, NUM_RETUNE, 1024, 512, &vcd->mediumPool);
+            tRetune_initToPool(&vcd->retune, NUM_RETUNE, mtof(36), mtof(84), 1024, &vcd->mediumPool);
+            tRetune_initToPool(&vcd->retune2, NUM_RETUNE, mtof(36), mtof(84), 1024, &vcd->mediumPool);
             tRamp_init(&vcd->pitchshiftRamp, 100.0f, 1, &vcd->leaf);
             tRamp_setVal(&vcd->pitchshiftRamp, 1.0f);
             
@@ -1184,8 +1184,8 @@ namespace vocodec
             
             float myPitchFactor = fastexp2f(myPitchFactorCombined);
             myPitchFactor *= keyPitch;
-            tRetune_setPitchFactor(&vcd->retune, myPitchFactor, 0);
-            tRetune_setPitchFactor(&vcd->retune2, myPitchFactor, 0);
+            tRetune_tuneVoice(&vcd->retune, 0, myPitchFactor);
+            tRetune_tuneVoice(&vcd->retune2, 0, myPitchFactor);
             
             tExpSmooth_setDest(&vcd->smoother3, vcd->displayValues[2]);
             tFormantShifter_setIntensity(&vcd->fs, tExpSmooth_tick(&vcd->smoother3)+.1f);
@@ -1245,7 +1245,7 @@ namespace vocodec
         void SFXNeartuneAlloc(Vocodec* vcd)
         {
             vcd->leaf.clearOnAllocation = 1;
-            tRetune_init(&vcd->autotuneMono, 1, 512, 256, &vcd->leaf);
+            tRetune_initToPool(&vcd->autotuneMono, 1, mtof(36), mtof(84), 1024, &vcd->mediumPool);
             calculateNoteArray(vcd);
             tExpSmooth_init(&vcd->neartune_smoother, 1.0f, .007f, &vcd->leaf);
             tRamp_init(&vcd->nearWetRamp, 20.0f, 1, &vcd->leaf);
@@ -1297,7 +1297,7 @@ namespace vocodec
             }
             
             vcd->displayValues[0] = 0.5f + (vcd->presetKnobValues[AutotuneMono][0] * 0.49f); //fidelity
-            tRetune_setFidelityThreshold(&vcd->autotuneMono, vcd->displayValues[0]);
+//            tRetune_setFidelityThreshold(&vcd->autotuneMono, vcd->displayValues[0]);
             vcd->displayValues[1] = LEAF_clip(0.0f, vcd->presetKnobValues[AutotuneMono][1] * 1.1f, 1.0f); // amount of forcing to new pitch
             vcd->displayValues[2] = vcd->presetKnobValues[AutotuneMono][2]; //speed to get to desired pitch shift
             
@@ -1310,7 +1310,7 @@ namespace vocodec
             float sample = 0.0f;
             
             vcd->displayValues[0] = 0.5f + (vcd->presetKnobValues[AutotuneMono][0] * 0.49f); //fidelity
-            tRetune_setFidelityThreshold(&vcd->autotuneMono, vcd->displayValues[0]);
+//            tRetune_setFidelityThreshold(&vcd->autotuneMono, vcd->displayValues[0]);
             vcd->displayValues[1] = LEAF_clip(0.0f, vcd->presetKnobValues[AutotuneMono][1] * 1.1f, 1.0f); // amount of forcing to new pitch
             vcd->displayValues[2] = vcd->presetKnobValues[AutotuneMono][2]; //speed to get to desired pitch shift
             
@@ -1324,10 +1324,10 @@ namespace vocodec
             tExpSmooth_setFactor(&vcd->neartune_smoother, vcd->expBuffer[(int)(vcd->displayValues[2] * vcd->displayValues[2] * vcd->displayValues[2] * vcd->expBufferSizeMinusOne)]);
             float destFactor = tExpSmooth_tick(&vcd->neartune_smoother);
             
-            float detectedPeriod = tRetune_getInputPeriod(&vcd->autotuneMono);
-            if (detectedPeriod > 0.0f)
+            float detected = tRetune_getInputFrequency(&vcd->autotuneMono);
+            if (detected > 0.0f)
             {
-                vcd->detectedNote = LEAF_frequencyToMidi(1.0f / detectedPeriod);
+                vcd->detectedNote = LEAF_frequencyToMidi(detected);
                 
                 vcd->desiredSnap = nearestNoteWithHysteresis(vcd, vcd->detectedNote, vcd->displayValues[4]);
                 
@@ -1355,11 +1355,8 @@ namespace vocodec
                 }
                 
             }
-            
-            
-            
-            
-            tRetune_setPitchFactor(&vcd->autotuneMono, destFactor, 0);
+        
+            tRetune_tuneVoice(&vcd->autotuneMono, 0, destFactor);
             float* samples = tRetune_tick(&vcd->autotuneMono, input[1]);
             //tAutotune_setFreq(&autotuneMono, leaf.sampleRate / nearestPeriod(tAutotune_getInputPeriod(&autotuneMono)), 0);
             
@@ -1383,7 +1380,8 @@ namespace vocodec
         //6 autotune
         void SFXAutotuneAlloc(Vocodec* vcd)
         {
-            tAutotune_initToPool(&vcd->autotunePoly, NUM_AUTOTUNE, 1024, 512, &vcd->mediumPool);
+            tRetune_initToPool(&vcd->autotunePoly, NUM_AUTOTUNE, mtof(36), mtof(84), 1024, &vcd->mediumPool);
+            tRetune_setMode(&vcd->autotunePoly, 1);
             tSimplePoly_setNumVoices(&vcd->poly, NUM_AUTOTUNE);
             setLED_A(vcd, 0);
             setLED_B(vcd, 0);
@@ -1413,21 +1411,21 @@ namespace vocodec
             
             //displayValues[2] = presetKnobValues[AutotunePoly][2];
             
-            tAutotune_setFidelityThreshold(&vcd->autotunePoly, vcd->displayValues[0]);
+//            tAutotune_setFidelityThreshold(&vcd->autotunePoly, vcd->displayValues[0]);
             //tAutotune_setAlpha(&autotunePoly, displayValues[1]);
             //tAutotune_setTolerance(&autotunePoly, displayValues[2]);
-            
-            
+        
             for (int i = 0; i < tSimplePoly_getNumVoices(&vcd->poly); ++i)
             {
-                tAutotune_setFreq(&vcd->autotunePoly, vcd->freq[i], i);
+                tRetune_tuneVoice(&vcd->autotunePoly, i, vcd->freq[i]);
             }
             
-            float* samples = tAutotune_tick(&vcd->autotunePoly, input[1]);
+            float* samples = tRetune_tick(&vcd->autotunePoly, input[1]);
             
             for (int i = 0; i < tSimplePoly_getNumVoices(&vcd->poly); ++i)
             {
-                sample += samples[i] * tExpSmooth_tick(&vcd->polyRamp[i]);
+                float gain = tExpSmooth_tick(&vcd->polyRamp[i]);
+                sample += samples[i] * gain;
             }
             sample *= tExpSmooth_tick(&vcd->comp);
             input[0] = sample;
@@ -1436,7 +1434,7 @@ namespace vocodec
         
         void SFXAutotuneFree(Vocodec* vcd)
         {
-            tAutotune_free(&vcd->autotunePoly);
+            tRetune_free(&vcd->autotunePoly);
         }
         
         

@@ -285,7 +285,7 @@ namespace vocodec
             //audio objects
             tFormantShifter fs;
             tRetune autotuneMono;
-            tAutotune autotunePoly;
+            tRetune autotunePoly;
             tRetune retune;
             tRetune retune2;
             tRamp pitchshiftRamp;
