@@ -303,13 +303,13 @@ namespace vocodec
             vcd->defaultPresetKnobValues[Pitchshift][8] = 0.25f;
             vcd->defaultPresetKnobValues[Pitchshift][9] = 0.25f;
             
-            vcd->defaultPresetKnobValues[AutotuneMono][0] = 0.0f; // pickiness
+            vcd->defaultPresetKnobValues[AutotuneMono][0] = 0.5051f; // pickiness
             vcd->defaultPresetKnobValues[AutotuneMono][1] = 1.0f; // amount
             vcd->defaultPresetKnobValues[AutotuneMono][2] = 0.5f; // speed
             vcd->defaultPresetKnobValues[AutotuneMono][3] = 1.0f; // leap allow
             vcd->defaultPresetKnobValues[AutotuneMono][4] = 0.25f; // hysteresis
             
-            vcd->defaultPresetKnobValues[AutotunePoly][0] = 1.0f; // fidelity thresh
+            vcd->defaultPresetKnobValues[AutotunePoly][0] = 0.5051f; // periodicity thresh
             vcd->defaultPresetKnobValues[AutotunePoly][1] = 0.5f;
             vcd->defaultPresetKnobValues[AutotunePoly][2] = 0.1f;
             vcd->defaultPresetKnobValues[AutotunePoly][3] = 0.0f;
@@ -1309,8 +1309,8 @@ namespace vocodec
         {
             float sample = 0.0f;
             
-            vcd->displayValues[0] = 0.5f + (vcd->presetKnobValues[AutotuneMono][0] * 0.49f); //fidelity
-//            tRetune_setFidelityThreshold(&vcd->autotuneMono, vcd->displayValues[0]);
+            vcd->displayValues[0] = 0.9f + (vcd->presetKnobValues[AutotuneMono][0] * 0.099f); //fidelity
+            tRetune_setPickiness(&vcd->autotuneMono, vcd->displayValues[0]);
             vcd->displayValues[1] = LEAF_clip(0.0f, vcd->presetKnobValues[AutotuneMono][1] * 1.1f, 1.0f); // amount of forcing to new pitch
             vcd->displayValues[2] = vcd->presetKnobValues[AutotuneMono][2]; //speed to get to desired pitch shift
             
@@ -1375,7 +1375,6 @@ namespace vocodec
             tExpSmooth_free(&vcd->neartune_smoother);
             tRamp_free(&vcd->nearWetRamp);
         }
-        
 
         //6 autotune
         void SFXAutotuneAlloc(Vocodec* vcd)
@@ -1405,7 +1404,9 @@ namespace vocodec
         void SFXAutotuneTick(Vocodec* vcd, float* input)
         {
             float sample = 0.0f;
-            vcd->displayValues[0] = 0.5f + (vcd->presetKnobValues[AutotunePoly][0] * 0.47f);
+            vcd->displayValues[0] = 0.9f + (vcd->presetKnobValues[AutotunePoly][0] * 0.099f);
+            
+            tRetune_setPickiness(&vcd->autotunePoly, vcd->displayValues[0]);
             
             //displayValues[1] = presetKnobValues[AutotunePoly][1];
             

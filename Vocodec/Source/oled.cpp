@@ -466,7 +466,7 @@ namespace vocodec
             if (f<1.0f)
             {
                 numDigits = 3;
-                numDecimal = 2;
+                numDecimal = 3;
             }
             
             else if (f<10.0f)
