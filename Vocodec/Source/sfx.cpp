@@ -303,13 +303,13 @@ namespace vocodec
             vcd->defaultPresetKnobValues[Pitchshift][8] = 0.25f;
             vcd->defaultPresetKnobValues[Pitchshift][9] = 0.25f;
             
-            vcd->defaultPresetKnobValues[AutotuneMono][0] = 0.5051f; // pickiness
+            vcd->defaultPresetKnobValues[AutotuneMono][0] = 0.6f; // pickiness
             vcd->defaultPresetKnobValues[AutotuneMono][1] = 1.0f; // amount
             vcd->defaultPresetKnobValues[AutotuneMono][2] = 0.5f; // speed
             vcd->defaultPresetKnobValues[AutotuneMono][3] = 1.0f; // leap allow
             vcd->defaultPresetKnobValues[AutotuneMono][4] = 0.25f; // hysteresis
             
-            vcd->defaultPresetKnobValues[AutotunePoly][0] = 0.5051f; // periodicity thresh
+            vcd->defaultPresetKnobValues[AutotunePoly][0] = 0.6f; // periodicity thresh
             vcd->defaultPresetKnobValues[AutotunePoly][1] = 0.5f;
             vcd->defaultPresetKnobValues[AutotunePoly][2] = 0.1f;
             vcd->defaultPresetKnobValues[AutotunePoly][3] = 0.0f;
@@ -1131,8 +1131,8 @@ namespace vocodec
         {
             
             tFormantShifter_init(&vcd->fs, 7, &vcd->leaf);
-            tRetune_initToPool(&vcd->retune, NUM_RETUNE, mtof(36), mtof(84), 1024, &vcd->mediumPool);
-            tRetune_initToPool(&vcd->retune2, NUM_RETUNE, mtof(36), mtof(84), 1024, &vcd->mediumPool);
+            tRetune_initToPool(&vcd->retune, NUM_RETUNE, mtof(42), mtof(84), 1024, &vcd->mediumPool);
+            tRetune_initToPool(&vcd->retune2, NUM_RETUNE, mtof(42), mtof(84), 1024, &vcd->mediumPool);
             tRamp_init(&vcd->pitchshiftRamp, 100.0f, 1, &vcd->leaf);
             tRamp_setVal(&vcd->pitchshiftRamp, 1.0f);
             
@@ -1245,7 +1245,7 @@ namespace vocodec
         void SFXNeartuneAlloc(Vocodec* vcd)
         {
             vcd->leaf.clearOnAllocation = 1;
-            tRetune_initToPool(&vcd->autotuneMono, 1, mtof(36), mtof(84), 1024, &vcd->mediumPool);
+            tRetune_initToPool(&vcd->autotuneMono, 1, mtof(42), mtof(84), 1024, &vcd->mediumPool);
             calculateNoteArray(vcd);
             tExpSmooth_init(&vcd->neartune_smoother, 1.0f, .007f, &vcd->leaf);
             tRamp_init(&vcd->nearWetRamp, 20.0f, 1, &vcd->leaf);
@@ -1309,7 +1309,7 @@ namespace vocodec
         {
             float sample = 0.0f;
             
-            vcd->displayValues[0] = 0.9f + (vcd->presetKnobValues[AutotuneMono][0] * 0.099f); //fidelity
+            vcd->displayValues[0] = 0.95f + (vcd->presetKnobValues[AutotuneMono][0] * 0.05f); //fidelity
             tRetune_setPickiness(&vcd->autotuneMono, vcd->displayValues[0]);
             vcd->displayValues[1] = LEAF_clip(0.0f, vcd->presetKnobValues[AutotuneMono][1] * 1.1f, 1.0f); // amount of forcing to new pitch
             vcd->displayValues[2] = vcd->presetKnobValues[AutotuneMono][2]; //speed to get to desired pitch shift
@@ -1379,13 +1379,13 @@ namespace vocodec
         //6 autotune
         void SFXAutotuneAlloc(Vocodec* vcd)
         {
-            tRetune_initToPool(&vcd->autotunePoly, NUM_AUTOTUNE, mtof(36), mtof(84), 1024, &vcd->mediumPool);
+            tRetune_initToPool(&vcd->autotunePoly, NUM_AUTOTUNE, mtof(42), mtof(84), 1024, &vcd->mediumPool);
             tRetune_setMode(&vcd->autotunePoly, 1);
             tSimplePoly_setNumVoices(&vcd->poly, NUM_AUTOTUNE);
             setLED_A(vcd, 0);
             setLED_B(vcd, 0);
             setLED_C(vcd, 0);
-            //tAutotune_init(&autotunePoly, NUM_AUTOTUNE, 2048, 1024); //old settings
+            tCycle_init(&vcd->tremolo, &vcd->leaf);
         }
         
         void SFXAutotuneFrame(Vocodec* vcd)
@@ -1404,7 +1404,7 @@ namespace vocodec
         void SFXAutotuneTick(Vocodec* vcd, float* input)
         {
             float sample = 0.0f;
-            vcd->displayValues[0] = 0.9f + (vcd->presetKnobValues[AutotunePoly][0] * 0.099f);
+            vcd->displayValues[0] = 0.95f + (vcd->presetKnobValues[AutotunePoly][0] * 0.05f);
             
             tRetune_setPickiness(&vcd->autotunePoly, vcd->displayValues[0]);
             
@@ -1431,6 +1431,12 @@ namespace vocodec
             sample *= tExpSmooth_tick(&vcd->comp);
             input[0] = sample;
             input[1] = sample;
+            
+//            tCycle_setFreq(&vcd->tremolo, tRetune_getInputFrequency(&vcd->autotunePoly));
+                           
+//            float s = tCycle_tick(&vcd->tremolo) *0.2f;
+//            input[0] += s;
+//            input[1] += s;
         }
         
         void SFXAutotuneFree(Vocodec* vcd)
