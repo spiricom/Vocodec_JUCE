@@ -512,9 +512,9 @@ namespace vocodec
         void GFXdrawBitmap(GFX* myGFX, int16_t x, int16_t y,
                            uint8_t *bitmap, int16_t w, int16_t h, uint16_t color, uint16_t bg) {
             
-// Getting a bit messy with these #ifndefs but startWrite() and endWrite()
-// don't seem to exist anywhere in the Vocodec code. Doesn't cause a build
-// error for the hardware version but does for JUCE version.
+            // Getting a bit messy with these #ifndefs but startWrite() and endWrite()
+            // don't seem to exist anywhere in the Vocodec code. Doesn't cause a build
+            // error for the hardware version but does for JUCE version.
 #ifndef __cplusplus
             int16_t byteWidth = (w + 7) / 8; // Bitmap scanline pad = whole byte
             uint8_t byte = 0;

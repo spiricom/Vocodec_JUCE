@@ -8,7 +8,7 @@
 #define SFX_H_
 
 #ifndef __cplusplus
-#include "audiostream.h"
+//#include "audiostream.h"
 #else
 #include <JuceHeader.h>
 #endif
@@ -54,19 +54,19 @@ namespace vocodec
 #define NUM_STRINGS 6
 #define MAX_AUTOSAMP_LENGTH 192000
         
-// UI
+        // UI
 #define NUM_ADC_CHANNELS 6
 #define NUM_BUTTONS 10
 #define NUM_PRESET_KNOB_VALUES 25
 #define KNOB_PAGE_SIZE 5
         
 #define NUM_CHARACTERS_PER_PRESET_NAME 16
-//
+        //
         
 #ifndef __cplusplus
-        char small_memory[SMALL_MEM_SIZE];
-        char medium_memory[MED_MEM_SIZE] __ATTR_RAM_D1;
-        char large_memory[LARGE_MEM_SIZE] __ATTR_SDRAM;
+        extern char small_memory[SMALL_MEM_SIZE];
+        extern char medium_memory[MED_MEM_SIZE] __ATTR_RAM_D1;
+        extern char large_memory[LARGE_MEM_SIZE] __ATTR_SDRAM;
 #endif
         
         //PresetNil is used as a counter for the size of the enum
@@ -506,7 +506,7 @@ namespace vocodec
             float samplesPerMs;
             
             // CLASSIC SUBTRACTIVE SYNTH
-
+            
             tEfficientSVF synthLP[NUM_VOC_VOICES];
             uint16_t filtFreqs[NUM_VOC_VOICES];
             tADSR4 polyEnvs[NUM_VOC_VOICES];
@@ -540,13 +540,12 @@ namespace vocodec
             int lastNearNote;
             
             int newBuffer[NUM_SAMPLER_KEYS];
-        
+            
             
             // UI /////////
-
-//            uint16_t ADC_values[NUM_ADC_CHANNELS] __ATTR_RAM_D2;
+            
             uint16_t (*ADC_values)[NUM_ADC_CHANNELS];
-
+            
             float floatADC[NUM_ADC_CHANNELS];
             float lastFloatADC[NUM_ADC_CHANNELS];
             float floatADCUI[NUM_ADC_CHANNELS];
@@ -607,8 +606,11 @@ namespace vocodec
             unsigned char buffer[512];
             GFX theGFX;
             char oled_buffer[32];
-
+            
         };
+#ifndef __cplusplus
+        extern Vocodec vocodec;
+#endif
         
         void SFX_init(Vocodec* vcd, uint16_t (*ADC_values)[NUM_ADC_CHANNELS]);
         void initPresetParams(Vocodec* vcd);
@@ -621,7 +623,7 @@ namespace vocodec
         void SFXVocoderFrame(Vocodec* vcd);
         void SFXVocoderTick(Vocodec* vcd, float* input);
         void SFXVocoderFree(Vocodec* vcd);
-    
+        
         //channel Vocoder
         void SFXVocoderChAlloc(Vocodec* vcd);
         void SFXVocoderChFrame(Vocodec* vcd);

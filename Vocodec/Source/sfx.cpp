@@ -303,7 +303,7 @@ namespace vocodec
             vcd->defaultPresetKnobValues[Pitchshift][8] = 0.25f;
             vcd->defaultPresetKnobValues[Pitchshift][9] = 0.25f;
             
-            vcd->defaultPresetKnobValues[AutotuneMono][0] = 0.6f; // pickiness
+            vcd->defaultPresetKnobValues[AutotuneMono][0] = 0.4f; // pickiness
             vcd->defaultPresetKnobValues[AutotuneMono][1] = 1.0f; // amount
             vcd->defaultPresetKnobValues[AutotuneMono][2] = 0.5f; // speed
             vcd->defaultPresetKnobValues[AutotuneMono][3] = 1.0f; // leap allow

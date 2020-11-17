@@ -21,6 +21,8 @@ namespace vocodec
 {
     extern "C"
     {
+#else
+        uint16_t ADC_values[NUM_ADC_CHANNELS] __ATTR_RAM_D2;
 #endif
         
         void initModeNames(Vocodec* vcd)
@@ -336,16 +338,16 @@ namespace vocodec
                  */
                 
                 //A little more efficient since it avoids a function call
-                buttonValues[0] =!(GPIOB->IDR & GPIO_PIN_13);
-                buttonValues[1] =!(GPIOB->IDR & GPIO_PIN_12);
-                buttonValues[2] =!(GPIOB->IDR & GPIO_PIN_14);
-                buttonValues[3] =!(GPIOD->IDR & GPIO_PIN_11);
-                buttonValues[4] =!(GPIOB->IDR & GPIO_PIN_15);
-                buttonValues[5] =!(GPIOB->IDR & GPIO_PIN_1);
-                buttonValues[6] =!(GPIOD->IDR & GPIO_PIN_7);
-                buttonValues[7] =!(GPIOB->IDR & GPIO_PIN_11);
-                buttonValues[8] =!(GPIOG->IDR & GPIO_PIN_11);
-                buttonValues[9] =!(GPIOB->IDR & GPIO_PIN_10);
+                vcd->buttonValues[0] =!(GPIOB->IDR & GPIO_PIN_13);
+                vcd->buttonValues[1] =!(GPIOB->IDR & GPIO_PIN_12);
+                vcd->buttonValues[2] =!(GPIOB->IDR & GPIO_PIN_14);
+                vcd->buttonValues[3] =!(GPIOD->IDR & GPIO_PIN_11);
+                vcd->buttonValues[4] =!(GPIOB->IDR & GPIO_PIN_15);
+                vcd->buttonValues[5] =!(GPIOB->IDR & GPIO_PIN_1);
+                vcd->buttonValues[6] =!(GPIOD->IDR & GPIO_PIN_7);
+                vcd->buttonValues[7] =!(GPIOB->IDR & GPIO_PIN_11);
+                vcd->buttonValues[8] =!(GPIOG->IDR & GPIO_PIN_11);
+                vcd->buttonValues[9] =!(GPIOB->IDR & GPIO_PIN_10);
 #endif
                 
                 
@@ -403,7 +405,6 @@ namespace vocodec
                 
                 if (vcd->buttonActionsUI[ButtonLeft][ActionPress] == 1)
                 {
-//                    vcd->previousPreset = vcd->currentPreset;
                     if (vcd->currentPreset <= 0) vcd->currentPreset = (VocodecPresetType)((int)PresetNil - 1);
                     else vcd->currentPreset = (VocodecPresetType)((int)vcd->currentPreset - 1);
                     checkPage(vcd);
@@ -414,7 +415,6 @@ namespace vocodec
                 }
                 if (vcd->buttonActionsUI[ButtonRight][ActionPress] == 1)
                 {
-//                    vcd->previousPreset = vcd->currentPreset;
                     if (vcd->currentPreset >= PresetNil - 1) vcd->currentPreset = (VocodecPresetType)0;
                     else vcd->currentPreset = (VocodecPresetType)((int)vcd->currentPreset + 1);
                     checkPage(vcd);
@@ -607,7 +607,7 @@ namespace vocodec
         void writeCurrentPresetToFlash(Vocodec* vcd)
         {
 #ifndef __cplusplus
-            if((EE_WriteVariable(VirtAddVarTab[0],  currentPreset)) != HAL_OK)
+            if((EE_WriteVariable(VirtAddVarTab[0],  vcd->currentPreset)) != HAL_OK)
             {
                 Error_Handler();
             }
@@ -627,7 +627,7 @@ namespace vocodec
             else vcd->knobPage--;
             setKnobValues(vcd, vcd->presetKnobValues[vcd->currentPreset] + (vcd->knobPage * KNOB_PAGE_SIZE));
         }
-
+        
         void checkPage(Vocodec* vcd)
         {
             if (vcd->knobPage >= vcd->numPages[vcd->currentPreset])

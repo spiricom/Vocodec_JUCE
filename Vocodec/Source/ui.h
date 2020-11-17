@@ -19,33 +19,35 @@ namespace vocodec
 {
     extern "C"
     {
+#else
+        extern uint16_t ADC_values[NUM_ADC_CHANNELS] __ATTR_RAM_D2;
 #endif
         
         void initModeNames(Vocodec* vcd);
-
+        
         void buttonCheck(Vocodec* vcd);
-
+        
         void adcCheck(Vocodec* vcd);
-
+        
         void clearButtonActions(Vocodec* vcd);
-
+        
         void changeTuning(Vocodec* vcd);
-
+        
         void writeCurrentPresetToFlash(Vocodec* vcd);
-
+        
         void incrementPage(Vocodec* vcd);
-
+        
         void decrementPage(Vocodec* vcd);
-
+        
         void checkPage(Vocodec* vcd);
-
+        
         void resetKnobValues(Vocodec* vcd);
-
+        
         void setKnobValues(Vocodec* vcd, float* values);
-
+        
         void deactivateKnob(Vocodec* vcd, int knob);
         void deactivateAllKnobs(Vocodec* vcd);
-
+        
         const char* UIVocoderButtons(Vocodec* vcd, VocodecButton button, ButtonAction action);
         const char* UIVocoderChButtons(Vocodec* vcd, VocodecButton button, ButtonAction action);
         const char* UIPitchShiftButtons(Vocodec* vcd, VocodecButton button, ButtonAction action);
@@ -64,7 +66,7 @@ namespace vocodec
         const char* UILivingStringSynthButtons(Vocodec* vcd, VocodecButton button, ButtonAction action);
         const char* UIClassicSynthButtons(Vocodec* vcd, VocodecButton button, ButtonAction action);
         const char* UIRhodesButtons(Vocodec* vcd, VocodecButton button, ButtonAction action);
-
+        
 #ifdef __cplusplus
     }
 } // extern "C"
