@@ -90,7 +90,7 @@ public:
     
     vocodec::Vocodec vcd;
     
-    float editorScale;
+    float editorScale = 1.0f;
     
 private:
     
