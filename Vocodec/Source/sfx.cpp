@@ -1448,7 +1448,9 @@ namespace vocodec
         //7 sampler - button press
         void SFXSamplerBPAlloc(Vocodec* vcd)
         {
-            tBuffer_initToPool(&vcd->buff, vcd->leaf.sampleRate * 172.0f, &vcd->largePool);
+            // Shouldn't rely on sample rate to set the size here because high rates will cause problems
+            // 7585200 is a bit arbitrary, there's should be some more space
+            tBuffer_initToPool(&vcd->buff, 7585200/*vcd->leaf.sampleRate * 172.0f*/, &vcd->largePool);
             tBuffer_setRecordMode(&vcd->buff, RecordOneShot);
             tSampler_init(&vcd->sampler, &vcd->buff, &vcd->leaf);
             tSampler_setMode(&vcd->sampler, (PlayMode)(vcd->samplerBPParams.playMode));
@@ -1583,7 +1585,7 @@ namespace vocodec
             
             for (int i = 0; i < NUM_SAMPLER_KEYS; i++)
             {
-                tBuffer_initToPool(&vcd->keyBuff[i], vcd->leaf.sampleRate * 3.5f, &vcd->largePool);
+                tBuffer_initToPool(&vcd->keyBuff[i], 154350/*vcd->leaf.sampleRate * 3.5f*/, &vcd->largePool);
                 tBuffer_setRecordMode(&vcd->keyBuff[i], RecordOneShot);
                 tSampler_init(&vcd->keySampler[i], &vcd->keyBuff[i], &vcd->leaf);
                 tSampler_setMode(&vcd->keySampler[i], PlayLoop);
