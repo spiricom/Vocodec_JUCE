@@ -1044,10 +1044,10 @@ namespace vocodec
             }
             if (vcd->buttonActionsUI[ButtonB][ActionPress] == 1)
             {
-                if (vcd->wavetableSynthParams.loadIndex == 0) writeString = "VOICE1";
-                else if (vcd->wavetableSynthParams.loadIndex == 1) writeString = "VOICE2";
-                else if (vcd->wavetableSynthParams.loadIndex == 2) writeString = "VOICE3";
-                else if (vcd->wavetableSynthParams.loadIndex == 3) writeString = "VOICE4";
+                if (vcd->wavetableSynthParams.loadIndex == 0) writeString = "TABLE1";
+                else if (vcd->wavetableSynthParams.loadIndex == 1) writeString = "TABLE2";
+                else if (vcd->wavetableSynthParams.loadIndex == 2) writeString = "TABLE3";
+                else if (vcd->wavetableSynthParams.loadIndex == 3) writeString = "TABLE4";
                 vcd->buttonActionsUI[ButtonB][ActionPress] = 0;
             }
             if (vcd->buttonActionsUI[ButtonC][ActionPress] == 1)
