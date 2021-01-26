@@ -193,10 +193,6 @@ void VocodecLight::paint (Graphics &g)
     }
 }
 
-
-
-
-
 VocodecScreen::VocodecScreen(VocodecAudioProcessor& p) :
 Component("VocodecScreen"),
 processor(p)
@@ -227,6 +223,7 @@ processor(p)
     menu.addItem("LIVINGSTRINGSYNTH", 16);
     menu.addItem("CLASSICSYNTH", 17);
     menu.addItem("RHODES", 18);
+    menu.addItem("WAVETABLESYNTH", 19);
     menu.setColour(ComboBox::ColourIds::backgroundColourId, Colours::transparentWhite);
     menu.setColour(ComboBox::ColourIds::textColourId, Colours::white);
     menu.setColour(ComboBox::ColourIds::buttonColourId, Colours::black);

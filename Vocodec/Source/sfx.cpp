@@ -32,9 +32,17 @@ namespace vocodec
         const float default_FM_freqRatios[5][6] = {{1.0f, 1.00001f, 1.0f, 3.0f, 1.0f, 1.0f}, {2.0f, 2.0001f, .99999f, 3.0f, 5.0f, 8.0f},  {1.0f, 2.0f, 1.0f, 7.0f, 3.0f, 4.0f}, {1.0f, 2.0f, 1.0f, 7.0f, 3.0f, 4.0f}, {1.0f, 2.0f, 1.0f, 7.0f, 3.0f, 4.0f}};
         const float default_FM_indices[5][6] = {{800.0f, 0.0f, 120.0f, 32.0f, 3.0f, 1.0f}, {100.0f, 100.0f, 300.0f, 300.0f, 10.0f, 5.0f}, {500.0f, 50.0f, 500.0f, 10.0f,0.0f, 0.0f}, {50.0f, 128.0f, 1016.0f, 528.0f, 4.0f, 0.0f},{50.0f, 128.0f, 1016.0f, 528.0f, 4.0f, 0.0f}};
         
-        void SFX_init(Vocodec* vcd, uint16_t (*ADC_values)[NUM_ADC_CHANNELS])
+        void SFX_init(Vocodec* vcd, uint16_t (*ADC_values)[NUM_ADC_CHANNELS],
+                      void (*loadFunction)(vocodec::Vocodec* vcd))
         {
             vcd->ADC_values = ADC_values;
+            vcd->loadWav = loadFunction;
+            vcd->attemptFileLoad = 0;
+            vcd->newWavLoaded = 0;
+            for (int i = 0; i < 4; ++i)
+            {
+                vcd->loadedTableSizes[i] = 0;
+            }
             
             vcd->expBufferSizeMinusOne = EXP_BUFFER_SIZE - 1;
             vcd->decayExpBufferSizeMinusOne = DECAY_EXP_BUFFER_SIZE - 1;
@@ -100,6 +108,8 @@ namespace vocodec
             vcd->rhodesParams.numVoices = NUM_VOC_VOICES;
             vcd->rhodesParams.sound = 0;
             vcd->rhodesParams.tremoloStereo = 0;
+            
+            vcd->wavetableSynthParams.numVoices = NUM_VOC_VOICES;
             
             //============================================//
             
@@ -452,6 +462,16 @@ namespace vocodec
             vcd->defaultPresetKnobValues[Rhodes][23] = 0.00f;
             vcd->defaultPresetKnobValues[Rhodes][24] = 0.00f;
             
+            vcd->defaultPresetKnobValues[WavetableSynth][0] = 0.0f; // phases
+            vcd->defaultPresetKnobValues[WavetableSynth][1] = 0.0f;
+            vcd->defaultPresetKnobValues[WavetableSynth][2] = 0.0f;
+            vcd->defaultPresetKnobValues[WavetableSynth][3] = 0.0f;
+            vcd->defaultPresetKnobValues[WavetableSynth][4] = 0.0f; // index
+            vcd->defaultPresetKnobValues[WavetableSynth][5] = 0.5f; // gains
+            vcd->defaultPresetKnobValues[WavetableSynth][6] = 0.5f;
+            vcd->defaultPresetKnobValues[WavetableSynth][7] = 0.5f;
+            vcd->defaultPresetKnobValues[WavetableSynth][8] = 0.5f;
+            
             for (int p = 0; p < PresetNil; p++)
             {
                 for (int v = 0; v < NUM_PRESET_KNOB_VALUES; v++)
@@ -552,6 +572,11 @@ namespace vocodec
             vcd->frameFunctions[Rhodes] = SFXRhodesFrame;
             vcd->tickFunctions[Rhodes] = SFXRhodesTick;
             vcd->freeFunctions[Rhodes] = SFXRhodesFree;
+            
+            vcd->allocFunctions[WavetableSynth] = SFXWavetableSynthAlloc;
+            vcd->frameFunctions[WavetableSynth] = SFXWavetableSynthFrame;
+            vcd->tickFunctions[WavetableSynth] = SFXWavetableSynthTick;
+            vcd->freeFunctions[WavetableSynth] = SFXWavetableSynthFree;
         }
         
         void initGlobalSFXObjects(Vocodec* vcd)
@@ -3697,6 +3722,76 @@ namespace vocodec
             tCycle_free(&vcd->tremolo);
             
         }
+        
+        //reverb
+        void SFXWavetableSynthAlloc(Vocodec* vcd)
+        {
+            tWaveset_initToPool(&vcd->waveset, vcd->loadedTables, 4, vcd->loadedTableSizes, 20000.f, &vcd->mediumPool);
+            vcd->wavetableSynthParams.loadIndex = 0;
+            setLED_A(vcd, vcd->wavetableSynthParams.numVoices == 1);
+            setLED_B(vcd, 0);
+            setLED_C(vcd, 0);
+        }
+        
+        void SFXWavetableSynthFrame(Vocodec* vcd)
+        {
+            if (vcd->buttonActionsSFX[ButtonA][ActionPress])
+            {
+                vcd->wavetableSynthParams.numVoices = vcd->wavetableSynthParams.numVoices > 1 ? 1 : NUM_VOC_VOICES;
+                vcd->buttonActionsSFX[ButtonA][ActionPress] = 0;
+                setLED_A(vcd, vcd->wavetableSynthParams.numVoices == 1);
+            }
+            if (vcd->buttonActionsSFX[ButtonB][ActionPress])
+            {
+                vcd->wavetableSynthParams.loadIndex++;
+                if (vcd->wavetableSynthParams.loadIndex >= 4) vcd->wavetableSynthParams.loadIndex = 0;
+                vcd->buttonActionsSFX[ButtonB][ActionPress] = 0;
+            }
+            if (vcd->buttonActionsSFX[ButtonC][ActionPress])
+            {
+                vcd->loadWav(vcd);
+                vcd->buttonActionsSFX[ButtonC][ActionPress] = 0;
+            }
+            if (vcd->newWavLoaded > 0)
+            {
+                tWaveset_free(&vcd->waveset);
+                tWaveset_initToPool(&vcd->waveset, vcd->loadedTables, 4, vcd->loadedTableSizes, 20000.f, &vcd->mediumPool);
+                vcd->newWavLoaded = 0;
+            }
+            
+            vcd->displayValues[0] = vcd->presetKnobValues[WavetableSynth][0];
+            vcd->displayValues[1] = vcd->presetKnobValues[WavetableSynth][1];
+            vcd->displayValues[2] = vcd->presetKnobValues[WavetableSynth][2];
+            vcd->displayValues[3] = vcd->presetKnobValues[WavetableSynth][3];
+            vcd->displayValues[4] = vcd->presetKnobValues[WavetableSynth][4];
+            vcd->displayValues[5] = vcd->presetKnobValues[WavetableSynth][5];
+            vcd->displayValues[6] = vcd->presetKnobValues[WavetableSynth][6];
+            vcd->displayValues[7] = vcd->presetKnobValues[WavetableSynth][7];
+            vcd->displayValues[8] = vcd->presetKnobValues[WavetableSynth][8];
+            
+            tWaveset_setIndex(&vcd->waveset, vcd->presetKnobValues[WavetableSynth][4]);
+            for (int i = 0; i < 4; ++i)
+            {
+                tWaveset_setIndexPhase(&vcd->waveset, i, vcd->displayValues[i]);
+                tWaveset_setIndexGain(&vcd->waveset, i, vcd->displayValues[5+i]);
+            }
+        }
+        
+        // Add stereo param so in1 + in2 -> out1 & out2 instead of in1 -> out1 & out2 ?
+        void SFXWavetableSynthTick(Vocodec* vcd, float* input)
+        {
+            float sample = 0.0f;
+            
+            sample = tWaveset_tick(&vcd->waveset);
+            input[0] = sample;
+            input[1] = input[0];
+        }
+        
+        void SFXWavetableSynthFree(Vocodec* vcd)
+        {
+            tWaveset_free(&vcd->waveset);
+        }
+        
         
         // midi functions
         void calculateFreq(Vocodec* vcd, int voice)

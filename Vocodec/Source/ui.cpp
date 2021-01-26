@@ -315,6 +315,21 @@ namespace vocodec
             vcd->knobParamNames[Rhodes][22] = "TUNE SNAP";
             vcd->knobParamNames[Rhodes][23] = "RAND DECAY";
             vcd->knobParamNames[Rhodes][24] = "RAND SUST";
+            
+            vcd->modeNames[WavetableSynth] = "WAVETABLES";
+            vcd->shortModeNames[WavetableSynth] = "WT";
+            vcd->modeNamesDetails[WavetableSynth] = "C LOAD, B SEL";
+            vcd->numPages[WavetableSynth] = 2;
+            vcd->knobParamNames[WavetableSynth][0] = "PHASE1";
+            vcd->knobParamNames[WavetableSynth][1] = "PHASE2";
+            vcd->knobParamNames[WavetableSynth][2] = "PHASE3";
+            vcd->knobParamNames[WavetableSynth][3] = "PHASE4";
+            vcd->knobParamNames[WavetableSynth][4] = "INDEX";
+            vcd->knobParamNames[WavetableSynth][5] = "GAIN1";
+            vcd->knobParamNames[WavetableSynth][6] = "GAIN2";
+            vcd->knobParamNames[WavetableSynth][7] = "GAIN3";
+            vcd->knobParamNames[WavetableSynth][8] = "GAIN4";
+            vcd->knobParamNames[WavetableSynth][9] = "";
         }
         
         void buttonCheck(Vocodec* vcd)
@@ -1014,6 +1029,30 @@ namespace vocodec
             if (vcd->buttonActionsUI[ButtonC][ActionPress] == 1)
             {
                 writeString = (vcd->rhodesParams.tremoloStereo > 0) ? "STEREO TREM" : "MONO TREM";
+                vcd->buttonActionsUI[ButtonC][ActionPress] = 0;
+            }
+            return writeString;
+        }
+        
+        const char* UIWavetableSynthButtons(Vocodec* vcd, VocodecButton button, ButtonAction action)
+        {
+            const char* writeString = "";
+            if (vcd->buttonActionsUI[ButtonA][ActionPress] == 1)
+            {
+                writeString = (vcd->wavetableSynthParams.numVoices > 1) ? "POLY" : "MONO";
+                vcd->buttonActionsUI[ButtonA][ActionPress] = 0;
+            }
+            if (vcd->buttonActionsUI[ButtonB][ActionPress] == 1)
+            {
+                if (vcd->wavetableSynthParams.loadIndex == 0) writeString = "VOICE1";
+                else if (vcd->wavetableSynthParams.loadIndex == 1) writeString = "VOICE2";
+                else if (vcd->wavetableSynthParams.loadIndex == 2) writeString = "VOICE3";
+                else if (vcd->wavetableSynthParams.loadIndex == 3) writeString = "VOICE4";
+                vcd->buttonActionsUI[ButtonB][ActionPress] = 0;
+            }
+            if (vcd->buttonActionsUI[ButtonC][ActionPress] == 1)
+            {
+                writeString = "FILE LOAD";
                 vcd->buttonActionsUI[ButtonC][ActionPress] = 0;
             }
             return writeString;

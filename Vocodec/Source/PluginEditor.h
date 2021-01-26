@@ -40,6 +40,8 @@ public:
     void timerCallback() override;
     
     void updateKnobs();
+    
+    void loadWav();
 
     OwnedArray<Slider> dials;
     OwnedArray<VocodecButton> buttons;
@@ -64,6 +66,8 @@ private:
     
     vocodec::VocodecPresetType currentKnobPreset;
     bool sliderActive[NUM_ADC_CHANNELS];
+    
+    juce::AudioFormatManager formatManager;
     
     VocodecLookAndFeel vocodecLAF;
     

@@ -21,6 +21,8 @@ constrain(new ComponentBoundsConstrainer()),
 resizer(new ResizableCornerComponent (this, constrain.get())),
 screen(p)
 {
+    formatManager.registerBasicFormats();
+    
     panel = Drawable::createFromImageData(BinaryData::panel_svg, BinaryData::panel_svgSize);
     
     setWantsKeyboardFocus(true);
@@ -43,7 +45,6 @@ screen(p)
         dials[i]->setLookAndFeel(&vocodecLAF);
         dials[i]->setSliderStyle(Slider::Rotary);
         dials[i]->setTextBoxStyle(Slider::NoTextBox, false, 0, 0);
-        addAndMakeVisible(dials[i]);
         dials[i]->addListener(this);
         dials[i]->setRange(0., 1.);
         dials[i]->setOpaque(true);
@@ -349,6 +350,14 @@ void VocodecAudioProcessorEditor::timerCallback()
     gainLabel.setText(String(processor.inputGain->get(), 2, false), dontSendNotification);
     
     screen.timerCallback();
+    
+    if (processor.vcd.attemptFileLoad)
+    {
+        processor.vcd.attemptFileLoad = 0;
+        loadWav();
+        processor.vcd.newWavLoaded = 1;
+    }
+        
 }
 
 void VocodecAudioProcessorEditor::updateKnobs()
@@ -374,6 +383,35 @@ void VocodecAudioProcessorEditor::updateKnobs()
         dials[0]->setValue(processor.inputGain->get(), dontSendNotification);
     if (dials[6]->getValue() != processor.dryWetMix->get())
         dials[6]->setValue(processor.dryWetMix->get(), dontSendNotification);
+}
+
+void VocodecAudioProcessorEditor::loadWav()
+{
+    int idx = processor.vcd.wavetableSynthParams.loadIndex;
+    
+    juce::FileChooser chooser ("Select a .wav file to load...", {}, "*.wav");
+    
+    if (chooser.browseForFileToOpen())
+    {
+        auto file = chooser.getResult();
+        auto* reader = formatManager.createReaderFor (file);
+        
+        if (reader != nullptr)
+        {
+            AudioBuffer<float> buffer = AudioBuffer<float>(reader->numChannels, int(reader->lengthInSamples));
+            
+            reader->read(&buffer, 0, buffer.getNumSamples(), 0, true, true);
+            
+            if (processor.vcd.loadedTableSizes[idx] > 0)
+                mpool_free((char*)processor.vcd.loadedTables[idx], processor.vcd.largePool);
+            processor.vcd.loadedTables[idx] = (float*) mpool_alloc(sizeof(float) * buffer.getNumSamples(), processor.vcd.largePool);
+            processor.vcd.loadedTableSizes[idx] = buffer.getNumSamples();
+            for (int i = 0; i < processor.vcd.loadedTableSizes[idx]; ++i)
+            {
+                processor.vcd.loadedTables[idx][i] = buffer.getSample(0, i);
+            }
+        }
+    }
 }
 
 namespace vocodec

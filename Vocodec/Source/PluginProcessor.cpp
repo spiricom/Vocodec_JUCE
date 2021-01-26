@@ -29,7 +29,7 @@ pluginParamPrefixes(cPluginParamPrefixes),
 pluginParamNames(cPluginParamNames),
 choiceParamNames(cChoiceParamNames)
 {
-    SFX_init(&vcd, &ADC_values);
+    SFX_init(&vcd, &ADC_values, &loadWav);
     vcd.currentPreset = vocodec::PresetNil;
     vcd.previousPreset = vocodec::PresetNil;
     vcd.loadingPreset = 1;
@@ -186,6 +186,10 @@ choiceParamNames(cChoiceParamNames)
     choiceParams.set("rhodes_tremoloStereo",
                      new AudioParameterChoice("rhodes_tremoloStereo", "rhodes_tremoloStereo",
                                               StringArray("Off", "On"), 0));
+    
+    choiceParams.set("wavetableSynth_numVoices",
+                     new AudioParameterChoice("wavetableSynth_numVoices", "wavetableSynth_numVoices",
+                                              StringArray("Poly", "Mono"), 0));
     
     for (auto paramName : choiceParamNames)
         addParameter(choiceParams[paramName]);
@@ -633,6 +637,8 @@ void VocodecAudioProcessor::updateChoiceParams()
     *choiceParams["rhodes_numVoices"] = vcd.rhodesParams.numVoices > 1 ? 0 : 1;
     *choiceParams["rhodes_sound"] = vcd.rhodesParams.sound;
     *choiceParams["rhodes_tremoloStereo"] = vcd.rhodesParams.tremoloStereo;
+    
+    *choiceParams["wavetableSynth_numVoices"] = vcd.wavetableSynthParams.numVoices > 1 ? 0 : 1;
 }
 
 void VocodecAudioProcessor::updateChoiceValues()
@@ -689,6 +695,8 @@ void VocodecAudioProcessor::updateChoiceValues()
     vcd.rhodesParams.numVoices = choiceParams["rhodes_numVoices"]->getIndex() > 0 ? 1 : NUM_VOC_VOICES;
     vcd.rhodesParams.sound = choiceParams["rhodes_sound"]->getIndex();
     vcd.rhodesParams.tremoloStereo = choiceParams["rhodes_tremoloStereo"]->getIndex();
+    
+    vcd.wavetableSynthParams.numVoices = choiceParams["wavetableSynth_numVoices"]->getIndex() > 0 ? 1 : NUM_VOC_VOICES;
 }
 
 void VocodecAudioProcessor::updateAllValues()

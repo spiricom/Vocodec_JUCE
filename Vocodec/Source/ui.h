@@ -66,6 +66,7 @@ namespace vocodec
         const char* UILivingStringSynthButtons(Vocodec* vcd, VocodecButton button, ButtonAction action);
         const char* UIClassicSynthButtons(Vocodec* vcd, VocodecButton button, ButtonAction action);
         const char* UIRhodesButtons(Vocodec* vcd, VocodecButton button, ButtonAction action);
+        const char* UIWavetableSynthButtons(Vocodec* vcd, VocodecButton button, ButtonAction action);
         
 #ifdef __cplusplus
     }

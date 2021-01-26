@@ -90,6 +90,7 @@ namespace vocodec
             LivingStringSynth,
             ClassicSynth,
             Rhodes,
+            WavetableSynth,
             PresetNil
         } VocodecPresetType;
         
@@ -245,6 +246,12 @@ namespace vocodec
             int tremoloStereo;
         } RhodesButtonParams;
         
+        typedef struct _WavetableSynthButtonParams
+        {
+            int numVoices;
+            int loadIndex;
+        } WavetableSynthButtonParams;
+        
         typedef struct _Vocodec Vocodec;
         struct _Vocodec
         {
@@ -281,6 +288,14 @@ namespace vocodec
             LivingStringSynthButtonParams livingStringSynthParams;
             ClassicSynthButtonParams classicSynthParams;
             RhodesButtonParams rhodesParams;
+            
+            WavetableSynthButtonParams wavetableSynthParams;
+            tWaveset waveset;
+            float* loadedTables[4];
+            int loadedTableSizes[4];
+            void (*loadWav)(Vocodec* vcd);
+            int attemptFileLoad;
+            int newWavLoaded;
             
             //audio objects
             tFormantShifter fs;
@@ -612,7 +627,8 @@ namespace vocodec
         extern Vocodec vocodec;
 #endif
         
-        void SFX_init(Vocodec* vcd, uint16_t (*ADC_values)[NUM_ADC_CHANNELS]);
+        void SFX_init(Vocodec* vcd, uint16_t (*ADC_values)[NUM_ADC_CHANNELS],
+                      void (*loadFunction)(Vocodec* vcd));
         void initPresetParams(Vocodec* vcd);
         void initFunctionPointers(Vocodec* vcd);
         
@@ -714,7 +730,6 @@ namespace vocodec
         void SFXLivingStringSynthTick(Vocodec* vcd, float* input);
         void SFXLivingStringSynthFree(Vocodec* vcd);
         
-        
         // classic synth
         void SFXClassicSynthAlloc(Vocodec* vcd);
         void SFXClassicSynthFrame(Vocodec* vcd);
@@ -726,6 +741,12 @@ namespace vocodec
         void SFXRhodesFrame(Vocodec* vcd);
         void SFXRhodesTick(Vocodec* vcd, float* input);
         void SFXRhodesFree(Vocodec* vcd);
+        
+        // wavetable synth
+        void SFXWavetableSynthAlloc(Vocodec* vcd);
+        void SFXWavetableSynthFrame(Vocodec* vcd);
+        void SFXWavetableSynthTick(Vocodec* vcd, float* input);
+        void SFXWavetableSynthFree(Vocodec* vcd);
         
         // MIDI FUNCTIONS
         void noteOn(Vocodec* vcd, int key, int velocity);

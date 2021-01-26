@@ -51,7 +51,8 @@ const std::initializer_list<const char*> cPluginParamPrefixes = {
     "livingString",
     "livingStringSynth",
     "classicSynth",
-    "rhodes"
+    "rhodes",
+    "wavetableSynth"
 };
 
 const std::initializer_list<const char*> cPluginParamNames = {
@@ -207,7 +208,16 @@ const std::initializer_list<const char*> cPluginParamNames = {
     "rhodes_feedback",
     "rhodes_tuneSnap",
     "rhodes_randDecay",
-    "rhodes_randSust"
+    "rhodes_randSust",
+    "wavetableSynth_index",
+    "wavetableSynth_phase1",
+    "wavetableSynth_phase2",
+    "wavetableSynth_phase3",
+    "wavetableSynth_phase4",
+    "wavetableSynth_gain1",
+    "wavetableSynth_gain2",
+    "wavetableSynth_gain3",
+    "wavetableSynth_gain4"
 };
 
 const std::initializer_list<const char*> cChoiceParamNames = {
@@ -263,4 +273,6 @@ const std::initializer_list<const char*> cChoiceParamNames = {
     "rhodes_numVoices",
     "rhodes_sound",
     "rhodes_tremoloStereo",
+    
+    "wavetableSynth_numVoices",
 };
