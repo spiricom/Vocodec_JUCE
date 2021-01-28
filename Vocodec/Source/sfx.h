@@ -290,7 +290,7 @@ namespace vocodec
             RhodesButtonParams rhodesParams;
             
             WavetableSynthButtonParams wavetableSynthParams;
-            tWaveset waveset;
+            tWaveSynth waveSynth;
             float* loadedTables[4];
             int loadedTableSizes[4];
             void (*loadWav)(Vocodec* vcd);

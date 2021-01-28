@@ -3726,11 +3726,12 @@ namespace vocodec
         //reverb
         void SFXWavetableSynthAlloc(Vocodec* vcd)
         {
-            tWaveset_initToPool(&vcd->waveset, vcd->loadedTables, 4, vcd->loadedTableSizes, 20000.f, &vcd->mediumPool);
+            tWaveSynth_initToPool(&vcd->waveSynth, NUM_VOC_VOICES, vcd->loadedTables, vcd->loadedTableSizes, 4, 20000.0f, &vcd->mediumPool);
             vcd->wavetableSynthParams.loadIndex = 0;
             setLED_A(vcd, vcd->wavetableSynthParams.numVoices == 1);
             setLED_B(vcd, 0);
             setLED_C(vcd, 0);
+            tSimplePoly_setNumVoices(&vcd->poly, vcd->vocoderChParams.numVoices);
         }
         
         void SFXWavetableSynthFrame(Vocodec* vcd)
@@ -3754,8 +3755,8 @@ namespace vocodec
             }
             if (vcd->newWavLoaded > 0)
             {
-                tWaveset_free(&vcd->waveset);
-                tWaveset_initToPool(&vcd->waveset, vcd->loadedTables, 4, vcd->loadedTableSizes, 20000.f, &vcd->mediumPool);
+                tWaveSynth_free(&vcd->waveSynth);
+                tWaveSynth_initToPool(&vcd->waveSynth, NUM_VOC_VOICES,  vcd->loadedTables, vcd->loadedTableSizes, 4, 20000.0f, &vcd->mediumPool);
                 vcd->newWavLoaded = 0;
             }
             
@@ -3769,11 +3770,18 @@ namespace vocodec
             vcd->displayValues[7] = vcd->presetKnobValues[WavetableSynth][7];
             vcd->displayValues[8] = vcd->presetKnobValues[WavetableSynth][8];
             
-            tWaveset_setIndex(&vcd->waveset, vcd->presetKnobValues[WavetableSynth][4]);
+            for (int i = 0; i < tSimplePoly_getNumVoices(&vcd->poly); i++)
+            {
+                tExpSmooth_setDest(&vcd->polyRamp[i], (tSimplePoly_getVelocity(&vcd->poly, i) > 0));
+                calculateFreq(vcd, i);
+                tWaveSynth_setFreq(&vcd->waveSynth, i, vcd->freq[i]);
+            }
+            
+            tWaveSynth_setIndex(&vcd->waveSynth, vcd->presetKnobValues[WavetableSynth][4]);
             for (int i = 0; i < 4; ++i)
             {
-                tWaveset_setIndexPhase(&vcd->waveset, i, vcd->displayValues[i]);
-                tWaveset_setIndexGain(&vcd->waveset, i, vcd->displayValues[5+i]);
+                tWaveSynth_setIndexPhase(&vcd->waveSynth, i, vcd->displayValues[i]);
+                tWaveSynth_setIndexGain(&vcd->waveSynth, i, vcd->displayValues[5+i]);
             }
         }
         
@@ -3782,14 +3790,18 @@ namespace vocodec
         {
             float sample = 0.0f;
             
-            sample = tWaveset_tick(&vcd->waveset);
+            for (int i = 0; i < tSimplePoly_getNumVoices(&vcd->poly); ++i)
+            {
+                sample += tWaveSynth_tickVoice(&vcd->waveSynth, i) * tExpSmooth_tick(&vcd->polyRamp[i]) * 0.5f;
+            }
+
             input[0] = sample;
             input[1] = input[0];
         }
         
         void SFXWavetableSynthFree(Vocodec* vcd)
         {
-            tWaveset_free(&vcd->waveset);
+            tWaveSynth_free(&vcd->waveSynth);
         }
         
         

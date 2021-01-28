@@ -19,7 +19,8 @@ VocodecAudioProcessorEditor::VocodecAudioProcessorEditor (VocodecAudioProcessor&
 AudioProcessorEditor (&p), processor (p),
 constrain(new ComponentBoundsConstrainer()),
 resizer(new ResizableCornerComponent (this, constrain.get())),
-screen(p)
+screen(p),
+chooser("Select a .wav file to load...", {}, "*.wav")
 {
     formatManager.registerBasicFormats();
     
@@ -355,7 +356,6 @@ void VocodecAudioProcessorEditor::timerCallback()
     {
         processor.vcd.attemptFileLoad = 0;
         loadWav();
-        processor.vcd.newWavLoaded = 1;
     }
         
 }
@@ -387,31 +387,49 @@ void VocodecAudioProcessorEditor::updateKnobs()
 
 void VocodecAudioProcessorEditor::loadWav()
 {
-    int idx = processor.vcd.wavetableSynthParams.loadIndex;
-    
-    juce::FileChooser chooser ("Select a .wav file to load...", {}, "*.wav");
-    
-    if (chooser.browseForFileToOpen())
-    {
-        auto file = chooser.getResult();
-        auto* reader = formatManager.createReaderFor (file);
+    chooser.launchAsync (FileBrowserComponent::canSelectMultipleItems | FileBrowserComponent::openMode
+                         | FileBrowserComponent::canSelectFiles,
+                         [this] (const FileChooser& chooser)
+                         {
+        int idx = processor.vcd.wavetableSynthParams.loadIndex;
         
-        if (reader != nullptr)
+        auto results = chooser.getResults();
+        
+        int n = 0;
+        for (auto result : results)
         {
-            AudioBuffer<float> buffer = AudioBuffer<float>(reader->numChannels, int(reader->lengthInSamples));
+            auto* reader = formatManager.createReaderFor (result);
             
-            reader->read(&buffer, 0, buffer.getNumSamples(), 0, true, true);
-            
-            if (processor.vcd.loadedTableSizes[idx] > 0)
-                mpool_free((char*)processor.vcd.loadedTables[idx], processor.vcd.largePool);
-            processor.vcd.loadedTables[idx] = (float*) mpool_alloc(sizeof(float) * buffer.getNumSamples(), processor.vcd.largePool);
-            processor.vcd.loadedTableSizes[idx] = buffer.getNumSamples();
-            for (int i = 0; i < processor.vcd.loadedTableSizes[idx]; ++i)
+            if (reader != nullptr)
             {
-                processor.vcd.loadedTables[idx][i] = buffer.getSample(0, i);
+                std::unique_ptr<juce::AudioFormatReaderSource> newSource (new juce::AudioFormatReaderSource
+                                                                          (reader, true));
+                
+                AudioBuffer<float> buffer = AudioBuffer<float>(reader->numChannels, int(reader->lengthInSamples));
+                
+                reader->read(&buffer, 0, buffer.getNumSamples(), 0, true, true);
+                
+                if (processor.vcd.loadedTableSizes[idx] > 0)
+                {
+                    mpool_free((char*)processor.vcd.loadedTables[idx], processor.vcd.largePool);
+                }
+                processor.vcd.loadedTables[idx] =
+                (float*) mpool_alloc(sizeof(float) * buffer.getNumSamples(), processor.vcd.largePool);
+                processor.vcd.loadedTableSizes[idx] = buffer.getNumSamples();
+                for (int i = 0; i < processor.vcd.loadedTableSizes[idx]; ++i)
+                {
+                    processor.vcd.loadedTables[idx][i] = buffer.getSample(0, i);
+                }
+                
+                readerSource.reset(newSource.release());
             }
+            idx++; n++;
+            if (idx >= 4) idx = 0;
+            // Only load the first 4 files
+            if (n >= 4) break;
         }
-    }
+        processor.vcd.newWavLoaded = 1;
+    });
 }
 
 namespace vocodec
