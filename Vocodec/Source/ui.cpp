@@ -319,17 +319,22 @@ namespace vocodec
             vcd->modeNames[WavetableSynth] = "WAVETABLES";
             vcd->shortModeNames[WavetableSynth] = "WT";
             vcd->modeNamesDetails[WavetableSynth] = "C LOAD, B SEL";
-            vcd->numPages[WavetableSynth] = 2;
-            vcd->knobParamNames[WavetableSynth][0] = "PHASE1";
-            vcd->knobParamNames[WavetableSynth][1] = "PHASE2";
-            vcd->knobParamNames[WavetableSynth][2] = "PHASE3";
-            vcd->knobParamNames[WavetableSynth][3] = "PHASE4";
+            vcd->numPages[WavetableSynth] = 3;
+            vcd->knobParamNames[WavetableSynth][0] = "GAIN1";
+            vcd->knobParamNames[WavetableSynth][1] = "GAIN2";
+            vcd->knobParamNames[WavetableSynth][2] = "GAIN3";
+            vcd->knobParamNames[WavetableSynth][3] = "GAIN4";
             vcd->knobParamNames[WavetableSynth][4] = "INDEX";
-            vcd->knobParamNames[WavetableSynth][5] = "GAIN1";
-            vcd->knobParamNames[WavetableSynth][6] = "GAIN2";
-            vcd->knobParamNames[WavetableSynth][7] = "GAIN3";
-            vcd->knobParamNames[WavetableSynth][8] = "GAIN4";
-            vcd->knobParamNames[WavetableSynth][9] = "";
+            vcd->knobParamNames[WavetableSynth][5] = "ATTACK";
+            vcd->knobParamNames[WavetableSynth][6] = "DECAY";
+            vcd->knobParamNames[WavetableSynth][7] = "SUSTAIN";
+            vcd->knobParamNames[WavetableSynth][8] = "RELEASE";
+            vcd->knobParamNames[WavetableSynth][9] = "LEAK";
+            vcd->knobParamNames[WavetableSynth][10] = "PHASE1";
+            vcd->knobParamNames[WavetableSynth][11] = "PHASE2";
+            vcd->knobParamNames[WavetableSynth][12] = "PHASE3";
+            vcd->knobParamNames[WavetableSynth][13] = "PHASE4";
+            vcd->knobParamNames[WavetableSynth][14] = "";
         }
         
         void buttonCheck(Vocodec* vcd)

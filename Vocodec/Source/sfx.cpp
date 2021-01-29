@@ -110,6 +110,7 @@ namespace vocodec
             vcd->rhodesParams.tremoloStereo = 0;
             
             vcd->wavetableSynthParams.numVoices = NUM_VOC_VOICES;
+            vcd->wavetableSynthParams.loadIndex = 0;
             
             //============================================//
             
@@ -462,15 +463,20 @@ namespace vocodec
             vcd->defaultPresetKnobValues[Rhodes][23] = 0.00f;
             vcd->defaultPresetKnobValues[Rhodes][24] = 0.00f;
             
-            vcd->defaultPresetKnobValues[WavetableSynth][0] = 0.0f; // phases
-            vcd->defaultPresetKnobValues[WavetableSynth][1] = 0.0f;
-            vcd->defaultPresetKnobValues[WavetableSynth][2] = 0.0f;
-            vcd->defaultPresetKnobValues[WavetableSynth][3] = 0.0f;
+            vcd->defaultPresetKnobValues[WavetableSynth][0] = 0.5f; // gains
+            vcd->defaultPresetKnobValues[WavetableSynth][1] = 0.5f;
+            vcd->defaultPresetKnobValues[WavetableSynth][2] = 0.5f;
+            vcd->defaultPresetKnobValues[WavetableSynth][3] = 0.5f;
             vcd->defaultPresetKnobValues[WavetableSynth][4] = 0.0f; // index
-            vcd->defaultPresetKnobValues[WavetableSynth][5] = 0.5f; // gains
-            vcd->defaultPresetKnobValues[WavetableSynth][6] = 0.5f;
-            vcd->defaultPresetKnobValues[WavetableSynth][7] = 0.5f;
-            vcd->defaultPresetKnobValues[WavetableSynth][8] = 0.5f;
+            vcd->defaultPresetKnobValues[WavetableSynth][5] = 0.0f; // attack
+            vcd->defaultPresetKnobValues[WavetableSynth][6] = 0.06f; // decay
+            vcd->defaultPresetKnobValues[WavetableSynth][7] = 0.9f; // sustain
+            vcd->defaultPresetKnobValues[WavetableSynth][8] = 0.1f; // release
+            vcd->defaultPresetKnobValues[WavetableSynth][9] = 0.1f; // leak
+            vcd->defaultPresetKnobValues[WavetableSynth][10] = 0.0f; // phases
+            vcd->defaultPresetKnobValues[WavetableSynth][11] = 0.0f;
+            vcd->defaultPresetKnobValues[WavetableSynth][12] = 0.0f;
+            vcd->defaultPresetKnobValues[WavetableSynth][13] = 0.0f;
             
             for (int p = 0; p < PresetNil; p++)
             {
@@ -3006,7 +3012,7 @@ namespace vocodec
                 tComplexLivingString_initToPool(&vcd->theString[i], 440.f, 0.2f, 0.3f, 0.f, 9000.f, 1.0f, 0.0f, 0.01f, 0.125f, vcd->livingStringSynthParams.feedback, &vcd->mediumPool);
                 tSlide_init(&vcd->stringOutEnvs[i], 10.0f, 1000.0f, &vcd->leaf);
                 tSlide_init(&vcd->stringInEnvs[i], 12.0f, 1000.0f, &vcd->leaf);
-                tADSR4_init(&vcd->pluckEnvs[i], 4.0f, 70.0f, 0.0f, 5.0f, vcd->decayExpBuffer, DECAY_EXP_BUFFER_SIZE, &vcd->leaf);
+                tADSRT_init(&vcd->pluckEnvs[i], 4.0f, 70.0f, 0.0f, 5.0f, vcd->decayExpBuffer, DECAY_EXP_BUFFER_SIZE, &vcd->leaf);
                 
             }
             tVZFilter_init(&vcd->pluckFilt, BandpassPeak, 2000.0f, 4.0f, &vcd->leaf);
@@ -3065,7 +3071,7 @@ namespace vocodec
                 tComplexLivingString_setPrepPos(&vcd->theString[i], vcd->displayValues[5]);
                 tComplexLivingString_setPrepIndex(&vcd->theString[i], vcd->displayValues[6]);
                 tSlide_setDownSlide(&vcd->stringOutEnvs[i], vcd->displayValues[9] * vcd->samplesPerMs);
-                //tADSR4_setDecay(&pluckEnvs[i], displayValues[9]);
+                //tADSRT_setDecay(&pluckEnvs[i], displayValues[9]);
                 
             }
             tVZFilter_setFreq(&vcd->pluckFilt, faster_mtof((vcd->displayValues[1] * 100.0f)+20.0f));
@@ -3111,8 +3117,8 @@ namespace vocodec
             {
                 
                 //float pluck = tNoise_tick(&stringPluckNoise);
-                inputSample = tanhf((input[1] * vcd->livingStringSynthParams.audioIn) + (pluck * tADSR4_tick(&vcd->pluckEnvs[i])));
-                //inputSample = (input[1] * voicePluck) + (tVZFilter_tick(&pluckFilt, (tNoise_tick(&stringPluckNoise))) * tADSR4_tick(&pluckEnvs[i]));
+                inputSample = tanhf((input[1] * vcd->livingStringSynthParams.audioIn) + (pluck * tADSRT_tick(&vcd->pluckEnvs[i])));
+                //inputSample = (input[1] * voicePluck) + (tVZFilter_tick(&pluckFilt, (tNoise_tick(&stringPluckNoise))) * tADSRT_tick(&pluckEnvs[i]));
                 sample += tComplexLivingString_tick(&vcd->theString[i], (inputSample * tSlide_tickNoInput(&vcd->stringOutEnvs[i]))) * tSlide_tickNoInput(&vcd->stringOutEnvs[i]);
             }
             sample *= 0.1625f;
@@ -3128,7 +3134,7 @@ namespace vocodec
                 tComplexLivingString_free(&vcd->theString[i]);
                 tSlide_free(&vcd->stringInEnvs[i]);
                 tSlide_free(&vcd->stringOutEnvs[i]);
-                tADSR4_free(&vcd->pluckEnvs[i]);
+                tADSRT_free(&vcd->pluckEnvs[i]);
             }
             tVZFilter_free(&vcd->pluckFilt);
             tNoise_free(&vcd->stringPluckNoise);
@@ -3190,10 +3196,10 @@ namespace vocodec
                 }
                 
                 tEfficientSVF_init(&vcd->synthLP[i], SVFTypeLowpass, 2000, vcd->displayValues[4], &vcd->leaf);
-                tADSR4_init(&vcd->polyEnvs[i], vcd->displayValues[5], vcd->displayValues[6], vcd->displayValues[7], vcd->displayValues[8], vcd->decayExpBuffer, DECAY_EXP_BUFFER_SIZE, &vcd->leaf);
-                tADSR4_setLeakFactor(&vcd->polyEnvs[i],((1.0f - vcd->displayValues[9]) * 0.00005f) + 0.99995f);
-                tADSR4_init(&vcd->polyFiltEnvs[i], vcd->displayValues[10], vcd->displayValues[11], vcd->displayValues[12], vcd->displayValues[13], vcd->decayExpBuffer, DECAY_EXP_BUFFER_SIZE, &vcd->leaf);
-                tADSR4_setLeakFactor(&vcd->polyFiltEnvs[i], ((1.0f - vcd->displayValues[14]) * 0.00005f) + 0.99995f);
+                tADSRT_init(&vcd->polyEnvs[i], vcd->displayValues[5], vcd->displayValues[6], vcd->displayValues[7], vcd->displayValues[8], vcd->decayExpBuffer, DECAY_EXP_BUFFER_SIZE, &vcd->leaf);
+                tADSRT_setLeakFactor(&vcd->polyEnvs[i],((1.0f - vcd->displayValues[9]) * 0.00005f) + 0.99995f);
+                tADSRT_init(&vcd->polyFiltEnvs[i], vcd->displayValues[10], vcd->displayValues[11], vcd->displayValues[12], vcd->displayValues[13], vcd->decayExpBuffer, DECAY_EXP_BUFFER_SIZE, &vcd->leaf);
+                tADSRT_setLeakFactor(&vcd->polyFiltEnvs[i], ((1.0f - vcd->displayValues[14]) * 0.00005f) + 0.99995f);
                 
             }
             tCycle_init(&vcd->pwmLFO1, &vcd->leaf);
@@ -3252,70 +3258,70 @@ namespace vocodec
                         vcd->displayValues[5] = vcd->expBuffer[(int)(knobs[5] * vcd->expBufferSizeMinusOne)] * 8192.0f; //att
                         for (int i = 0; i < vcd->classicSynthParams.numVoices; i++)
                         {
-                            tADSR4_setAttack(&vcd->polyEnvs[i], vcd->displayValues[5]);
+                            tADSRT_setAttack(&vcd->polyEnvs[i], vcd->displayValues[5]);
                         }
                         break;
                     case 6:
                         vcd->displayValues[6] = vcd->expBuffer[(int)(knobs[6] * vcd->expBufferSizeMinusOne)] * 8192.0f; //dec
                         for (int i = 0; i < vcd->classicSynthParams.numVoices; i++)
                         {
-                            tADSR4_setDecay(&vcd->polyEnvs[i], vcd->displayValues[6]);
+                            tADSRT_setDecay(&vcd->polyEnvs[i], vcd->displayValues[6]);
                         }
                         break;
                     case 7:
                         vcd->displayValues[7] = knobs[7]; //sus
                         for (int i = 0; i < vcd->classicSynthParams.numVoices; i++)
                         {
-                            tADSR4_setSustain(&vcd->polyEnvs[i], vcd->displayValues[7]);
+                            tADSRT_setSustain(&vcd->polyEnvs[i], vcd->displayValues[7]);
                         }
                         break;
                     case 8:
                         vcd->displayValues[8] = vcd->expBuffer[(int)(knobs[8] * vcd->expBufferSizeMinusOne)] * 8192.0f; //rel
                         for (int i = 0; i < vcd->classicSynthParams.numVoices; i++)
                         {
-                            tADSR4_setRelease(&vcd->polyEnvs[i], vcd->displayValues[8]);
+                            tADSRT_setRelease(&vcd->polyEnvs[i], vcd->displayValues[8]);
                         }
                         break;
                     case 9:
                         vcd->displayValues[9] = knobs[9]; //leak
                         for (int i = 0; i < vcd->classicSynthParams.numVoices; i++)
                         {
-                            tADSR4_setLeakFactor(&vcd->polyEnvs[i], ((1.0f - vcd->displayValues[9]) * 0.00005f) + 0.99995f);
+                            tADSRT_setLeakFactor(&vcd->polyEnvs[i], ((1.0f - vcd->displayValues[9]) * 0.00005f) + 0.99995f);
                         }
                         break;
                     case 10:
                         vcd->displayValues[10] = vcd->expBuffer[(int)(knobs[10] * vcd->expBufferSizeMinusOne)] * 8192.0f; //att
                         for (int i = 0; i < vcd->classicSynthParams.numVoices; i++)
                         {
-                            tADSR4_setAttack(&vcd->polyFiltEnvs[i], vcd->displayValues[10]);
+                            tADSRT_setAttack(&vcd->polyFiltEnvs[i], vcd->displayValues[10]);
                         }
                         break;
                     case 11:
                         vcd->displayValues[11] = vcd->expBuffer[(int)(knobs[11] * vcd->expBufferSizeMinusOne)] * 8192.0f; //dec
                         for (int i = 0; i < vcd->classicSynthParams.numVoices; i++)
                         {
-                            tADSR4_setDecay(&vcd->polyFiltEnvs[i], vcd->displayValues[11]);
+                            tADSRT_setDecay(&vcd->polyFiltEnvs[i], vcd->displayValues[11]);
                         }
                         break;
                     case 12:
                         vcd->displayValues[12] = knobs[12]; //sus
                         for (int i = 0; i < vcd->classicSynthParams.numVoices; i++)
                         {
-                            tADSR4_setSustain(&vcd->polyFiltEnvs[i], vcd->displayValues[12]);
+                            tADSRT_setSustain(&vcd->polyFiltEnvs[i], vcd->displayValues[12]);
                         }
                         break;
                     case 13:
                         vcd->displayValues[13] = vcd->expBuffer[(int)(knobs[13] * vcd->expBufferSizeMinusOne)] * 8192.0f; //rel
                         for (int i = 0; i < vcd->classicSynthParams.numVoices; i++)
                         {
-                            tADSR4_setRelease(&vcd->polyFiltEnvs[i], vcd->displayValues[13]);
+                            tADSRT_setRelease(&vcd->polyFiltEnvs[i], vcd->displayValues[13]);
                         }
                         break;
                     case 14:
                         vcd->displayValues[14] = knobs[14]; //leak
                         for (int i = 0; i < vcd->classicSynthParams.numVoices; i++)
                         {
-                            tADSR4_setLeakFactor(&vcd->polyFiltEnvs[i], ((1.0f - vcd->displayValues[14]) * 0.00005f) + 0.99995f);
+                            tADSRT_setLeakFactor(&vcd->polyFiltEnvs[i], ((1.0f - vcd->displayValues[14]) * 0.00005f) + 0.99995f);
                         }
                         break;
                     case 15:
@@ -3375,14 +3381,14 @@ namespace vocodec
             for (int i = 0; i < tSimplePoly_getNumVoices(&vcd->poly); i++)
             {
                 float tempSample = 0.0f;
-                float env = tADSR4_tick(&vcd->polyEnvs[i]);
+                float env = tADSRT_tick(&vcd->polyEnvs[i]);
                 
                 for (int j = 0; j < NUM_OSC_PER_VOICE; j++)
                 {
                     tempSample += tSawtooth_tick(&vcd->osc[(i * NUM_OSC_PER_VOICE) + j]) * env * (1.0f - vcd->displayValues[16]);
                     tempSample += tRosenbergGlottalPulse_tick(&vcd->glottal[(i * NUM_OSC_PER_VOICE) + j]) * env * (vcd->displayValues[16]);
                 }
-                tEfficientSVF_setFreq(&vcd->synthLP[i], LEAF_clip(0.0f, (vcd->filtFreqs[i] + (vcd->displayValues[15] * tADSR4_tick(&vcd->polyFiltEnvs[i]))), 4095.0f));
+                tEfficientSVF_setFreq(&vcd->synthLP[i], LEAF_clip(0.0f, (vcd->filtFreqs[i] + (vcd->displayValues[15] * tADSRT_tick(&vcd->polyFiltEnvs[i]))), 4095.0f));
                 sample += tEfficientSVF_tick(&vcd->synthLP[i], tempSample);
             }
             sample *= INV_NUM_OSC_PER_VOICE * vcd->displayValues[0];
@@ -3403,8 +3409,8 @@ namespace vocodec
                     tRosenbergGlottalPulse_free(&vcd->glottal[(i * NUM_OSC_PER_VOICE) + j]);
                 }
                 tEfficientSVF_free(&vcd->synthLP[i]);
-                tADSR4_free(&vcd->polyEnvs[i]);
-                tADSR4_free(&vcd->polyFiltEnvs[i]);
+                tADSRT_free(&vcd->polyEnvs[i]);
+                tADSRT_free(&vcd->polyFiltEnvs[i]);
             }
             
             tCycle_free(&vcd->pwmLFO1);
@@ -3423,8 +3429,8 @@ namespace vocodec
                 for (int j = 0; j < 6; j++)
                 {
                     tCycle_init(&vcd->FM_sines[i][j], &vcd->leaf);
-                    tADSR4_init(&vcd->FM_envs[i][j], 10, 1000, 0.5f, 100.0f, vcd->decayExpBuffer, DECAY_EXP_BUFFER_SIZE, &vcd->leaf);
-                    tADSR4_setLeakFactor(&vcd->FM_envs[i][j], 0.99998f);
+                    tADSRT_init(&vcd->FM_envs[i][j], 10, 1000, 0.5f, 100.0f, vcd->decayExpBuffer, DECAY_EXP_BUFFER_SIZE, &vcd->leaf);
+                    tADSRT_setLeakFactor(&vcd->FM_envs[i][j], 0.99998f);
                 }
             }
             for (int i = 0; i < 6; i++)
@@ -3529,7 +3535,7 @@ namespace vocodec
                 {
                     for (int j = 0; j < 6; j++)
                     {
-                        tADSR4_setDecay(&vcd->FM_envs[i][j],(LEAF_clip(10.0f, vcd->displayValues[6] * vcd->randomDecays[j], 20000.0f))); //FM_decays[Rsound][j] * displayValues[6]);
+                        tADSRT_setDecay(&vcd->FM_envs[i][j],(LEAF_clip(10.0f, vcd->displayValues[6] * vcd->randomDecays[j], 20000.0f))); //FM_decays[Rsound][j] * displayValues[6]);
                     }
                 }
             }
@@ -3564,7 +3570,7 @@ namespace vocodec
                                     //tADSR_setAttack(&FM_envs[i][j], FM_attacks[Rsound][j] * displayValues[5]);
                                     //                                    cycleCountVals[1][2] = 0;
                                     //                                    uint64_t tempCount1 = DWT->CYCCNT;
-                                    tADSR4_setAttack(&vcd->FM_envs[i][j], vcd->displayValues[5] );
+                                    tADSRT_setAttack(&vcd->FM_envs[i][j], vcd->displayValues[5] );
                                     //                                    uint64_t tempCount2 = DWT->CYCCNT;
                                     //                                    cycleCountVals[1][1] = tempCount2-tempCount1;
                                     //                                    CycleCounterTrackMinAndMax(1);
@@ -3576,7 +3582,7 @@ namespace vocodec
                             {
                                 for (int j = 0; j < 6; j++)
                                 {
-                                    tADSR4_setDecay(&vcd->FM_envs[i][j],(LEAF_clip(7.0f, vcd->displayValues[6] * vcd->randomDecays[j], 20000.0f)));
+                                    tADSRT_setDecay(&vcd->FM_envs[i][j],(LEAF_clip(7.0f, vcd->displayValues[6] * vcd->randomDecays[j], 20000.0f)));
                                 }
                             }
                             break;
@@ -3591,7 +3597,7 @@ namespace vocodec
                             {
                                 for (int j = 0; j < 6; j++)
                                 {
-                                    tADSR4_setRelease(&vcd->FM_envs[i][j], vcd->displayValues[8]);
+                                    tADSRT_setRelease(&vcd->FM_envs[i][j], vcd->displayValues[8]);
                                 }
                             }
                             break;
@@ -3600,7 +3606,7 @@ namespace vocodec
                             {
                                 for (int j = 0; j < 6; j++)
                                 {
-                                    tADSR4_setLeakFactor(&vcd->FM_envs[i][j], ((1.0f - vcd->displayValues[9])  * 0.00004f) + 0.99996f);
+                                    tADSRT_setLeakFactor(&vcd->FM_envs[i][j], ((1.0f - vcd->displayValues[9])  * 0.00004f) + 0.99996f);
                                 }
                             }
                             break;
@@ -3646,7 +3652,7 @@ namespace vocodec
             {
                 for (int j = 0; j < 6; j++)
                 {
-                    tADSR4_setSustain(&vcd->FM_envs[i][j], vcd->sustainsFinal[j]); //FM_sustains[Rsound][j] * displayValues[7]);
+                    tADSRT_setSustain(&vcd->FM_envs[i][j], vcd->sustainsFinal[j]); //FM_sustains[Rsound][j] * displayValues[7]);
                 }
             }
             
@@ -3658,19 +3664,19 @@ namespace vocodec
                 tCycle_setFreq(&vcd->FM_sines[i][5], (myFrequency * vcd->FM_freqRatios[r][5]) + (vcd->FM_indices[r][5] * vcd->feedback_output * vcd->displayValues[0]));
                 
                 vcd->feedback_output = tCycle_tick(&vcd->FM_sines[i][5]);
-                tCycle_setFreq(&vcd->FM_sines[i][4], (myFrequency * vcd->FM_freqRatios[r][4]) + (vcd->FM_indices[r][4] * vcd->feedback_output * vcd->displayValues[0] * tADSR4_tick(&vcd->FM_envs[i][5])));
+                tCycle_setFreq(&vcd->FM_sines[i][4], (myFrequency * vcd->FM_freqRatios[r][4]) + (vcd->FM_indices[r][4] * vcd->feedback_output * vcd->displayValues[0] * tADSRT_tick(&vcd->FM_envs[i][5])));
                 
-                tCycle_setFreq(&vcd->FM_sines[i][3], (myFrequency * vcd->FM_freqRatios[r][3]) + (vcd->FM_indices[r][3] * vcd->displayValues[0] * tCycle_tick(&vcd->FM_sines[i][4]) * tADSR4_tickNoInterp(&vcd->FM_envs[i][4])));
+                tCycle_setFreq(&vcd->FM_sines[i][3], (myFrequency * vcd->FM_freqRatios[r][3]) + (vcd->FM_indices[r][3] * vcd->displayValues[0] * tCycle_tick(&vcd->FM_sines[i][4]) * tADSRT_tickNoInterp(&vcd->FM_envs[i][4])));
                 
-                tCycle_setFreq(&vcd->FM_sines[i][2], (myFrequency * vcd->FM_freqRatios[r][2]) + (vcd->FM_indices[r][2] * vcd->displayValues[0] * tCycle_tick(&vcd->FM_sines[i][3]) * tADSR4_tickNoInterp(&vcd->FM_envs[i][3])));
+                tCycle_setFreq(&vcd->FM_sines[i][2], (myFrequency * vcd->FM_freqRatios[r][2]) + (vcd->FM_indices[r][2] * vcd->displayValues[0] * tCycle_tick(&vcd->FM_sines[i][3]) * tADSRT_tickNoInterp(&vcd->FM_envs[i][3])));
                 
                 tCycle_setFreq(&vcd->FM_sines[i][1], myFrequency * vcd->FM_freqRatios[r][1]);
                 
-                tCycle_setFreq(&vcd->FM_sines[i][0],( myFrequency  * vcd->FM_freqRatios[r][0]) + (vcd->FM_indices[r][0] * vcd->displayValues[0] * tCycle_tick(&vcd->FM_sines[i][1]) * tADSR4_tickNoInterp(&vcd->FM_envs[i][1])));
+                tCycle_setFreq(&vcd->FM_sines[i][0],( myFrequency  * vcd->FM_freqRatios[r][0]) + (vcd->FM_indices[r][0] * vcd->displayValues[0] * tCycle_tick(&vcd->FM_sines[i][1]) * tADSRT_tickNoInterp(&vcd->FM_envs[i][1])));
                 
-                sample += (tCycle_tick(&vcd->FM_sines[i][2]) * tADSR4_tickNoInterp(&vcd->FM_envs[i][2]));
+                sample += (tCycle_tick(&vcd->FM_sines[i][2]) * tADSRT_tickNoInterp(&vcd->FM_envs[i][2]));
                 
-                sample += tCycle_tick(&vcd->FM_sines[i][0]) * tADSR4_tickNoInterp(&vcd->FM_envs[i][0]);
+                sample += tCycle_tick(&vcd->FM_sines[i][0]) * tADSRT_tickNoInterp(&vcd->FM_envs[i][0]);
                 
                 leftSample += sample * ((0.5f * (1.0f - vcd->displayValues[4])) + (vcd->displayValues[4] * (1.0f - vcd->panValues[i])));
                 
@@ -3711,7 +3717,7 @@ namespace vocodec
                 for (int j = 0; j < 6; j++)
                 {
                     tCycle_free(&vcd->FM_sines[i][j]);
-                    tADSR4_free(&vcd->FM_envs[i][j]);
+                    tADSRT_free(&vcd->FM_envs[i][j]);
                 }
                 
             }
@@ -3728,10 +3734,26 @@ namespace vocodec
         {
             tWaveSynth_initToPool(&vcd->waveSynth, NUM_VOC_VOICES, vcd->loadedTables, vcd->loadedTableSizes, 4, 20000.0f, &vcd->mediumPool);
             vcd->wavetableSynthParams.loadIndex = 0;
+            
+            tSimplePoly_setNumVoices(&vcd->poly, vcd->wavetableSynthParams.numVoices);
+            
+            float* knobs = vcd->presetKnobValues[ClassicSynth];
+            
+            vcd->displayValues[5] = vcd->expBuffer[(int)(knobs[5] * vcd->expBufferSizeMinusOne)] * 8192.0f; //att
+            vcd->displayValues[6] = vcd->expBuffer[(int)(knobs[6] * vcd->expBufferSizeMinusOne)] * 8192.0f; //dec
+            vcd->displayValues[7] = knobs[7]; //sus
+            vcd->displayValues[8] = vcd->expBuffer[(int)(knobs[8] * vcd->expBufferSizeMinusOne)] * 8192.0f; //rel
+            vcd->displayValues[9] = knobs[9]; //leak
+            
+            for (int i = 0; i < NUM_VOC_VOICES; ++i)
+            {
+                tADSRT_init(&vcd->polyEnvs[i], vcd->displayValues[5], vcd->displayValues[6], vcd->displayValues[7], vcd->displayValues[8], vcd->decayExpBuffer, DECAY_EXP_BUFFER_SIZE, &vcd->leaf);
+                tADSRT_setLeakFactor(&vcd->polyEnvs[i],((1.0f - vcd->displayValues[9]) * 0.00005f) + 0.99995f);
+            }
+            
             setLED_A(vcd, vcd->wavetableSynthParams.numVoices == 1);
             setLED_B(vcd, 0);
             setLED_C(vcd, 0);
-            tSimplePoly_setNumVoices(&vcd->poly, vcd->vocoderChParams.numVoices);
         }
         
         void SFXWavetableSynthFrame(Vocodec* vcd)
@@ -3739,6 +3761,7 @@ namespace vocodec
             if (vcd->buttonActionsSFX[ButtonA][ActionPress])
             {
                 vcd->wavetableSynthParams.numVoices = vcd->wavetableSynthParams.numVoices > 1 ? 1 : NUM_VOC_VOICES;
+                tSimplePoly_setNumVoices(&vcd->poly, vcd->wavetableSynthParams.numVoices);
                 vcd->buttonActionsSFX[ButtonA][ActionPress] = 0;
                 setLED_A(vcd, vcd->wavetableSynthParams.numVoices == 1);
             }
@@ -3756,19 +3779,40 @@ namespace vocodec
             if (vcd->newWavLoaded > 0)
             {
                 tWaveSynth_free(&vcd->waveSynth);
-                tWaveSynth_initToPool(&vcd->waveSynth, NUM_VOC_VOICES,  vcd->loadedTables, vcd->loadedTableSizes, 4, 20000.0f, &vcd->mediumPool);
+                tWaveSynth_initToPool(&vcd->waveSynth, NUM_VOC_VOICES, vcd->loadedTables, vcd->loadedTableSizes, 4, 20000.0f, &vcd->mediumPool);
                 vcd->newWavLoaded = 0;
             }
             
-            vcd->displayValues[0] = vcd->presetKnobValues[WavetableSynth][0];
-            vcd->displayValues[1] = vcd->presetKnobValues[WavetableSynth][1];
-            vcd->displayValues[2] = vcd->presetKnobValues[WavetableSynth][2];
-            vcd->displayValues[3] = vcd->presetKnobValues[WavetableSynth][3];
-            vcd->displayValues[4] = vcd->presetKnobValues[WavetableSynth][4];
-            vcd->displayValues[5] = vcd->presetKnobValues[WavetableSynth][5];
-            vcd->displayValues[6] = vcd->presetKnobValues[WavetableSynth][6];
-            vcd->displayValues[7] = vcd->presetKnobValues[WavetableSynth][7];
-            vcd->displayValues[8] = vcd->presetKnobValues[WavetableSynth][8];
+            float* knobs = vcd->presetKnobValues[WavetableSynth];
+            
+            // Gains
+            vcd->displayValues[0] = knobs[0];
+            vcd->displayValues[1] = knobs[1];
+            vcd->displayValues[2] = knobs[2];
+            vcd->displayValues[3] = knobs[3];
+            vcd->displayValues[4] = knobs[4];
+            
+            // ADSR
+            vcd->displayValues[5] = vcd->expBuffer[(int)(knobs[5] * vcd->expBufferSizeMinusOne)] * 8192.0f; //att
+            vcd->displayValues[6] = vcd->expBuffer[(int)(knobs[6] * vcd->expBufferSizeMinusOne)] * 8192.0f; //dec
+            vcd->displayValues[7] = knobs[7]; //sus
+            vcd->displayValues[8] = vcd->expBuffer[(int)(knobs[8] * vcd->expBufferSizeMinusOne)] * 8192.0f; //rel
+            vcd->displayValues[9] = knobs[9]; //leak
+            
+            for (int i = 0; i < vcd->wavetableSynthParams.numVoices; i++)
+            {
+                tADSRT_setAttack(&vcd->polyEnvs[i], vcd->displayValues[5]);
+                tADSRT_setDecay(&vcd->polyEnvs[i], vcd->displayValues[6]);
+                tADSRT_setSustain(&vcd->polyEnvs[i], vcd->displayValues[7]);
+                tADSRT_setRelease(&vcd->polyEnvs[i], vcd->displayValues[8]);
+                tADSRT_setLeakFactor(&vcd->polyEnvs[i], ((1.0f - vcd->displayValues[9]) * 0.00005f) + 0.99995f);
+            }
+            
+            // Phases
+            vcd->displayValues[10] = knobs[10];
+            vcd->displayValues[11] = knobs[11];
+            vcd->displayValues[12] = knobs[12];
+            vcd->displayValues[13] = knobs[13];
             
             for (int i = 0; i < tSimplePoly_getNumVoices(&vcd->poly); i++)
             {
@@ -3780,8 +3824,8 @@ namespace vocodec
             tWaveSynth_setIndex(&vcd->waveSynth, vcd->presetKnobValues[WavetableSynth][4]);
             for (int i = 0; i < 4; ++i)
             {
-                tWaveSynth_setIndexPhase(&vcd->waveSynth, i, vcd->displayValues[i]);
-                tWaveSynth_setIndexGain(&vcd->waveSynth, i, vcd->displayValues[5+i]);
+                tWaveSynth_setIndexGain(&vcd->waveSynth, i, vcd->displayValues[i]);
+                tWaveSynth_setIndexPhase(&vcd->waveSynth, i, vcd->displayValues[10+i]);
             }
         }
         
@@ -3792,16 +3836,33 @@ namespace vocodec
             
             for (int i = 0; i < tSimplePoly_getNumVoices(&vcd->poly); ++i)
             {
-                sample += tWaveSynth_tickVoice(&vcd->waveSynth, i) * tExpSmooth_tick(&vcd->polyRamp[i]) * 0.5f;
+                if (vcd->wavetableSynthParams.numVoices > 1)
+                {
+                    if (vcd->poly->voices[i][0] == -2)
+                    {
+                        if (vcd->polyEnvs[i]->whichStage == env_idle)
+                        {
+                            tSimplePoly_deactivateVoice(&vcd->poly, i);
+                        }
+                    }
+                }
+                
+                float env = tADSRT_tick(&vcd->polyEnvs[i]);
+                
+                sample += tWaveSynth_tickVoice(&vcd->waveSynth, i) * tExpSmooth_tick(&vcd->polyRamp[i]) * env;
             }
-
-            input[0] = sample;
+    
+            input[0] = tanhf(sample);
             input[1] = input[0];
         }
         
         void SFXWavetableSynthFree(Vocodec* vcd)
         {
             tWaveSynth_free(&vcd->waveSynth);
+            for (int i = 0; i < NUM_VOC_VOICES; ++i)
+            {
+                tADSRT_free(&vcd->polyEnvs[i]);
+            }
         }
         
         
@@ -4004,31 +4065,36 @@ namespace vocodec
 
                 if (vcd->currentPreset == Rhodes)
                 {
-                    
                     int whichVoice = tSimplePoly_noteOn(&vcd->poly, key, velocity);
                     
                     if (whichVoice >= 0)
                     {
                         for (int j = 0; j < 6; j++)
                         {
-                            tADSR4_on(&vcd->FM_envs[whichVoice][j], velocity * 0.0078125f);
+                            tADSRT_on(&vcd->FM_envs[whichVoice][j], velocity * 0.0078125f);
                         }
                         vcd->panValues[whichVoice] = key * 0.0078125f; // divide by 128.0f
                     }
                 }
                 else if (vcd->currentPreset == ClassicSynth)
                 {
-                    
                     int whichVoice = tSimplePoly_noteOn(&vcd->poly, key, velocity);
                     
                     if (whichVoice >= 0)
                     {
-                        tADSR4_on(&vcd->polyEnvs[whichVoice], velocity * 0.0078125f);
-                        tADSR4_on(&vcd->polyFiltEnvs[whichVoice], velocity * 0.0078125f);
+                        tADSRT_on(&vcd->polyEnvs[whichVoice], velocity * 0.0078125f);
+                        tADSRT_on(&vcd->polyFiltEnvs[whichVoice], velocity * 0.0078125f);
                     }
                 }
-                
-                
+                else if (vcd->currentPreset == WavetableSynth)
+                {
+                    int whichVoice = tSimplePoly_noteOn(&vcd->poly, key, velocity);
+                    
+                    if (whichVoice >= 0)
+                    {
+                        tADSRT_on(&vcd->polyEnvs[whichVoice], velocity * 0.0078125f);
+                    }
+                }
                 else if (vcd->currentPreset == SamplerKeyboard)
                 {
                     if ((key >= LOWEST_SAMPLER_KEY) && key < (LOWEST_SAMPLER_KEY + NUM_SAMPLER_KEYS))
@@ -4070,7 +4136,7 @@ namespace vocodec
                     int whichVoice = tSimplePoly_noteOn(&vcd->poly, key, velocity);
                     if (whichVoice >= 0)
                     {
-                        tADSR4_on(&vcd->pluckEnvs[whichVoice], velocity * 0.0078125f);
+                        tADSRT_on(&vcd->pluckEnvs[whichVoice], velocity * 0.0078125f);
                     }
                 }
                 else
@@ -4100,7 +4166,7 @@ namespace vocodec
                 {
                     for (int j = 0; j < 6; j++)
                     {
-                        tADSR4_off(&vcd->FM_envs[voice][j]);
+                        tADSRT_off(&vcd->FM_envs[voice][j]);
                     }
                 }
                 
@@ -4119,8 +4185,25 @@ namespace vocodec
                 
                 if (voice >= 0)
                 {
-                    tADSR4_off(&vcd->polyEnvs[voice]);
-                    tADSR4_off(&vcd->polyFiltEnvs[voice]);
+                    tADSRT_off(&vcd->polyEnvs[voice]);
+                    tADSRT_off(&vcd->polyFiltEnvs[voice]);
+                }
+            }
+            else if (vcd->currentPreset == WavetableSynth)
+            {
+                int voice;
+                if (tSimplePoly_getNumVoices(&vcd->poly) > 1)
+                {
+                    voice = tSimplePoly_markPendingNoteOff(&vcd->poly, key); //if we're polyphonic, we need to let release envelopes happen and not mark voices free when they are not
+                }
+                else
+                {
+                    voice = tSimplePoly_noteOff(&vcd->poly, key); //if we're monophonic, we need to allow fast voice stealing and returning to previous stolen notes without regard for the release envelopes
+                }
+                
+                if (voice >= 0)
+                {
+                    tADSRT_off(&vcd->polyEnvs[voice]);
                 }
             }
             
@@ -4159,7 +4242,7 @@ namespace vocodec
                 
                 if (voice >= 0)
                 {
-                    tADSR4_off(&vcd->pluckEnvs[voice]);
+                    tADSRT_off(&vcd->pluckEnvs[voice]);
                 }
             }
             else

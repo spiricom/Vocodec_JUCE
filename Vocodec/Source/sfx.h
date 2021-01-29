@@ -514,7 +514,7 @@ namespace vocodec
             
             tSlide stringOutEnvs[NUM_STRINGS];
             tSlide stringInEnvs[NUM_STRINGS];
-            tADSR4 pluckEnvs[NUM_STRINGS];
+            tADSRT pluckEnvs[NUM_STRINGS];
             tNoise stringPluckNoise;
             
             tVZFilter pluckFilt;
@@ -524,8 +524,8 @@ namespace vocodec
             
             tEfficientSVF synthLP[NUM_VOC_VOICES];
             uint16_t filtFreqs[NUM_VOC_VOICES];
-            tADSR4 polyEnvs[NUM_VOC_VOICES];
-            tADSR4 polyFiltEnvs[NUM_VOC_VOICES];
+            tADSRT polyEnvs[NUM_VOC_VOICES];
+            tADSRT polyFiltEnvs[NUM_VOC_VOICES];
             tCycle pwmLFO1;
             tCycle pwmLFO2;
             
@@ -534,7 +534,7 @@ namespace vocodec
             tCycle FM_sines[NUM_VOC_VOICES][6];
             float FM_freqRatios[5][6];
             float FM_indices[5][6];
-            tADSR4 FM_envs[NUM_VOC_VOICES][6];
+            tADSRT FM_envs[NUM_VOC_VOICES][6];
             float feedback_output;
             
             float panValues[NUM_VOC_VOICES];
