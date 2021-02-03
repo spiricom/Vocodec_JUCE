@@ -69,8 +69,6 @@ private:
     bool sliderActive[NUM_ADC_CHANNELS];
     
     juce::FileChooser chooser;
-    juce::AudioFormatManager formatManager;
-    std::unique_ptr<juce::AudioFormatReaderSource> readerSource;
     
     VocodecLookAndFeel vocodecLAF;
     

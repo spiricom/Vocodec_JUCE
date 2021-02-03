@@ -21,9 +21,7 @@ constrain(new ComponentBoundsConstrainer()),
 resizer(new ResizableCornerComponent (this, constrain.get())),
 screen(p),
 chooser("Select a .wav file to load...", {}, "*.wav")
-{
-    formatManager.registerBasicFormats();
-    
+{    
     panel = Drawable::createFromImageData(BinaryData::panel_svg, BinaryData::panel_svgSize);
     
     setWantsKeyboardFocus(true);
@@ -398,7 +396,7 @@ void VocodecAudioProcessorEditor::loadWav()
         int n = 0;
         for (auto result : results)
         {
-            auto* reader = formatManager.createReaderFor (result);
+            auto* reader = processor.formatManager.createReaderFor (result);
             
             if (reader != nullptr)
             {
@@ -421,7 +419,10 @@ void VocodecAudioProcessorEditor::loadWav()
                     processor.vcd.loadedTables[idx][i] = buffer.getSample(0, i);
                 }
                 
-                readerSource.reset(newSource.release());
+                processor.readerSource.reset(newSource.release());
+
+                processor.wavetablePaths.set(idx, result.getFullPathName());
+                processor.vcd.loadedFilePaths[idx] = (char*) processor.wavetablePaths[idx].toRawUTF8();
             }
             idx++; n++;
             if (idx >= 4) idx = 0;

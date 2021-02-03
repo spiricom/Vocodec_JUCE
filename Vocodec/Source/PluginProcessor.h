@@ -91,6 +91,11 @@ public:
     vocodec::Vocodec vcd;
     
     float editorScale = 1.0f;
+
+    StringArray wavetablePaths;
+
+    juce::AudioFormatManager formatManager;
+    std::unique_ptr<juce::AudioFormatReaderSource> readerSource;
     
 private:
     

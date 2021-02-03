@@ -296,6 +296,7 @@ namespace vocodec
             void (*loadWav)(Vocodec* vcd);
             int attemptFileLoad;
             int newWavLoaded;
+            char* loadedFilePaths[4];
             
             //audio objects
             tFormantShifter fs;

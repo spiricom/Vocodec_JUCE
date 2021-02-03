@@ -29,6 +29,8 @@ pluginParamPrefixes(cPluginParamPrefixes),
 pluginParamNames(cPluginParamNames),
 choiceParamNames(cChoiceParamNames)
 {
+    formatManager.registerBasicFormats();
+
     SFX_init(&vcd, &ADC_values, &loadWav);
     vcd.currentPreset = vocodec::PresetNil;
     vcd.previousPreset = vocodec::PresetNil;
@@ -295,6 +297,40 @@ void VocodecAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBloc
     }
     vcd.previousPreset = vocodec::PresetNil;
     vcd.loadingPreset = 1;
+
+    int idx = 0;
+    for (auto path : wavetablePaths)
+    {
+        File file(path);
+        auto* reader = formatManager.createReaderFor(file);
+
+        if (reader != nullptr)
+        {
+            std::unique_ptr<juce::AudioFormatReaderSource> newSource(new juce::AudioFormatReaderSource
+            (reader, true));
+
+            AudioBuffer<float> buffer = AudioBuffer<float>(reader->numChannels, int(reader->lengthInSamples));
+
+            reader->read(&buffer, 0, buffer.getNumSamples(), 0, true, true);
+
+            if (vcd.loadedTableSizes[idx] > 0)
+            {
+                mpool_free((char*)vcd.loadedTables[idx], vcd.largePool);
+            }
+            vcd.loadedTables[idx] =
+                (float*)mpool_alloc(sizeof(float) * buffer.getNumSamples(), vcd.largePool);
+            vcd.loadedTableSizes[idx] = buffer.getNumSamples();
+            for (int i = 0; i < vcd.loadedTableSizes[idx]; ++i)
+            {
+                vcd.loadedTables[idx][i] = buffer.getSample(0, i);
+            }
+
+            readerSource.reset(newSource.release());
+        }
+        idx++;
+        if (idx >= 4) idx = 0;
+    }
+    vcd.newWavLoaded = 1;
     
     startTimer(2);
 }
@@ -456,6 +492,12 @@ void VocodecAudioProcessor::getStateInformation (MemoryBlock& destData)
         xml->setAttribute(param->getName(50).removeCharacters(StringRef(" /<>")), param->getIndex());
     
     xml->setAttribute("editorScale", editorScale);
+
+    for (int i = 0; i < 4; ++i)
+    {
+        wavetablePaths.set(i, String(vcd.loadedFilePaths[i]));
+        xml->setAttribute("wavetablePath" + String(i), wavetablePaths[i]);
+    }
     
     copyXmlToBinary(*xml, destData);
 }
@@ -500,6 +542,12 @@ void VocodecAudioProcessor::setStateInformation (const void* data, int sizeInByt
         }
         
         editorScale = xmlState->getDoubleAttribute("editorScale", 1.0);
+
+        for (int i = 0; i < 4; ++i)
+        {
+            wavetablePaths.set(i, xmlState->getStringAttribute("wavetablePath" + String(i), String()));
+            vcd.loadedFilePaths[i] = (char*) wavetablePaths[i].toRawUTF8();
+        }
     }
 }
 
