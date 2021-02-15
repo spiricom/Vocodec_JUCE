@@ -12,6 +12,7 @@
 #include "PluginEditor.h"
 #include "oled.h"
 #include "ui.h"
+#include "tunings.h"
 
 //==============================================================================
 VocodecAudioProcessor::VocodecAudioProcessor()
@@ -39,12 +40,14 @@ choiceParamNames(cChoiceParamNames)
     I2C_HandleTypeDef* dummyArg = nullptr;
     vocodec::OLED_init(&vcd, dummyArg);
     
-    inputGain = new AudioParameterFloat("inputGain", "inputGain",
-                                        0.0f, 4.0f, 1.0f);
+    inputGain = new AudioParameterFloat("inputGain", "inputGain", 0.0f, 4.0f, 1.0f);
     addParameter(inputGain);
-    dryWetMix = new AudioParameterFloat("dryWetMix", "dryWetMix",
-                                        0.0f, 1.0f, 1.0f);
+    dryWetMix = new AudioParameterFloat("dryWetMix", "dryWetMix", 0.0f, 1.0f, 1.0f);
     addParameter(dryWetMix);
+    tuning = new AudioParameterInt("tuning", "tuning", 0, NUM_TUNINGS-1, 0);
+    addParameter(tuning);
+    keyCenter = new AudioParameterInt("keyCenter", "keyCenter", 0, 11, 0);
+    addParameter(keyCenter);
     for (int p = 0; p < int(vocodec::PresetNil); ++p)
     {
         for (int v = 0; v < vcd.numPages[p] * KNOB_PAGE_SIZE; ++v)
@@ -485,6 +488,8 @@ void VocodecAudioProcessor::getStateInformation (MemoryBlock& destData)
     
     xml->setAttribute(inputGain->getName(50), inputGain->get());
     xml->setAttribute(dryWetMix->getName(50), dryWetMix->get());
+    xml->setAttribute(tuning->getName(50), tuning->get());
+    xml->setAttribute(keyCenter->getName(50), keyCenter->get());
     
     for (auto param : pluginParams)
         xml->setAttribute(param->getName(50).removeCharacters(StringRef(" /<>")), *param);
@@ -519,6 +524,18 @@ void VocodecAudioProcessor::setStateInformation (const void* data, int sizeInByt
         name = dryWetMix->getName(50);
         value = (float)xmlState->getDoubleAttribute(name, 1.0f);
         dryWetMix->setValueNotifyingHost(value);
+        
+        name = tuning->getName(50);
+        value = (float)xmlState->getIntAttribute(name, 0);
+        value = tuning->getNormalisableRange().convertTo0to1(value);
+        tuning->setValueNotifyingHost(value);
+        vcd.currentTuning = tuning->get();
+        
+        name = keyCenter->getName(50);
+        value = (float)xmlState->getIntAttribute(name, 0);
+        value = keyCenter->getNormalisableRange().convertTo0to1(value);
+        keyCenter->setValueNotifyingHost(value);
+        vcd.keyCenter = keyCenter->get();
 
         for (int p = 0; p < int(vocodec::PresetNil); ++p)
         {
@@ -633,6 +650,9 @@ void VocodecAudioProcessor::hiResTimerCallback()
 
 void VocodecAudioProcessor::updateChoiceParams()
 {
+    *tuning = vcd.currentTuning;
+    *keyCenter = vcd.keyCenter;
+    
     *choiceParams["vocoder_numVoices"] = vcd.vocoderParams.numVoices > 1 ? 0 : 1;
     *choiceParams["vocoder_internalExternal"] = vcd.vocoderParams.internalExternal;
     *choiceParams["vocoder_freeze"] = vcd.vocoderParams.freeze;
@@ -691,6 +711,9 @@ void VocodecAudioProcessor::updateChoiceParams()
 
 void VocodecAudioProcessor::updateChoiceValues()
 {
+    vcd.currentTuning = tuning->get();
+    vcd.keyCenter = keyCenter->get();
+    
     vcd.vocoderParams.numVoices = choiceParams["vocoder_numVoices"]->getIndex() > 0 ? 1 : NUM_VOC_VOICES;
     vcd.vocoderParams.internalExternal = choiceParams["vocoder_internalExternal"]->getIndex();
     vcd.vocoderParams.freeze = choiceParams["vocoder_freeze"]->getIndex();
@@ -761,5 +784,6 @@ void VocodecAudioProcessor::updateAllValues()
             }
         }
     }
+
     updateChoiceValues();
 }

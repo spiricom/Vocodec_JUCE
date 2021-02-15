@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<JUCERPROJECT id="zM8rA0" name="Vocodec" projectType="audioplug" pluginCharacteristicsValue="pluginProducesMidiOut,pluginWantsMidiIn"
-              displaySplashScreen="1" jucerFormatVersion="1" pluginVST3Category="Delay,Distortion,Fx,Instrument,Pitch Shift,Reverb,Sampler,Synth"
+<JUCERPROJECT id="zM8rA0" name="Vocodec" projectType="audioplug" pluginCharacteristicsValue="pluginWantsMidiIn"
+              displaySplashScreen="1" jucerFormatVersion="1" pluginVST3Category="Fx"
               pluginManufacturer="Snyderphonics" companyName="Snyderphonics"
               companyCopyright="Snyderphonics" companyWebsite="http://snyderphonics.com/"
               pluginName="Vocodec" pluginDesc="A vocal effects pedal." pluginManufacturerCode="Vcdc"
               pluginCode="vc8r" aaxIdentifier="com.snyderphonics.Vocodec" pluginAUExportPrefix="VocodecAU"
               bundleIdentifier="com.snyderphonics.Vocodec" pluginAUMainType="'aumf'"
-              version="0.3.1">
+              version="0.3.2">
   <MAINGROUP id="uEka6H" name="Vocodec">
     <GROUP id="{B405E64B-4792-254D-5BDE-97BC1F91F9E6}" name="Source">
       <GROUP id="{F62A9309-7BE1-5B65-A806-641EB05C4C88}" name="Resources-Vocoder">

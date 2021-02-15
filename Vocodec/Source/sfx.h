@@ -616,7 +616,6 @@ namespace vocodec
             uint32_t currentTuning;
             uint8_t keyCenter;
             
-            
             // OLED
             
             unsigned char buffer[512];

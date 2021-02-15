@@ -81,6 +81,8 @@ public:
 
     AudioParameterFloat* inputGain;
     AudioParameterFloat* dryWetMix;
+    AudioParameterInt* tuning;
+    AudioParameterInt* keyCenter;
     HashMap<int, AudioParameterFloat*> pluginParams;
     HashMap<String, AudioParameterChoice*> choiceParams;
     

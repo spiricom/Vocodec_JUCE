@@ -3732,7 +3732,7 @@ namespace vocodec
         //reverb
         void SFXWavetableSynthAlloc(Vocodec* vcd)
         {
-            tWaveSynth_initToPool(&vcd->waveSynth, NUM_VOC_VOICES, vcd->loadedTables, vcd->loadedTableSizes, 4, 20000.0f, &vcd->mediumPool);
+            tWaveSynth_initToPool(&vcd->waveSynth, NUM_VOC_VOICES, vcd->loadedTables, vcd->loadedTableSizes, 4, 20000.0f, &vcd->largePool);
             vcd->wavetableSynthParams.loadIndex = 0;
             
             tSimplePoly_setNumVoices(&vcd->poly, vcd->wavetableSynthParams.numVoices);
@@ -3779,7 +3779,7 @@ namespace vocodec
             if (vcd->newWavLoaded > 0)
             {
                 tWaveSynth_free(&vcd->waveSynth);
-                tWaveSynth_initToPool(&vcd->waveSynth, NUM_VOC_VOICES, vcd->loadedTables, vcd->loadedTableSizes, 4, 20000.0f, &vcd->mediumPool);
+                tWaveSynth_initToPool(&vcd->waveSynth, NUM_VOC_VOICES, vcd->loadedTables, vcd->loadedTableSizes, 4, 20000.0f, &vcd->largePool);
                 vcd->newWavLoaded = 0;
             }
             
