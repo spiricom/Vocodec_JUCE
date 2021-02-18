@@ -8,6 +8,7 @@
  ==============================================================================
  */
 
+#include "VocodecStandalone.h"
 #include "PluginProcessor.h"
 #include "PluginEditor.h"
 #include "oled.h"
@@ -273,6 +274,38 @@ void VocodecAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBloc
     processingInactiveCount = 0;
     processingInactiveThreshold = 10 * (samplesPerBlock / sampleRate) * 1000;
     
+    if (leafInitialized)
+    {
+        if (presetInitialized) vcd.freeFunctions[vcd.currentPreset](&vcd);
+        
+        for (int i = 0; i < 4; ++i)
+        {
+            if (vcd.loadedTableSizes[i] > 0)
+            {
+                mpool_free((char*)vcd.loadedTables[i], vcd.largePool);
+                vcd.loadedTableSizes[i] = 0;
+            }
+        }
+        
+        tEnvelopeFollower_free(&inputFollower[0]);
+        tEnvelopeFollower_free(&inputFollower[1]);
+        tEnvelopeFollower_free(&outputFollower[0]);
+        tEnvelopeFollower_free(&outputFollower[1]);
+        
+        if (oversamplingRatio > 1)
+        {
+            tOversampler_free(&oversampler[0]);
+            tOversampler_free(&oversampler[1]);
+        }
+        
+        for (int i = 0; i < 6; i++)
+        {
+            tExpSmooth_free(&vcd.adc[i]);
+        }
+        
+        vocodec::freeGlobalSFXObjects(&vcd);
+    }
+    
     LEAF_init(&vcd.leaf, sampleRate, samplesPerBlock, small_memory, SMALL_MEM_SIZE,
               []() {return (float)rand() / RAND_MAX; });
     tMempool_init(&vcd.mediumPool, medium_memory, MED_MEM_SIZE, &vcd.leaf);
@@ -283,6 +316,9 @@ void VocodecAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBloc
     tEnvelopeFollower_init(&outputFollower[0], 0.0001f, 0.9995f, &vcd.leaf);
     tEnvelopeFollower_init(&outputFollower[1], 0.0001f, 0.9995f, &vcd.leaf);
     
+    tOversampler_init(&oversampler[0], oversamplingRatio, 1, &vcd.leaf);
+    tOversampler_init(&oversampler[1], oversamplingRatio, 1, &vcd.leaf);
+
     //ramps to smooth the knobs
     for (int i = 0; i < 6; i++)
     {
@@ -315,11 +351,7 @@ void VocodecAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBloc
             AudioBuffer<float> buffer = AudioBuffer<float>(reader->numChannels, int(reader->lengthInSamples));
 
             reader->read(&buffer, 0, buffer.getNumSamples(), 0, true, true);
-
-            if (vcd.loadedTableSizes[idx] > 0)
-            {
-                mpool_free((char*)vcd.loadedTables[idx], vcd.largePool);
-            }
+            
             vcd.loadedTables[idx] =
                 (float*)mpool_alloc(sizeof(float) * buffer.getNumSamples(), vcd.largePool);
             vcd.loadedTableSizes[idx] = buffer.getNumSamples();
@@ -334,6 +366,8 @@ void VocodecAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBloc
         if (idx >= 4) idx = 0;
     }
     vcd.newWavLoaded = 1;
+    
+    leafInitialized = true;
     
     startTimer(2);
 }
@@ -379,6 +413,19 @@ void VocodecAudioProcessor::processBlock (AudioBuffer<float>& buffer, MidiBuffer
     
     vocodec::VocodecPresetType currentPreset = vcd.currentPreset;
     
+    if (oversamplingRatio != oversamplingUpdate)
+    {
+        if (oversamplingRatio > 1)
+        {
+            tOversampler_free(&oversampler[0]);
+            tOversampler_free(&oversampler[1]);
+        }
+        oversamplingRatio = oversamplingUpdate;
+
+        tOversampler_init(&oversampler[0], oversamplingRatio, 1, &vcd.leaf);
+        tOversampler_init(&oversampler[1], oversamplingRatio, 1, &vcd.leaf);
+    }
+    
     if (vcd.loadingPreset)
     {
         for (int i = 0; i < vocodec::ButtonNil; ++i)
@@ -393,8 +440,13 @@ void VocodecAudioProcessor::processBlock (AudioBuffer<float>& buffer, MidiBuffer
         if (vcd.previousPreset != vocodec::PresetNil)
             vcd.freeFunctions[vcd.previousPreset](&vcd);
         
+        presetInitialized = false;
+        
         if (currentPreset != vocodec::PresetNil)
+        {
             vcd.allocFunctions[currentPreset](&vcd);
+            presetInitialized = true;
+        }
         
         vcd.previousPreset = currentPreset;
         vcd.loadingPreset = 0;
@@ -445,7 +497,25 @@ void VocodecAudioProcessor::processBlock (AudioBuffer<float>& buffer, MidiBuffer
         audio[1] = leftChannel[i];
         audio[0] = rightChannel[i];
         
-        vcd.tickFunctions[currentPreset](&vcd, audio);
+        float oversampled[2][64];
+        if (oversamplingRatio > 1)
+        {
+            tOversampler_upsample(&oversampler[0], audio[0], oversampled[0]);
+            tOversampler_upsample(&oversampler[1], audio[1], oversampled[1]);
+            
+            for (int i = 0; i < oversamplingRatio; ++i)
+            {
+                audio[0] = oversampled[0][i];
+                audio[1] = oversampled[1][i];
+                vcd.tickFunctions[currentPreset](&vcd, audio);
+                oversampled[0][i] = audio[0];
+                oversampled[1][i] = audio[1];
+            }
+            
+            audio[0] = tOversampler_downsample(&oversampler[0], oversampled[0]);
+            audio[1] = tOversampler_downsample(&oversampler[1], oversampled[1]);
+        }
+        else vcd.tickFunctions[currentPreset](&vcd, audio);
         
         audio[1] = LEAF_interpolation_linear(leftChannel[i], audio[1], mix);
         
@@ -503,6 +573,8 @@ void VocodecAudioProcessor::getStateInformation (MemoryBlock& destData)
         wavetablePaths.set(i, String(vcd.loadedFilePaths[i]));
         xml->setAttribute("wavetablePath" + String(i), wavetablePaths[i]);
     }
+    
+    xml->setAttribute("oversamplingRatio", oversamplingRatio);
     
     copyXmlToBinary(*xml, destData);
 }
@@ -565,6 +637,9 @@ void VocodecAudioProcessor::setStateInformation (const void* data, int sizeInByt
             wavetablePaths.set(i, xmlState->getStringAttribute("wavetablePath" + String(i), String()));
             vcd.loadedFilePaths[i] = (char*) wavetablePaths[i].toRawUTF8();
         }
+        
+        oversamplingRatio = xmlState->getIntAttribute("oversamplingRatio", 1);
+        oversamplingUpdate = oversamplingRatio;
     }
 }
 

@@ -587,6 +587,7 @@ namespace vocodec
         
         void initGlobalSFXObjects(Vocodec* vcd)
         {
+            vcd->leaf.clearOnAllocation = 1;
             calculateNoteArray(vcd);
             
             tSimplePoly_init(&vcd->poly, NUM_VOC_VOICES, &vcd->leaf);
@@ -600,6 +601,17 @@ namespace vocodec
             
             LEAF_generate_exp(vcd->expBuffer, 1000.0f, -1.0f, 0.0f, -0.0008f, EXP_BUFFER_SIZE); //exponential buffer rising from 0 to 1
             LEAF_generate_exp(vcd->decayExpBuffer, 0.001f, 0.0f, 1.0f, -0.0008f, DECAY_EXP_BUFFER_SIZE); // exponential decay buffer falling from 1 to
+            vcd->leaf.clearOnAllocation = 0;
+        }
+        
+        void freeGlobalSFXObjects(Vocodec* vcd)
+        {
+            tSimplePoly_free(&vcd->poly);
+            for (int i = 0; i < NUM_VOC_VOICES; i++)
+            {
+                tExpSmooth_free(&vcd->polyRamp[i]);
+            }
+            tExpSmooth_free(&vcd->comp);
         }
         
         ///1 vocoder internal pol
@@ -1160,7 +1172,6 @@ namespace vocodec
         // pitch shift
         void SFXPitchShiftAlloc(Vocodec* vcd)
         {
-            
             tFormantShifter_init(&vcd->fs, 7, &vcd->leaf);
             tRetune_initToPool(&vcd->retune, NUM_RETUNE, mtof(42), mtof(84), 1024, &vcd->mediumPool);
             tRetune_initToPool(&vcd->retune2, NUM_RETUNE, mtof(42), mtof(84), 1024, &vcd->mediumPool);
@@ -1236,13 +1247,8 @@ namespace vocodec
             tExpSmooth_setDest(&vcd->smoother1, myGains[0]);
             tExpSmooth_setDest(&vcd->smoother2, myGains[1]);
             
-            
-            
             float formantsample = tanhf(tFormantShifter_remove(&vcd->fs, input[1]));
-            
-            
-            
-            
+        
             float* samples = tRetune_tick(&vcd->retune2, formantsample);
             formantsample = samples[0];
             sample = input[1];
@@ -1280,6 +1286,7 @@ namespace vocodec
             calculateNoteArray(vcd);
             tExpSmooth_init(&vcd->neartune_smoother, 1.0f, .007f, &vcd->leaf);
             tRamp_init(&vcd->nearWetRamp, 20.0f, 1, &vcd->leaf);
+            vcd->leaf.clearOnAllocation = 0;
             setLED_A(vcd, vcd->neartuneParams.useChromatic);
             setLED_B(vcd, 0);
             setLED_C(vcd, vcd->neartuneParams.lock);
@@ -1412,11 +1419,11 @@ namespace vocodec
         {
             tRetune_initToPool(&vcd->autotunePoly, NUM_AUTOTUNE, mtof(42), mtof(84), 1024, &vcd->mediumPool);
             tRetune_setMode(&vcd->autotunePoly, 1);
+            tCycle_init(&vcd->tremolo, &vcd->leaf);
             tSimplePoly_setNumVoices(&vcd->poly, NUM_AUTOTUNE);
             setLED_A(vcd, 0);
             setLED_B(vcd, 0);
             setLED_C(vcd, 0);
-            tCycle_init(&vcd->tremolo, &vcd->leaf);
         }
         
         void SFXAutotuneFrame(Vocodec* vcd)
@@ -1473,6 +1480,7 @@ namespace vocodec
         void SFXAutotuneFree(Vocodec* vcd)
         {
             tRetune_free(&vcd->autotunePoly);
+            tCycle_free(&vcd->tremolo);
         }
         
         
@@ -3183,16 +3191,16 @@ namespace vocodec
             
             vcd->displayValues[16] = knobs[16];  // fade between sawtooth and glottal pulse
             
-            
             for (int i = 0; i < NUM_VOC_VOICES; i++)
             {
                 for (int j = 0; j < NUM_OSC_PER_VOICE; j++)
                 {
-                    tSawtooth_init(&vcd->osc[(i * NUM_OSC_PER_VOICE) + j], &vcd->leaf);
+                    int k = (i * NUM_OSC_PER_VOICE) + j;
+                    tSawtooth_init(&vcd->osc[k], &vcd->leaf);
                     vcd->synthDetune[i][j] = ((vcd->leaf.random() * 0.0264f) - 0.0132f);
-                    tRosenbergGlottalPulse_init(&vcd->glottal[(i * NUM_OSC_PER_VOICE) + j], &vcd->leaf);
-                    tRosenbergGlottalPulse_setOpenLength(&vcd->glottal[(i * NUM_OSC_PER_VOICE) + j], 0.3f);
-                    tRosenbergGlottalPulse_setPulseLength(&vcd->glottal[(i * NUM_OSC_PER_VOICE) + j], 0.4f);
+                    tRosenbergGlottalPulse_init(&vcd->glottal[k], &vcd->leaf);
+                    tRosenbergGlottalPulse_setOpenLength(&vcd->glottal[k], 0.3f);
+                    tRosenbergGlottalPulse_setPulseLength(&vcd->glottal[k], 0.4f);
                 }
                 
                 tEfficientSVF_init(&vcd->synthLP[i], SVFTypeLowpass, 2000, vcd->displayValues[4], &vcd->leaf);

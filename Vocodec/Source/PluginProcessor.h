@@ -14,6 +14,8 @@
 #include "UIConstants.h"
 #include "sfx.h"
 
+class StandalonePluginHolder;
+
 //==============================================================================
 /**
 */
@@ -90,6 +92,10 @@ public:
     
     tEnvelopeFollower inputFollower[2], outputFollower[2];
     
+    tOversampler oversampler[2];
+    int oversamplingRatio;
+    int oversamplingUpdate;
+    
     vocodec::Vocodec vcd;
     
     float editorScale = 1.0f;
@@ -106,6 +112,9 @@ private:
     char large_memory[LARGE_MEM_SIZE];
     
     uint16_t ADC_values[NUM_ADC_CHANNELS];
+    
+    bool leafInitialized = false;
+    bool presetInitialized = false;
     
 	bool isAddingFromMidiInput = false;
     

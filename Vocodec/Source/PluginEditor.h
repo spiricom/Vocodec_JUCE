@@ -61,6 +61,9 @@ private:
     
     VocodecScreen screen;
     
+    ComboBox oversamplingMenu;
+    Label oversamplingLabel;
+    
     Label versionLabel;
     
     Font euphemia;

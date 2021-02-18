@@ -21,13 +21,13 @@ public:
     VocodecLookAndFeel()
     {
         setColour(ComboBox::backgroundColourId, Colour(10, 10, 10));
-        setColour(ComboBox::textColourId, Colours::white);
+        setColour(ComboBox::textColourId, Colours::lightgrey);
         setColour(ComboBox::buttonColourId, Colours::black);
-        setColour(ComboBox::outlineColourId, Colours::white);
-        setColour(ComboBox::arrowColourId, Colours::white);
+        setColour(ComboBox::outlineColourId, Colours::lightgrey);
+        setColour(ComboBox::arrowColourId, Colours::lightgrey);
         
         setColour(PopupMenu::backgroundColourId, Colour(10, 10, 10));
-        setColour(PopupMenu::textColourId, Colours::white);
+        setColour(PopupMenu::textColourId, Colours::lightgrey);
         
         setColour(Label::textColourId, Colours::gold.withBrightness(0.95f));
         

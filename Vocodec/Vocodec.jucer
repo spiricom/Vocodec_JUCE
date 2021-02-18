@@ -6,16 +6,22 @@
               companyCopyright="Snyderphonics" companyWebsite="http://snyderphonics.com/"
               pluginName="Vocodec" pluginDesc="A vocal effects pedal." pluginManufacturerCode="Vcdc"
               pluginCode="vc8r" aaxIdentifier="com.snyderphonics.Vocodec" pluginAUExportPrefix="VocodecAU"
-              bundleIdentifier="com.snyderphonics.Vocodec" pluginAUMainType="'aumf'"
-              version="0.3.2">
+              bundleIdentifier="com.snyderphonics.Vocodec" pluginAUMainType="'aufx'"
+              version="0.3.2" defines="JUCE_USE_CUSTOM_PLUGIN_STANDALONE_APP=1">
   <MAINGROUP id="uEka6H" name="Vocodec">
     <GROUP id="{B405E64B-4792-254D-5BDE-97BC1F91F9E6}" name="Source">
-      <GROUP id="{F62A9309-7BE1-5B65-A806-641EB05C4C88}" name="Resources-Vocoder">
-        <FILE id="qpVCo0" name="EuphemiaCAS.ttf" compile="0" resource="1" file="Source/Resources-Vocoder/EuphemiaCAS.ttf"/>
-        <FILE id="gg3oYc" name="logo_large.svg" compile="0" resource="1" file="Source/Resources-Vocoder/logo_large.svg"/>
-        <FILE id="MinlXu" name="panel.svg" compile="0" resource="1" file="Source/Resources-Vocoder/panel.svg"/>
-        <FILE id="dxrfkP" name="snyderphonics-whitelogo.svg" compile="0" resource="1"
-              file="Source/Resources-Vocoder/snyderphonics-whitelogo.svg"/>
+      <GROUP id="{01880B7F-B075-06C8-13C4-AA7342A3B95F}" name="Standalone">
+        <FILE id="Iq796U" name="VocodecStandalone.cpp" compile="1" resource="0"
+              file="Source/VocodecStandalone.cpp"/>
+        <FILE id="Ridy5v" name="VocodecStandalone.h" compile="0" resource="0"
+              file="Source/VocodecStandalone.h"/>
+      </GROUP>
+      <GROUP id="{F62A9309-7BE1-5B65-A806-641EB05C4C88}" name="Resources">
+        <FILE id="Wpn310" name="EuphemiaCAS.ttf" compile="0" resource="1" file="Source/Resources/EuphemiaCAS.ttf"/>
+        <FILE id="Rc89Xq" name="logo_large.svg" compile="0" resource="1" file="Source/Resources/logo_large.svg"/>
+        <FILE id="mHt91y" name="panel.svg" compile="0" resource="1" file="Source/Resources/panel.svg"/>
+        <FILE id="g219PQ" name="snyderphonics-whitelogo.svg" compile="0" resource="1"
+              file="Source/Resources/snyderphonics-whitelogo.svg"/>
       </GROUP>
       <FILE id="kpt5Dz" name="custom_fonts.h" compile="0" resource="0" file="Source/custom_fonts.h"/>
       <FILE id="u5JWgW" name="gfx.cpp" compile="1" resource="0" file="Source/gfx.cpp"/>

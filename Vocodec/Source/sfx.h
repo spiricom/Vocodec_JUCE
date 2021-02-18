@@ -374,7 +374,7 @@ namespace vocodec
             tNoise vocoderNoise;
             tZeroCrossingCounter zerox;
             tSawtooth osc[NUM_VOC_VOICES * NUM_OSC_PER_VOICE];
-            tRosenbergGlottalPulse glottal[NUM_VOC_VOICES];
+            tRosenbergGlottalPulse glottal[NUM_VOC_VOICES * NUM_OSC_PER_VOICE];
             tExpSmooth noiseRamp;
             tNoise breathNoise;
             tHighpass noiseHP;
@@ -633,6 +633,7 @@ namespace vocodec
         void initFunctionPointers(Vocodec* vcd);
         
         void initGlobalSFXObjects(Vocodec* vcd);
+        void freeGlobalSFXObjects(Vocodec* vcd);
         
         //LPC Vocoder
         void SFXVocoderAlloc(Vocodec* vcd);

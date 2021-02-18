@@ -26,6 +26,27 @@ chooser("Select a .wav file to load...", {}, "*.wav")
     
     setWantsKeyboardFocus(true);
     
+    addAndMakeVisible(oversamplingMenu);
+    oversamplingMenu.setLookAndFeel(&vocodecLAF);
+    oversamplingMenu.addItem("1", 1);
+    oversamplingMenu.addItem("2", 2);
+    oversamplingMenu.addItem("4", 3);
+    oversamplingMenu.addItem("8", 4);
+    oversamplingMenu.addItem("16", 5);
+    oversamplingMenu.addItem("32", 6);
+    oversamplingMenu.addItem("64", 7);
+    oversamplingMenu.setJustificationType(Justification::centred);
+    oversamplingMenu.setSelectedId(1, dontSendNotification);
+    oversamplingMenu.onChange = [this] {
+        processor.oversamplingUpdate = exp2(oversamplingMenu.getSelectedId()-1);
+    };
+    
+    oversamplingLabel.setText("OVERSAMPLING", dontSendNotification);
+    oversamplingLabel.setFont(euphemia);
+    oversamplingLabel.setJustificationType(Justification::centredTop);
+    oversamplingLabel.setLookAndFeel(&vocodecLAF);
+    addAndMakeVisible(oversamplingLabel);
+    
     addAndMakeVisible(screen);
     screen.setOpaque(true);
     screen.onChange = [this] { presetChanged(); };
@@ -117,6 +138,8 @@ VocodecAudioProcessorEditor::~VocodecAudioProcessorEditor()
         dials[i]->setLookAndFeel(nullptr);
         dialLabels[i]->setLookAndFeel(nullptr);
     }
+    oversamplingMenu.setLookAndFeel(nullptr);
+    oversamplingLabel.setLookAndFeel(nullptr);
 }
 
 //==============================================================================
@@ -153,6 +176,9 @@ void VocodecAudioProcessorEditor::resized()
     const float smallLightSize = 15.0f*s;
     const float labelWidth = 130.0f*s;
     const float labelHeight = 20.0f*s;
+    
+    oversamplingMenu.setBounds(378*s, 621*s, buttonSize*3, buttonSize);
+    oversamplingLabel.setBounds(342*s, 656*s, buttonSize*6, buttonSize);
     
     buttons[vocodec::ButtonA]       ->setBounds(543*s, 356*s, buttonSize, buttonSize);
     buttons[vocodec::ButtonB]       ->setBounds(543*s, 415*s, buttonSize, buttonSize);
@@ -286,6 +312,7 @@ void VocodecAudioProcessorEditor::presetChanged()
 void VocodecAudioProcessorEditor::timerCallback()
 {
     screen.getMenu()->setSelectedId(processor.vcd.currentPreset + 1, dontSendNotification);
+    oversamplingMenu.setSelectedId(log2(processor.oversamplingRatio)+1);
     
     processor.vcd.lightStates[vocodec::VocodecLightIn1Clip] = processor.audioInput[0] >= 0.999f;
     processor.vcd.lightStates[vocodec::VocodecLightIn2Clip] = processor.audioInput[1] >= 0.999f;
@@ -356,6 +383,13 @@ void VocodecAudioProcessorEditor::timerCallback()
         loadWav();
     }
         
+//    oversamplingMenu.setEnabled(true);
+//    if (processor.vcd.currentPreset == vocodec::Wavefolder ||
+//        processor.vcd.currentPreset == vocodec::Wavefolder ||
+//        processor.vcd.currentPreset == vocodec::Wavefolder ||)
+//    {
+//        oversamplingMenu.setEnabled(true);
+//    }
 }
 
 void VocodecAudioProcessorEditor::updateKnobs()
