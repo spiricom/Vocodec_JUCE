@@ -94,7 +94,6 @@ public:
     
     tOversampler oversampler[2];
     int oversamplingRatio;
-    int oversamplingUpdate;
     
     vocodec::Vocodec vcd;
     

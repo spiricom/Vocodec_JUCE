@@ -38,8 +38,15 @@ chooser("Select a .wav file to load...", {}, "*.wav")
     oversamplingMenu.setJustificationType(Justification::centred);
     oversamplingMenu.setSelectedId(1, dontSendNotification);
     oversamplingMenu.onChange = [this] {
-        processor.oversamplingUpdate = exp2(oversamplingMenu.getSelectedId()-1);
+        processor.oversamplingRatio = exp2(oversamplingMenu.getSelectedId()-1);
+        tOversampler_setRatio(&processor.oversampler[0], processor.oversamplingRatio);
+        tOversampler_setRatio(&processor.oversampler[1], processor.oversamplingRatio);
     };
+    
+    Typeface::Ptr tp = Typeface::createSystemTypefaceFor(BinaryData::EuphemiaCAS_ttf,
+                                                         BinaryData::EuphemiaCAS_ttfSize);
+    euphemia = Font(tp);
+    euphemia.setItalic(true);
     
     oversamplingLabel.setText("OVERSAMPLING", dontSendNotification);
     oversamplingLabel.setFont(euphemia);
@@ -50,13 +57,7 @@ chooser("Select a .wav file to load...", {}, "*.wav")
     addAndMakeVisible(screen);
     screen.setOpaque(true);
     screen.onChange = [this] { presetChanged(); };
-    
-    Typeface::Ptr tp = Typeface::createSystemTypefaceFor(BinaryData::EuphemiaCAS_ttf,
-                                                         BinaryData::EuphemiaCAS_ttfSize);
-    
-    euphemia = Font(tp);
-    euphemia.setItalic(true);
-    
+
     for (int i = 0; i < NUM_KNOBS; i++) {
         //        knobs.add(new DrawableImage());
         dials.add(new Slider());
@@ -177,8 +178,9 @@ void VocodecAudioProcessorEditor::resized()
     const float labelWidth = 130.0f*s;
     const float labelHeight = 20.0f*s;
     
-    oversamplingMenu.setBounds(378*s, 621*s, buttonSize*3, buttonSize);
-    oversamplingLabel.setBounds(342*s, 656*s, buttonSize*6, buttonSize);
+    oversamplingMenu.setBounds(378*s, 621*s, 72.0f*s, 24.0f*s);
+    oversamplingLabel.setBounds(332*s, 656*s, 164.0f*s, 50.0f*s);
+    oversamplingLabel.setFont(euphemia.withHeight(height * 0.025f));
     
     buttons[vocodec::ButtonA]       ->setBounds(543*s, 356*s, buttonSize, buttonSize);
     buttons[vocodec::ButtonB]       ->setBounds(543*s, 415*s, buttonSize, buttonSize);

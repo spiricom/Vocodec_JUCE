@@ -11,6 +11,9 @@ namespace BinaryData
     extern const char*   EuphemiaCAS_ttf;
     const int            EuphemiaCAS_ttfSize = 534712;
 
+    extern const char*   gear_svg;
+    const int            gear_svgSize = 811;
+
     extern const char*   logo_large_svg;
     const int            logo_large_svgSize = 5256;
 
@@ -21,7 +24,7 @@ namespace BinaryData
     const int            snyderphonicswhitelogo_svgSize = 9291;
 
     // Number of elements in the namedResourceList and originalFileNames arrays.
-    const int namedResourceListSize = 4;
+    const int namedResourceListSize = 5;
 
     // Points to the start of a list of resource names.
     extern const char* namedResourceList[];

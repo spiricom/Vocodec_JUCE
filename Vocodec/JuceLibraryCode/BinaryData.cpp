@@ -6205,8 +6205,17 @@ static const unsigned char temp_binary_data_0[] =
 
 const char* EuphemiaCAS_ttf = (const char*) temp_binary_data_0;
 
-//================== logo_large.svg ==================
+//================== gear.svg ==================
 static const unsigned char temp_binary_data_1[] =
+"<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"24\" height=\"24\" viewBox=\"0 0 24 24\"><path d=\"M24 13.616v-3.232c-1.651-.587-2.694-.752-3.219-2.019v-.001c-.527-1.271.1-2.134.847-3.707l-2.285-2.285c-1.561.742-2.433 1.375-3.707.847h-.001c-1.269-."
+"526-1.435-1.576-2.019-3.219h-3.232c-.582 1.635-.749 2.692-2.019 3.219h-.001c-1.271.528-2.132-.098-3.707-.847l-2.285 2.285c.745 1.568 1.375 2.434.847 3.707-.527 1.271-1.584 1.438-3.219 2.02v3.232c1.632.58 2.692.749 3.219 2.019.53 1.282-.114 2.166-.847"
+" 3.707l2.285 2.286c1.562-.743 2.434-1.375 3.707-.847h.001c1.27.526 1.436 1.579 2.019 3.219h3.232c.582-1.636.75-2.69 2.027-3.222h.001c1.262-.524 2.12.101 3.698.851l2.285-2.286c-.744-1.563-1.375-2.433-.848-3.706.527-1.271 1.588-1.44 3.221-2.021zm-12 2."
+"384c-2.209 0-4-1.791-4-4s1.791-4 4-4 4 1.791 4 4-1.791 4-4 4z\"/></svg>";
+
+const char* gear_svg = (const char*) temp_binary_data_1;
+
+//================== logo_large.svg ==================
+static const unsigned char temp_binary_data_2[] =
 "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>\n"
 "<!DOCTYPE svg PUBLIC \"-//W3C//DTD SVG 1.1//EN\" \"http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd\">\n"
 "<svg version=\"1.1\" xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" preserveAspectRatio=\"xMidYMid meet\" viewBox=\"0 0 640 640\" width=\"640\" height=\"640\"><defs><path d=\"M801 -1C801 -1 801 -1 801 -1C801 360.2 8"
@@ -6231,10 +6240,10 @@ static const unsigned char temp_binary_data_1[] =
 "62 168.55 170.74 169.56 171.56C186.69 185.17 191.76 185.78 208.26 177.13C220.3 170.95 267.88 107.28 275.49 87.51C281.2 73.29 259.63 53.5 239.34 53.5Z\" id=\"cbNeyz5w0\" fill=\"white\" fill-opacity=\"1\" filter=\"url(#shadow4591891)\"></path></g><use "
 "xlink:href=\"#fgkTPNEmn\" opacity=\"1\" fill=\"#d4af37\" fill-opacity=\"0.95\"></use><g><use xlink:href=\"#fgkTPNEmn\" opacity=\"1\" fill-opacity=\"0\" stroke=\"#000000\" stroke-width=\"1\" stroke-opacity=\"0\"></use></g></g></g></g></svg>";
 
-const char* logo_large_svg = (const char*) temp_binary_data_1;
+const char* logo_large_svg = (const char*) temp_binary_data_2;
 
 //================== panel.svg ==================
-static const unsigned char temp_binary_data_2[] =
+static const unsigned char temp_binary_data_3[] =
 { 60,63,120,109,108,32,118,101,114,115,105,111,110,61,34,49,46,48,34,32,101,110,99,111,100,105,110,103,61,34,85,84,70,45,56,34,32,115,116,97,110,100,97,108,111,110,101,61,34,110,111,34,63,62,10,60,33,68,79,67,84,89,80,69,32,115,118,103,32,80,85,66,76,73,
 67,32,34,45,47,47,87,51,67,47,47,68,84,68,32,83,86,71,32,49,46,49,47,47,69,78,34,32,34,104,116,116,112,58,47,47,119,119,119,46,119,51,46,111,114,103,47,71,114,97,112,104,105,99,115,47,83,86,71,47,49,46,49,47,68,84,68,47,115,118,103,49,49,46,100,116,100,
 34,62,10,60,115,118,103,32,118,101,114,115,105,111,110,61,34,49,46,49,34,32,120,109,108,110,115,61,34,104,116,116,112,58,47,47,119,119,119,46,119,51,46,111,114,103,47,50,48,48,48,47,115,118,103,34,32,120,109,108,110,115,58,120,108,105,110,107,61,34,104,
@@ -6873,10 +6882,10 @@ static const unsigned char temp_binary_data_2[] =
 102,61,34,35,105,49,97,54,74,79,66,97,54,48,34,32,111,112,97,99,105,116,121,61,34,49,34,32,102,105,108,108,45,111,112,97,99,105,116,121,61,34,48,34,32,115,116,114,111,107,101,61,34,35,48,48,48,48,48,48,34,32,115,116,114,111,107,101,45,119,105,100,116,
 104,61,34,49,34,32,115,116,114,111,107,101,45,111,112,97,99,105,116,121,61,34,48,34,62,60,47,117,115,101,62,60,47,103,62,60,47,103,62,60,47,103,62,60,47,103,62,60,47,115,118,103,62,0,0 };
 
-const char* panel_svg = (const char*) temp_binary_data_2;
+const char* panel_svg = (const char*) temp_binary_data_3;
 
 //================== snyderphonics-whitelogo.svg ==================
-static const unsigned char temp_binary_data_3[] =
+static const unsigned char temp_binary_data_4[] =
 "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>\n"
 "<!DOCTYPE svg PUBLIC \"-//W3C//DTD SVG 1.1//EN\" \"http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd\">\n"
 "<svg version=\"1.1\" xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" preserveAspectRatio=\"xMidYMid meet\" viewBox=\"0 0 640 640\" width=\"640\" height=\"640\"><defs><path d=\"M28.8 37C27.3 38.2 26.47 38.87 26.3 39C2"
@@ -6918,7 +6927,7 @@ static const unsigned char temp_binary_data_3[] =
 "/use></g></g><g><use xlink:href=\"#bCeFpsC3a\" opacity=\"1\" fill=\"#d4af37\" fill-opacity=\"1\"></use><g><use xlink:href=\"#bCeFpsC3a\" opacity=\"1\" fill-opacity=\"0\" stroke=\"#000000\" stroke-width=\"1\" stroke-opacity=\"0\"></use></g></g><g><use"
 " xlink:href=\"#dEXHdv9Xk\" opacity=\"1\" fill=\"#d4af37\" fill-opacity=\"1\"></use><g><use xlink:href=\"#dEXHdv9Xk\" opacity=\"1\" fill-opacity=\"0\" stroke=\"#000000\" stroke-width=\"1\" stroke-opacity=\"0\"></use></g></g></g></g></svg>";
 
-const char* snyderphonicswhitelogo_svg = (const char*) temp_binary_data_3;
+const char* snyderphonicswhitelogo_svg = (const char*) temp_binary_data_4;
 
 
 const char* getNamedResource (const char* resourceNameUTF8, int& numBytes)
@@ -6932,6 +6941,7 @@ const char* getNamedResource (const char* resourceNameUTF8, int& numBytes)
     switch (hash)
     {
         case 0x25cd1ad4:  numBytes = 534712; return EuphemiaCAS_ttf;
+        case 0x5667e7b4:  numBytes = 811; return gear_svg;
         case 0x307b79cc:  numBytes = 5256; return logo_large_svg;
         case 0xa7a855a9:  numBytes = 51239; return panel_svg;
         case 0xa5f7d92a:  numBytes = 9291; return snyderphonicswhitelogo_svg;
@@ -6945,6 +6955,7 @@ const char* getNamedResource (const char* resourceNameUTF8, int& numBytes)
 const char* namedResourceList[] =
 {
     "EuphemiaCAS_ttf",
+    "gear_svg",
     "logo_large_svg",
     "panel_svg",
     "snyderphonicswhitelogo_svg"
@@ -6953,6 +6964,7 @@ const char* namedResourceList[] =
 const char* originalFilenames[] =
 {
     "EuphemiaCAS.ttf",
+    "gear.svg",
     "logo_large.svg",
     "panel.svg",
     "snyderphonics-whitelogo.svg"

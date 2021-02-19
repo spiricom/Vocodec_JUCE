@@ -41,6 +41,8 @@ choiceParamNames(cChoiceParamNames)
     I2C_HandleTypeDef* dummyArg = nullptr;
     vocodec::OLED_init(&vcd, dummyArg);
     
+    oversamplingRatio = 1;
+    
     inputGain = new AudioParameterFloat("inputGain", "inputGain", 0.0f, 4.0f, 1.0f);
     addParameter(inputGain);
     dryWetMix = new AudioParameterFloat("dryWetMix", "dryWetMix", 0.0f, 1.0f, 1.0f);
@@ -292,11 +294,8 @@ void VocodecAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBloc
         tEnvelopeFollower_free(&outputFollower[0]);
         tEnvelopeFollower_free(&outputFollower[1]);
         
-        if (oversamplingRatio > 1)
-        {
-            tOversampler_free(&oversampler[0]);
-            tOversampler_free(&oversampler[1]);
-        }
+        tOversampler_free(&oversampler[0]);
+        tOversampler_free(&oversampler[1]);
         
         for (int i = 0; i < 6; i++)
         {
@@ -316,8 +315,8 @@ void VocodecAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBloc
     tEnvelopeFollower_init(&outputFollower[0], 0.0001f, 0.9995f, &vcd.leaf);
     tEnvelopeFollower_init(&outputFollower[1], 0.0001f, 0.9995f, &vcd.leaf);
     
-    tOversampler_init(&oversampler[0], oversamplingRatio, 1, &vcd.leaf);
-    tOversampler_init(&oversampler[1], oversamplingRatio, 1, &vcd.leaf);
+    tOversampler_init(&oversampler[0], 64, 1, &vcd.leaf);
+    tOversampler_init(&oversampler[1], 64, 1, &vcd.leaf);
 
     //ramps to smooth the knobs
     for (int i = 0; i < 6; i++)
@@ -412,20 +411,7 @@ void VocodecAudioProcessor::processBlock (AudioBuffer<float>& buffer, MidiBuffer
     updateAllValues();
     
     vocodec::VocodecPresetType currentPreset = vcd.currentPreset;
-    
-    if (oversamplingRatio != oversamplingUpdate)
-    {
-        if (oversamplingRatio > 1)
-        {
-            tOversampler_free(&oversampler[0]);
-            tOversampler_free(&oversampler[1]);
-        }
-        oversamplingRatio = oversamplingUpdate;
-
-        tOversampler_init(&oversampler[0], oversamplingRatio, 1, &vcd.leaf);
-        tOversampler_init(&oversampler[1], oversamplingRatio, 1, &vcd.leaf);
-    }
-    
+        
     if (vcd.loadingPreset)
     {
         for (int i = 0; i < vocodec::ButtonNil; ++i)
@@ -498,24 +484,21 @@ void VocodecAudioProcessor::processBlock (AudioBuffer<float>& buffer, MidiBuffer
         audio[0] = rightChannel[i];
         
         float oversampled[2][64];
-        if (oversamplingRatio > 1)
+
+        tOversampler_upsample(&oversampler[0], audio[0], oversampled[0]);
+        tOversampler_upsample(&oversampler[1], audio[1], oversampled[1]);
+        
+        for (int i = 0; i < oversamplingRatio; ++i)
         {
-            tOversampler_upsample(&oversampler[0], audio[0], oversampled[0]);
-            tOversampler_upsample(&oversampler[1], audio[1], oversampled[1]);
-            
-            for (int i = 0; i < oversamplingRatio; ++i)
-            {
-                audio[0] = oversampled[0][i];
-                audio[1] = oversampled[1][i];
-                vcd.tickFunctions[currentPreset](&vcd, audio);
-                oversampled[0][i] = audio[0];
-                oversampled[1][i] = audio[1];
-            }
-            
-            audio[0] = tOversampler_downsample(&oversampler[0], oversampled[0]);
-            audio[1] = tOversampler_downsample(&oversampler[1], oversampled[1]);
+            audio[0] = oversampled[0][i];
+            audio[1] = oversampled[1][i];
+            vcd.tickFunctions[currentPreset](&vcd, audio);
+            oversampled[0][i] = audio[0];
+            oversampled[1][i] = audio[1];
         }
-        else vcd.tickFunctions[currentPreset](&vcd, audio);
+        
+        audio[0] = tOversampler_downsample(&oversampler[0], oversampled[0]);
+        audio[1] = tOversampler_downsample(&oversampler[1], oversampled[1]);
         
         audio[1] = LEAF_interpolation_linear(leftChannel[i], audio[1], mix);
         
@@ -639,7 +622,6 @@ void VocodecAudioProcessor::setStateInformation (const void* data, int sizeInByt
         }
         
         oversamplingRatio = xmlState->getIntAttribute("oversamplingRatio", 1);
-        oversamplingUpdate = oversamplingRatio;
     }
 }
 

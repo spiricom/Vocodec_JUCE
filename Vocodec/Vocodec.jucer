@@ -18,6 +18,7 @@
       </GROUP>
       <GROUP id="{F62A9309-7BE1-5B65-A806-641EB05C4C88}" name="Resources">
         <FILE id="Wpn310" name="EuphemiaCAS.ttf" compile="0" resource="1" file="Source/Resources/EuphemiaCAS.ttf"/>
+        <FILE id="ESISt3" name="gear.svg" compile="0" resource="1" file="Source/Resources/gear.svg"/>
         <FILE id="Rc89Xq" name="logo_large.svg" compile="0" resource="1" file="Source/Resources/logo_large.svg"/>
         <FILE id="mHt91y" name="panel.svg" compile="0" resource="1" file="Source/Resources/panel.svg"/>
         <FILE id="g219PQ" name="snyderphonics-whitelogo.svg" compile="0" resource="1"
