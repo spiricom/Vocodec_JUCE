@@ -51,7 +51,15 @@ namespace vocodec
 #define EXP_BUFFER_SIZE 128
         
 #define DECAY_EXP_BUFFER_SIZE 512
+
+#ifndef __cplusplus
 #define NUM_STRINGS 6
+#define NUM_STRINGS_SYNTH 3
+#else
+    #define NUM_STRINGS 8
+   #define NUM_STRINGS_SYNTH 8
+#endif
+        
 #define MAX_AUTOSAMP_LENGTH 192000
         
         // UI
@@ -355,6 +363,7 @@ namespace vocodec
             float decayExpBufferSizeMinusOne;
             
             tComplexLivingString theString[NUM_STRINGS];
+            tLivingString2 theString2[NUM_STRINGS_SYNTH];
             
             float myDetune[NUM_STRINGS];
             float synthDetune[NUM_VOC_VOICES][NUM_OSC_PER_VOICE];
@@ -513,11 +522,11 @@ namespace vocodec
             
             //Living String Synth
             
-            tSlide stringOutEnvs[NUM_STRINGS];
-            tSlide stringInEnvs[NUM_STRINGS];
-            tADSRT pluckEnvs[NUM_STRINGS];
+            tSlide stringOutEnvs[NUM_STRINGS_SYNTH];
+            tSlide stringInEnvs[NUM_STRINGS_SYNTH];
+            tADSRT pluckEnvs[NUM_STRINGS_SYNTH];
             tNoise stringPluckNoise;
-            
+            tEnvelopeFollower prepEnvs[NUM_STRINGS_SYNTH];
             tVZFilter pluckFilt;
             float samplesPerMs;
             

@@ -64,7 +64,7 @@ chooser("Select a .wav file to load...", {}, "*.wav")
         addAndMakeVisible(dials[i]);
         //        addAndMakeVisible(knobs[i]);
         dials[i]->setLookAndFeel(&vocodecLAF);
-        dials[i]->setSliderStyle(Slider::Rotary);
+        dials[i]->setSliderStyle(Slider::RotaryVerticalDrag);
         dials[i]->setTextBoxStyle(Slider::NoTextBox, false, 0, 0);
         dials[i]->addListener(this);
         dials[i]->setRange(0., 1.);

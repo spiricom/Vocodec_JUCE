@@ -249,7 +249,7 @@ namespace vocodec
             vcd->modeNames[LivingStringSynth] = "STRING2";
             vcd->shortModeNames[LivingStringSynth] = "SS";
             vcd->modeNamesDetails[LivingStringSynth] = "STRING SYNTH";
-            vcd->numPages[LivingStringSynth] = 2;
+            vcd->numPages[LivingStringSynth] = 3;
             vcd->knobParamNames[LivingStringSynth][0] = "PLUCK VOL";
             vcd->knobParamNames[LivingStringSynth][1] = "PLUCK TONE";
             vcd->knobParamNames[LivingStringSynth][2] = "DECAY";
@@ -260,6 +260,11 @@ namespace vocodec
             vcd->knobParamNames[LivingStringSynth][7] = "LET RING";
             vcd->knobParamNames[LivingStringSynth][8] = "FB LEVEL";
             vcd->knobParamNames[LivingStringSynth][9] = "RELEASE";
+            vcd->knobParamNames[LivingStringSynth][10] = "PREP REMOVAL";
+            vcd->knobParamNames[LivingStringSynth][11] = "";
+            vcd->knobParamNames[LivingStringSynth][12] = "";
+            vcd->knobParamNames[LivingStringSynth][13] = "";
+            vcd->knobParamNames[LivingStringSynth][14] = "";
             
             vcd->modeNames[ClassicSynth] = "POLYSYNTH";
             vcd->shortModeNames[ClassicSynth] = "CS";
