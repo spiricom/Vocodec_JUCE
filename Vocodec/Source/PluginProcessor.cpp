@@ -8,6 +8,7 @@
  ==============================================================================
  */
 
+#include "VocodecStandalone.h"
 #include "PluginProcessor.h"
 #include "PluginEditor.h"
 #include "oled.h"
@@ -324,6 +325,9 @@ void VocodecAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBloc
     tEnvelopeFollower_init(&outputFollower[0], 0.0001f, 0.9995f, &vcd.leaf);
     tEnvelopeFollower_init(&outputFollower[1], 0.0001f, 0.9995f, &vcd.leaf);
     
+    tOversampler_init(&oversampler[0], 64, 1, &vcd.leaf);
+    tOversampler_init(&oversampler[1], 64, 1, &vcd.leaf);
+    
     //ramps to smooth the knobs
     for (int i = 0; i < 6; i++)
     {
@@ -430,8 +434,13 @@ void VocodecAudioProcessor::processBlock (AudioBuffer<float>& buffer, MidiBuffer
         if (vcd.previousPreset != vocodec::PresetNil)
             vcd.freeFunctions[vcd.previousPreset](&vcd);
         
+        presetInitialized = false;
+        
         if (currentPreset != vocodec::PresetNil)
+        {
             vcd.allocFunctions[currentPreset](&vcd);
+            presetInitialized = true;
+        }
         
         vcd.previousPreset = currentPreset;
         vcd.loadingPreset = 0;
@@ -439,6 +448,9 @@ void VocodecAudioProcessor::processBlock (AudioBuffer<float>& buffer, MidiBuffer
     
     vocodec::buttonCheck(&vcd);
     vocodec::adcCheck(&vcd);
+
+    tOversampler_setRatio(&oversampler[0], oversamplingRatio);
+    tOversampler_setRatio(&oversampler[1], oversamplingRatio);
     
     vcd.frameFunctions[currentPreset](&vcd);
     
@@ -482,7 +494,22 @@ void VocodecAudioProcessor::processBlock (AudioBuffer<float>& buffer, MidiBuffer
         audio[1] = leftChannel[i];
         audio[0] = rightChannel[i];
         
-        vcd.tickFunctions[currentPreset](&vcd, audio);
+        float oversampled[2][64];
+        
+        tOversampler_upsample(&oversampler[0], audio[0], oversampled[0]);
+        tOversampler_upsample(&oversampler[1], audio[1], oversampled[1]);
+        
+        for (int i = 0; i < oversamplingRatio; ++i)
+        {
+            audio[0] = oversampled[0][i];
+            audio[1] = oversampled[1][i];
+            vcd.tickFunctions[currentPreset](&vcd, audio);
+            oversampled[0][i] = audio[0];
+            oversampled[1][i] = audio[1];
+        }
+        
+        audio[0] = tOversampler_downsample(&oversampler[0], oversampled[0]);
+        audio[1] = tOversampler_downsample(&oversampler[1], oversampled[1]);
         
         audio[1] = LEAF_interpolation_linear(leftChannel[i], audio[1], mix);
         
@@ -539,6 +566,8 @@ void VocodecAudioProcessor::getStateInformation (MemoryBlock& destData)
     {
         xml->setAttribute("wavetablePath" + String(i), wavetablePaths[i]);
     }
+    
+    xml->setAttribute("oversamplingRatio", oversamplingRatio);
     
     copyXmlToBinary(*xml, destData);
 }
@@ -601,6 +630,8 @@ void VocodecAudioProcessor::setStateInformation (const void* data, int sizeInByt
             wavetablePaths.set(i, xmlState->getStringAttribute("wavetablePath" + String(i), String()));
             vcd.loadedFilePaths[i] = (char*) wavetablePaths[i].toRawUTF8();
         }
+        
+        oversamplingRatio = xmlState->getIntAttribute("oversamplingRatio", 1);
     }
 }
 
@@ -665,8 +696,13 @@ void VocodecAudioProcessor::hiResTimerCallback()
             if (vcd.previousPreset != vocodec::PresetNil)
                 vcd.freeFunctions[vcd.previousPreset](&vcd);
             
+            presetInitialized = false;
+            
             if (currentPreset != vocodec::PresetNil)
+            {
                 vcd.allocFunctions[currentPreset](&vcd);
+                presetInitialized = true;
+            }
             
             vcd.previousPreset = currentPreset;
             vcd.loadingPreset = 0;
