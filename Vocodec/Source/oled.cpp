@@ -59,7 +59,6 @@ namespace vocodec
             //GFXsetFont(&theGFX, &GillSans9pt7b); //not monospaced can fit 9 Ms
             //GFXsetFont(&theGFX, &Futura9pt7b); //not monospaced can fit only 7 Ms
             //GFXsetFont(&theGFX, &FUTRFW8pt7b); // monospaced, pretty, (my old score font) fits 8 Ms
-            //GFXsetFont(&theGFX, &nk57_monospace_cd_rg9pt7b); //fits 12 characters, a little crammed
             //GFXsetFont(&theGFX, &nk57_monospace_no_rg9pt7b); // fits 10 characters
             //GFXsetFont(&theGFX, &nk57_monospace_no_rg7pt7b); // fits 12 characters
             //GFXsetFont(&theGFX, &nk57_monospace_no_bd7pt7b); //fits 12 characters
@@ -466,8 +465,8 @@ namespace vocodec
             float f = fabsf(input);
             if (f<1.0f)
             {
-                numDigits = 4;
-                numDecimal = 3;
+                numDigits = 3;
+                numDecimal = 2;
             }
             
             else if (f<10.0f)

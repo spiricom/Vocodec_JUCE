@@ -525,6 +525,9 @@ namespace vocodec
             tSlide stringOutEnvs[NUM_STRINGS_SYNTH];
             tSlide stringInEnvs[NUM_STRINGS_SYNTH];
             tADSRT pluckEnvs[NUM_STRINGS_SYNTH];
+            tExpSmooth pickPosSmooth;
+            tExpSmooth prepPosSmooth;
+            tExpSmooth pickupPosSmooth;
             tNoise stringPluckNoise;
             tEnvelopeFollower prepEnvs[NUM_STRINGS_SYNTH];
             tVZFilter pluckFilt;

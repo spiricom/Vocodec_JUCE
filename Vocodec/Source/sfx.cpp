@@ -240,8 +240,11 @@ namespace vocodec
             vcd->adcHysteresisThreshold = 0.004f;
             
             vcd->knobPage = 0;
-            
+#ifndef __cplusplus
             vcd->buttonHysteresisThreshold = 5;
+#else
+            vcd->buttonHysteresisThreshold = 1;
+#endif
             vcd->buttonHoldThreshold = 200;
             vcd->buttonHoldMax = 200;
             
@@ -407,7 +410,7 @@ namespace vocodec
             
             vcd->defaultPresetKnobValues[LivingStringSynth][0] = 0.5f;
             vcd->defaultPresetKnobValues[LivingStringSynth][1] = 0.5f;
-            vcd->defaultPresetKnobValues[LivingStringSynth][2] = .85f; // decay
+            vcd->defaultPresetKnobValues[LivingStringSynth][2] = 0.85f; // decay
             vcd->defaultPresetKnobValues[LivingStringSynth][3] = 0.5f; // brightness
             vcd->defaultPresetKnobValues[LivingStringSynth][4] = 0.4f; // pick pos
             vcd->defaultPresetKnobValues[LivingStringSynth][5] = 0.25f; // prep pos
@@ -415,7 +418,8 @@ namespace vocodec
             vcd->defaultPresetKnobValues[LivingStringSynth][7] = 0.0f; // let ring
             vcd->defaultPresetKnobValues[LivingStringSynth][8] = 0.3f; // feedback volume
             vcd->defaultPresetKnobValues[LivingStringSynth][9] = 0.4f; // release time
-            vcd->defaultPresetKnobValues[LivingStringSynth][10] = 0.0f; // pickup Position
+            vcd->defaultPresetKnobValues[LivingStringSynth][10] = 0.0f; // prep removal amount
+            vcd->defaultPresetKnobValues[LivingStringSynth][11] = 0.0f; // pickup pos
             
             vcd->defaultPresetKnobValues[ClassicSynth][0] = 0.5f; // volume
             vcd->defaultPresetKnobValues[ClassicSynth][1] = 0.5f; // lowpass
@@ -750,8 +754,8 @@ namespace vocodec
             sample = tanhf(sample);
             
             sample = tTalkboxFloat_tick(&vcd->vocoder, sample, input[1]);
-            sample = tVZFilter_tick(&vcd->shelf1, sample); //put it through the low shelf
-            sample = tVZFilter_tick(&vcd->shelf2, sample); // now put that result through the high shelf
+            sample = tVZFilter_tickEfficient(&vcd->shelf1, sample); //put it through the low shelf
+            sample = tVZFilter_tickEfficient(&vcd->shelf2, sample); // now put that result through the high shelf
             sample *= vcd->displayValues[0] * 0.6f;
             sample = tanhf(sample);
             input[0] = sample;
@@ -950,6 +954,7 @@ namespace vocodec
                 vcd->thisBandwidth = vcd->bandWidthInOctaves * myQ;
                 vcd->invMyQ = 1.0f / myQ;
             }
+#ifndef __cplusplus
             if (vcd->alteringBands)
             {
                 
@@ -1044,7 +1049,94 @@ namespace vocodec
                     vcd->currentBandToAlter = 0;
                 }
             }
-            
+#else
+            if (vcd->alteringBands)
+            {
+                
+                float tempWarpFactor = warpFactor;
+                for (int i = 0; i < vcd->numberOfVocoderBands; i++)
+                {
+                    float bandFreq = faster_mtof(((float)i * vcd->bandWidthInSemitones) + bandOffset); //midinote 28 (41Hz) to midinote 134 (18814Hz) is 106 midinotes, divide that by how many bands to find out how far apart to put the bands
+                    
+                    //warp to bark scale if knob 16 is up
+                    bandFreq = (bandFreq * oneMinusBarkPull) + (vcd->barkBandFreqs[i] * barkPull);
+                    
+                    if (bandFreq > 5000.0f) // a way to keep the upper bands fixed so consonants are not stretched even though vowels are
+                    {
+                        tempWarpFactor = 1.0f;
+                    }
+                    
+                    if (bandFreq > 16000.0f)
+                    {
+                        bandFreq = 16000.0f;
+                    }
+                    
+                    float bandBandwidth = (vcd->thisBandwidth * oneMinusBarkPull) + (vcd->barkBandWidths[i] *  barkPull * myQ);
+                    float myHeight = (float)i * vcd->invNumberOfVocoderBands; //x value
+                    float tiltOffset = (1.0f - ((myTilt * 0.5f) + 0.5f)) + 0.5f;
+                    float tiltY = vcd->displayValues[12] * myHeight + tiltOffset;
+                    vcd->bandGains[i] = vcd->invMyQ * tiltY;
+                    
+
+                    tVZFilter_setFreqAndBandwidth(&vcd->analysisBands[i][0], bandFreq, bandBandwidth);
+                    //set these to match without computing for increased efficiency
+                    vcd->analysisBands[i][1]->B =
+                    vcd->analysisBands[i][0]->B;
+                    
+                    vcd->analysisBands[i][1]->fc =
+                    vcd->analysisBands[i][0]->fc;
+                    
+                    vcd->analysisBands[i][1]->R2 =
+                    vcd->analysisBands[i][0]->R2;
+                    
+                    vcd->analysisBands[i][1]->cL =
+                    vcd->analysisBands[i][0]->cL;
+                    
+                    vcd->analysisBands[i][1]->cB =
+                    vcd->analysisBands[i][0]->cB;
+                    
+                    vcd->analysisBands[i][1]->cH =
+                    vcd->analysisBands[i][0]->cH;
+                    
+                    vcd->analysisBands[i][1]->h =
+                    vcd->analysisBands[i][0]->h;
+                    
+                    vcd->analysisBands[i][1]->g =
+                    vcd->analysisBands[i][0]->g;
+                    
+
+                    tVZFilter_setFreqAndBandwidth(&vcd->synthesisBands[i][0], bandFreq * tempWarpFactor, bandBandwidth);
+                    //set these to match without computing for increased efficiency
+                    vcd->synthesisBands[i][1]->B =
+                    vcd->synthesisBands[i][0]->B;
+                    
+                    vcd->synthesisBands[i][1]->fc =
+                    vcd->synthesisBands[i][0]->fc;
+                    
+                    vcd->synthesisBands[i][1]->R2 =
+                    vcd->synthesisBands[i][0]->R2;
+                    
+                    vcd->synthesisBands[i][1]->cL =
+                    vcd->synthesisBands[i][0]->cL;
+                    
+                    vcd->synthesisBands[i][1]->cB =
+                    vcd->synthesisBands[i][0]->cB;
+                    
+                    vcd->synthesisBands[i][1]->cH =
+                    vcd->synthesisBands[i][0]->cH;
+                    
+                    vcd->synthesisBands[i][1]->h =
+                    vcd->synthesisBands[i][0]->h;
+                    
+                    vcd->synthesisBands[i][1]->g =
+                    vcd->synthesisBands[i][0]->g;
+                    
+
+                    vcd->alteringBands = 0;
+
+                }
+            }
+#endif
             vcd->prevNumberOfVocoderBands = vcd->numberOfVocoderBands;
             vcd->prevMyQ = myQ;
             vcd->prevWarpFactor = warpFactor;
@@ -1097,6 +1189,7 @@ namespace vocodec
                     float tempRamp = tExpSmooth_tick(&vcd->polyRamp[i]);
                     if (tempRamp > 0.0001f)
                     {
+#ifndef __cplusplus
                         if (vcd->displayValues[5] < 0.5f)
                         {
                             sample += tSawtooth_tick(&vcd->osc[i]) * tempRamp;
@@ -1105,6 +1198,11 @@ namespace vocodec
                         {
                             sample += tRosenbergGlottalPulse_tick(&vcd->glottal[i]) * tempRamp;
                         }
+#else
+                        sample += tSawtooth_tick(&vcd->osc[i]) * tempRamp * (1.0f - vcd->displayValues[5]);
+                        sample += tRosenbergGlottalPulse_tickHQ(&vcd->glottal[i]) * tempRamp * vcd->displayValues[5];
+#endif
+                        
                     }
                 }
                 //switch with consonant noise
@@ -1114,9 +1212,11 @@ namespace vocodec
                 sample *= tExpSmooth_tick(&vcd->comp);
                 
             }
-            
+#ifndef __cplusplus
             sample = fast_tanh4(sample);
-            
+#else
+            sample = tanhf(sample);
+#endif
             float output[2] = {0.0f, 0.0f};
             input[1] = input[1] * (vcd->displayValues[0] * 30.0f);
             for (int i = 0; i < vcd->numberOfVocoderBands; i++)
@@ -1125,8 +1225,13 @@ namespace vocodec
                 float tempSamp = input[1];
                 if (!vcd->vocoderChParams.freeze)
                 {
+#ifndef __cplusplus
                     tempSamp = tVZFilter_tickEfficient(&vcd->analysisBands[i][0], tempSamp);
                     tempSamp = tVZFilter_tickEfficient(&vcd->analysisBands[i][1], tempSamp);
+#else
+                    tempSamp = tVZFilter_tick(&vcd->analysisBands[i][0], tempSamp);
+                    tempSamp = tVZFilter_tick(&vcd->analysisBands[i][1], tempSamp);
+#endif
                     tExpSmooth_setDest(&vcd->envFollowers[i], fabsf(tempSamp));
                 }
                 
@@ -1134,15 +1239,26 @@ namespace vocodec
                 //here is the envelope followed gain of the modulator signal
                 tempSamp = LEAF_clip(0.0f, tempSamp, 2.0f);
                 float tempSynth = sample;
+#ifndef __cplusplus
                 tempSynth = tVZFilter_tickEfficient(&vcd->synthesisBands[i][0], tempSynth);
                 tempSynth = tVZFilter_tickEfficient(&vcd->synthesisBands[i][1], tempSynth);
+#else
+                tempSynth = tVZFilter_tick(&vcd->synthesisBands[i][0], tempSynth);
+                tempSynth = tVZFilter_tick(&vcd->synthesisBands[i][1], tempSynth);
+#endif
                 output[oddEven] += tempSynth * tempSamp * vcd->bandGains[i];
             }
             
             float finalSample1 = tHighpass_tick(&vcd->chVocFinalHP1, (output[0] + (output[1] * vcd->oneMinusStereo)) * vcd->chVocOutputGain);
             float finalSample2 = tHighpass_tick(&vcd->chVocFinalHP2, (output[1] + (output[0] * vcd->oneMinusStereo)) * vcd->chVocOutputGain);
+#ifndef __cplusplus
             input[0] = 0.98f * fast_tanh4(finalSample1);
             input[1] = 0.98f * fast_tanh4(finalSample2);
+#else
+            input[0] = 0.98f * tanhf(finalSample1);
+            input[1] = 0.98f * tanhf(finalSample2);
+#endif
+            
         }
     
         void SFXVocoderChFree(Vocodec* vcd)
@@ -3030,6 +3146,12 @@ namespace vocodec
             setLED_B(vcd, vcd->livingStringSynthParams.audioIn);
             setLED_C(vcd, vcd->livingStringSynthParams.feedback);
             vcd->samplesPerMs = vcd->leaf.sampleRate / 1000.0f;
+#ifdef __cplusplus
+            tExpSmooth_init(&vcd->pickPosSmooth, 0.5f, 0.0001f, &vcd->leaf);
+            tExpSmooth_init(&vcd->prepPosSmooth, 0.5f, 0.0001f, &vcd->leaf);
+            tExpSmooth_init(&vcd->pickupPosSmooth, 0.5f, 0.0001f, &vcd->leaf);
+#endif
+            
         }
         
         void SFXLivingStringSynthFrame(Vocodec* vcd)
@@ -3069,10 +3191,11 @@ namespace vocodec
             vcd->displayValues[5] = (vcd->presetKnobValues[LivingStringSynth][5] * 0.9f) + 0.05f;//prep Pos
             vcd->displayValues[6] = ((LEAF_tanh((vcd->presetKnobValues[LivingStringSynth][6] * 8.5f) - 4.25f)) * 0.5f) + 0.5f;//prep Index
             vcd->displayValues[7] = vcd->presetKnobValues[LivingStringSynth][7];//let Ring
-            vcd->displayValues[8] = vcd->presetKnobValues[LivingStringSynth][8];//feedback level
+            vcd->displayValues[8] = vcd->presetKnobValues[LivingStringSynth][8] * 0.1f;//feedback level
             vcd->displayValues[9] = vcd->expBuffer[(int)(vcd->presetKnobValues[LivingStringSynth][9] * vcd->expBufferSizeMinusOne)] * 8192.0f;//release time
-            vcd->displayValues[10] = vcd->presetKnobValues[LivingStringSynth][10]; //pickup position
-            
+            vcd->displayValues[10] = vcd->presetKnobValues[LivingStringSynth][10]; //preparation removal amount (hot potato style)
+            vcd->displayValues[11] = vcd->presetKnobValues[LivingStringSynth][11]; //pickup position
+#ifndef __cplusplus
             for (int i = 0; i < NUM_STRINGS_SYNTH; i++)
             {
                 //tComplexLivingString_setFreq(&theString[i], (i + (1.0f+(myDetune[i] * knobParams[1]))) * knobParams[0]);
@@ -3085,6 +3208,21 @@ namespace vocodec
                 //tADSRT_setDecay(&pluckEnvs[i], displayValues[9]);
                 
             }
+#else
+            for (int i = 0; i < NUM_STRINGS_SYNTH; i++)
+            {
+                //tComplexLivingString_setFreq(&theString[i], (i + (1.0f+(myDetune[i] * knobParams[1]))) * knobParams[0]);
+                tLivingString2_setDecay(&vcd->theString2[i], ((vcd->displayValues[2]  * 10.0f) + 0.01f));
+                tLivingString2_setBrightness(&vcd->theString2[i], vcd->displayValues[3]);
+               
+                tSlide_setDownSlide(&vcd->stringOutEnvs[i], vcd->displayValues[9] * vcd->samplesPerMs);
+                //tADSRT_setDecay(&pluckEnvs[i], displayValues[9]);
+                
+            }
+            tExpSmooth_setDest(&vcd->pickPosSmooth, vcd->displayValues[4]);
+            tExpSmooth_setDest(&vcd->prepPosSmooth, vcd->displayValues[5]);
+            tExpSmooth_setDest(&vcd->pickupPosSmooth, vcd->displayValues[11]);
+#endif
             tVZFilter_setFreq(&vcd->pluckFilt, faster_mtof((vcd->displayValues[1] * 100.0f)+20.0f));
             for (int i = 0; i < tSimplePoly_getNumVoices(&vcd->poly); i++)
             {
@@ -3123,10 +3261,24 @@ namespace vocodec
             //float pluck = (displayValues[1] * tNoise_tick(&stringPluckNoise)) + ((1.0f - displayValues[1]) * tNoise_tick(&stringPluckNoiseDark));
             float pluck = vcd->displayValues[0] * tNoise_tick(&vcd->stringPluckNoise);
             pluck = tVZFilter_tick(&vcd->pluckFilt, pluck);
+           #ifdef __cplusplus
             
+            float pickPos = tExpSmooth_tick(&vcd->pickPosSmooth);
+            float prepPos =tExpSmooth_tick(&vcd->prepPosSmooth);
+            float pickupPos = tExpSmooth_tick(&vcd->pickupPosSmooth);
+            for (int i = 0; i < NUM_STRINGS_SYNTH; i++)
+            {
+                tLivingString2_setPickPos(&vcd->theString2[i], pickPos);
+                tLivingString2_setPrepPos(&vcd->theString2[i], prepPos);
+                tLivingString2_setPickupPos(&vcd->theString2[i], pickupPos);
+            }
+            #endif
             for (int i = 0; i < NUM_STRINGS_SYNTH; i++)
             {
                 //float pluck = tNoise_tick(&stringPluckNoise);
+
+                
+
                 tLivingString2_setFreq(&vcd->theString2[i], vcd->freq[i]);
                 float envelopeVal = tADSRT_tick(&vcd->pluckEnvs[i]);
                 float prepIndexToSend = (vcd->displayValues[6] * tEnvelopeFollower_tick(&vcd->prepEnvs[i], envelopeVal) * vcd->displayValues[10]) + ((1.0f - vcd->displayValues[10]) * vcd->displayValues[6]);
@@ -3143,8 +3295,12 @@ namespace vocodec
                 sample += tComplexLivingString_tick(&vcd->theString[i], (inputSample * tSlide_tickNoInput(&vcd->stringOutEnvs[i]))) * tSlide_tickNoInput(&vcd->stringOutEnvs[i]);
                  */
             }
-            sample *= 0.1625f;
+            sample *= 0.25f;
+#ifndef __cplusplus
             sample = LEAF_tanh(sample) * 0.98f;
+#else
+             sample = tanhf(sample) * 0.98f;
+#endif
             input[0] = sample;
             input[1] = sample;
         }
@@ -3154,13 +3310,18 @@ namespace vocodec
             for (int i = 0; i < NUM_STRINGS_SYNTH; i++)
             {
                 tLivingString2_free(&vcd->theString2[i]);
-                tSlide_free(&vcd->stringInEnvs[i]);
                 tSlide_free(&vcd->stringOutEnvs[i]);
+                tSlide_free(&vcd->stringInEnvs[i]);
                 tADSRT_free(&vcd->pluckEnvs[i]);
                 tEnvelopeFollower_free(&vcd->prepEnvs[i]);
             }
             tVZFilter_free(&vcd->pluckFilt);
             tNoise_free(&vcd->stringPluckNoise);
+#ifdef __cplusplus
+            tExpSmooth_free(&vcd->pickPosSmooth);
+            tExpSmooth_free(&vcd->prepPosSmooth);
+            tExpSmooth_free(&vcd->pickupPosSmooth);
+#endif
         }
         
         
@@ -3227,8 +3388,8 @@ namespace vocodec
             }
             tCycle_init(&vcd->pwmLFO1, &vcd->leaf);
             tCycle_init(&vcd->pwmLFO2, &vcd->leaf);
-            tCycle_setFreq(&vcd->pwmLFO1, 63.0f);
-            tCycle_setFreq(&vcd->pwmLFO2, 72.11f);
+            tCycle_setFreq(&vcd->pwmLFO1, 0.63f);
+            tCycle_setFreq(&vcd->pwmLFO2, 0.7211f);
             vcd->leaf.clearOnAllocation = 0;
             //            cycleCountVals[0][2] = 2;
             setLED_A(vcd, vcd->classicSynthParams.numVoices == 1);
@@ -3409,7 +3570,11 @@ namespace vocodec
                 for (int j = 0; j < NUM_OSC_PER_VOICE; j++)
                 {
                     tempSample += tSawtooth_tick(&vcd->osc[(i * NUM_OSC_PER_VOICE) + j]) * env * (1.0f - vcd->displayValues[16]);
+#ifndef __cplusplus
                     tempSample += tRosenbergGlottalPulse_tick(&vcd->glottal[(i * NUM_OSC_PER_VOICE) + j]) * env * (vcd->displayValues[16]);
+#else
+                    tempSample += tRosenbergGlottalPulse_tickHQ(&vcd->glottal[(i * NUM_OSC_PER_VOICE) + j]) * env * (vcd->displayValues[16]);
+#endif
                 }
                 tEfficientSVF_setFreq(&vcd->synthLP[i], LEAF_clip(0.0f, (vcd->filtFreqs[i] + (vcd->displayValues[15] * tADSRT_tick(&vcd->polyFiltEnvs[i]))), 4095.0f));
                 sample += tEfficientSVF_tick(&vcd->synthLP[i], tempSample);

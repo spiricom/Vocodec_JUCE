@@ -21,62 +21,40 @@ constrain(new ComponentBoundsConstrainer()),
 resizer(new ResizableCornerComponent (this, constrain.get())),
 screen(p),
 chooser("Select a .wav file to load...", {}, "*.wav")
-{    
+{
     panel = Drawable::createFromImageData(BinaryData::panel_svg, BinaryData::panel_svgSize);
     
     setWantsKeyboardFocus(true);
     
-    addAndMakeVisible(oversamplingMenu);
-    oversamplingMenu.setLookAndFeel(&vocodecLAF);
-    oversamplingMenu.addItem("1", 1);
-    oversamplingMenu.addItem("2", 2);
-    oversamplingMenu.addItem("4", 3);
-    oversamplingMenu.addItem("8", 4);
-    oversamplingMenu.addItem("16", 5);
-    oversamplingMenu.addItem("32", 6);
-    oversamplingMenu.addItem("64", 7);
-    oversamplingMenu.setJustificationType(Justification::centred);
-    oversamplingMenu.setSelectedId(1, dontSendNotification);
-    oversamplingMenu.onChange = [this] {
-        processor.oversamplingRatio = exp2(oversamplingMenu.getSelectedId()-1);
-        tOversampler_setRatio(&processor.oversampler[0], processor.oversamplingRatio);
-        tOversampler_setRatio(&processor.oversampler[1], processor.oversamplingRatio);
-    };
-    
-    Typeface::Ptr tp = Typeface::createSystemTypefaceFor(BinaryData::EuphemiaCAS_ttf,
-                                                         BinaryData::EuphemiaCAS_ttfSize);
-    euphemia = Font(tp);
-    euphemia.setItalic(true);
-    
-    oversamplingLabel.setText("OVERSAMPLING", dontSendNotification);
-    oversamplingLabel.setFont(euphemia);
-    oversamplingLabel.setJustificationType(Justification::centredTop);
-    oversamplingLabel.setLookAndFeel(&vocodecLAF);
-    addAndMakeVisible(oversamplingLabel);
-    
     addAndMakeVisible(screen);
     screen.setOpaque(true);
     screen.onChange = [this] { presetChanged(); };
-
+    
+    Typeface::Ptr tp = Typeface::createSystemTypefaceFor(BinaryData::EuphemiaCAS_ttf,
+                                                         BinaryData::EuphemiaCAS_ttfSize);
+    
+    euphemia = Font(tp);
+    euphemia.setItalic(true);
+    
     for (int i = 0; i < NUM_KNOBS; i++) {
         //        knobs.add(new DrawableImage());
         dials.add(new Slider());
         addAndMakeVisible(dials[i]);
         //        addAndMakeVisible(knobs[i]);
         dials[i]->setLookAndFeel(&vocodecLAF);
-        dials[i]->setSliderStyle(Slider::RotaryVerticalDrag);
+        dials[i]->setSliderStyle(Slider::RotaryHorizontalVerticalDrag);
         dials[i]->setTextBoxStyle(Slider::NoTextBox, false, 0, 0);
         dials[i]->addListener(this);
         dials[i]->setRange(0., 1.);
         dials[i]->setOpaque(true);
         
         dialLabels.add(new Label());
-//        dialLabels[i]->setMultiLine(true);
-//        dialLabels[i]->setReadOnly(true);
+        //        dialLabels[i]->setMultiLine(true);
+        //        dialLabels[i]->setReadOnly(true);
         dialLabels[i]->setFont(euphemia);
-//        dialLabels[i]->setInterceptsMouseClicks(false, false);
+        //        dialLabels[i]->setInterceptsMouseClicks(false, false);
         dialLabels[i]->setJustificationType(Justification::centredTop);
-//        dialLabels[i]->setBorder(BorderSize<int>(-3, 0, 0, 0));
+        //        dialLabels[i]->setBorder(BorderSize<int>(-3, 0, 0, 0));
         dialLabels[i]->setLookAndFeel(&vocodecLAF);
         addAndMakeVisible(dialLabels[i]);
     }
@@ -105,7 +83,7 @@ chooser("Select a .wav file to load...", {}, "*.wav")
     
     for (int i = 0; i < (int) vocodec::VocodecLightNil; i++)
     {
-        lights.add(new VocodecLight("", Colours::grey, cLightColours[i]));
+        lights.add(new VocodecLight("", darkergrey, cLightColours[i]));
         addAndMakeVisible(lights[i]);
         lights[i]->setOpaque(true);
     }
@@ -113,7 +91,7 @@ chooser("Select a .wav file to load...", {}, "*.wav")
     processor.vcd.lightStates[vocodec::VocodecLightIn2Meter] = true;
     processor.vcd.lightStates[vocodec::VocodecLightOut1Meter] = true;
     processor.vcd.lightStates[vocodec::VocodecLightOut2Meter] = true;
-
+    
     setSize(600 * processor.editorScale, 716 * processor.editorScale);
     
     constrain->setFixedAspectRatio(600.0f / 716.0f);
@@ -139,8 +117,6 @@ VocodecAudioProcessorEditor::~VocodecAudioProcessorEditor()
         dials[i]->setLookAndFeel(nullptr);
         dialLabels[i]->setLookAndFeel(nullptr);
     }
-    oversamplingMenu.setLookAndFeel(nullptr);
-    oversamplingLabel.setLookAndFeel(nullptr);
 }
 
 //==============================================================================
@@ -148,7 +124,7 @@ void VocodecAudioProcessorEditor::paint (Graphics& g)
 {
     // (Our component is opaque, so we must completely fill the background with a solid colour)
     g.setGradientFill(ColourGradient(Colour(25, 25, 25), juce::Point<float>(0,0), Colour(10, 10, 10), juce::Point<float>(0, getHeight()), false));
-
+    
     g.fillRect(0, 0, getWidth(), getHeight());
     
     Rectangle<float> panelArea = getLocalBounds().toFloat();
@@ -177,10 +153,6 @@ void VocodecAudioProcessorEditor::resized()
     const float smallLightSize = 15.0f*s;
     const float labelWidth = 130.0f*s;
     const float labelHeight = 20.0f*s;
-    
-    oversamplingMenu.setBounds(378*s, 621*s, 72.0f*s, 24.0f*s);
-    oversamplingLabel.setBounds(332*s, 656*s, 164.0f*s, 50.0f*s);
-    oversamplingLabel.setFont(euphemia.withHeight(height * 0.025f));
     
     buttons[vocodec::ButtonA]       ->setBounds(543*s, 356*s, buttonSize, buttonSize);
     buttons[vocodec::ButtonB]       ->setBounds(543*s, 415*s, buttonSize, buttonSize);
@@ -218,12 +190,12 @@ void VocodecAudioProcessorEditor::resized()
     dials[6]                        ->setBounds(380*s, 500*s, knobSize, knobSize);
     
     dialLabels[0]                   ->setBounds(40*s, 110*s, 100*s, 50*s);
-//    dialLabels[1]                   ->setBounds(138*s, 185*s, labelWidth, labelHeight);
-//    dialLabels[2]                   ->setBounds(348*s, 185*s, labelWidth, labelHeight);
-//    dialLabels[3]                   ->setBounds(213*s, 325*s, labelWidth, labelHeight);
-//    dialLabels[4]                   ->setBounds(408*s, 325*s, labelWidth, labelHeight);
-//    dialLabels[5]                   ->setBounds(138*s, 480*s, labelWidth, labelHeight);
-//    dialLabels[6]                   ->setBounds(343*s, 480*s, labelWidth, labelHeight);
+    //    dialLabels[1]                   ->setBounds(138*s, 185*s, labelWidth, labelHeight);
+    //    dialLabels[2]                   ->setBounds(348*s, 185*s, labelWidth, labelHeight);
+    //    dialLabels[3]                   ->setBounds(213*s, 325*s, labelWidth, labelHeight);
+    //    dialLabels[4]                   ->setBounds(408*s, 325*s, labelWidth, labelHeight);
+    //    dialLabels[5]                   ->setBounds(138*s, 480*s, labelWidth, labelHeight);
+    //    dialLabels[6]                   ->setBounds(343*s, 480*s, labelWidth, labelHeight);
     dialLabels[1]                   ->setBounds(138*s, 270*s, labelWidth, labelHeight);
     dialLabels[2]                   ->setBounds(348*s, 270*s, labelWidth, labelHeight);
     dialLabels[3]                   ->setBounds(213*s, 410*s, labelWidth, labelHeight);
@@ -258,7 +230,7 @@ void VocodecAudioProcessorEditor::sliderValueChanged(Slider* slider)
         *processor.inputGain = sliderValue;
         return;
     }
-
+    
     // Set ADC_values so that we can take advantage of hardware UI internals
     (*processor.vcd.ADC_values)[whichKnob] = (uint16_t) (sliderValue * TWO_TO_10) << 6;
     sliderActive[whichKnob] = true;
@@ -314,7 +286,6 @@ void VocodecAudioProcessorEditor::presetChanged()
 void VocodecAudioProcessorEditor::timerCallback()
 {
     screen.getMenu()->setSelectedId(processor.vcd.currentPreset + 1, dontSendNotification);
-    oversamplingMenu.setSelectedId(log2(processor.oversamplingRatio)+1);
     
     processor.vcd.lightStates[vocodec::VocodecLightIn1Clip] = processor.audioInput[0] >= 0.999f;
     processor.vcd.lightStates[vocodec::VocodecLightIn2Clip] = processor.audioInput[1] >= 0.999f;
@@ -345,6 +316,7 @@ void VocodecAudioProcessorEditor::timerCallback()
     b = LEAF_clip(MIN_METER_VOL, b, 0.0f);
     b = (b - MIN_METER_VOL) * -INV_MIN_METER_VOL;
     lights[vocodec::VocodecLightOut2Meter]->setBrightness(b);
+    
     
     updateKnobs();
     
@@ -384,14 +356,7 @@ void VocodecAudioProcessorEditor::timerCallback()
         processor.vcd.attemptFileLoad = 0;
         loadWav();
     }
-        
-//    oversamplingMenu.setEnabled(true);
-//    if (processor.vcd.currentPreset == vocodec::Wavefolder ||
-//        processor.vcd.currentPreset == vocodec::Wavefolder ||
-//        processor.vcd.currentPreset == vocodec::Wavefolder ||)
-//    {
-//        oversamplingMenu.setEnabled(true);
-//    }
+    
 }
 
 void VocodecAudioProcessorEditor::updateKnobs()
@@ -425,48 +390,48 @@ void VocodecAudioProcessorEditor::loadWav()
                          | FileBrowserComponent::canSelectFiles,
                          [this] (const FileChooser& chooser)
                          {
-        int idx = processor.vcd.wavetableSynthParams.loadIndex;
-        
-        auto results = chooser.getResults();
-        
-        int n = 0;
-        for (auto result : results)
-        {
-            auto* reader = processor.formatManager.createReaderFor (result);
-            
-            if (reader != nullptr)
-            {
-                std::unique_ptr<juce::AudioFormatReaderSource> newSource (new juce::AudioFormatReaderSource
-                                                                          (reader, true));
-                
-                AudioBuffer<float> buffer = AudioBuffer<float>(reader->numChannels, int(reader->lengthInSamples));
-                
-                reader->read(&buffer, 0, buffer.getNumSamples(), 0, true, true);
-                
-                if (processor.vcd.loadedTableSizes[idx] > 0)
-                {
-                    mpool_free((char*)processor.vcd.loadedTables[idx], processor.vcd.largePool);
-                }
-                processor.vcd.loadedTables[idx] =
-                (float*) mpool_alloc(sizeof(float) * buffer.getNumSamples(), processor.vcd.largePool);
-                processor.vcd.loadedTableSizes[idx] = buffer.getNumSamples();
-                for (int i = 0; i < processor.vcd.loadedTableSizes[idx]; ++i)
-                {
-                    processor.vcd.loadedTables[idx][i] = buffer.getSample(0, i);
-                }
-                
-                processor.readerSource.reset(newSource.release());
-
-                processor.wavetablePaths.set(idx, result.getFullPathName());
-                processor.vcd.loadedFilePaths[idx] = (char*) processor.wavetablePaths[idx].toRawUTF8();
-            }
-            idx++; n++;
-            if (idx >= 4) idx = 0;
-            // Only load the first 4 files
-            if (n >= 4) break;
-        }
-        processor.vcd.newWavLoaded = 1;
-    });
+                             int idx = processor.vcd.wavetableSynthParams.loadIndex;
+                             
+                             auto results = chooser.getResults();
+                             
+                             int n = 0;
+                             for (auto result : results)
+                             {
+                                 auto* reader = processor.formatManager.createReaderFor (result);
+                                 
+                                 if (reader != nullptr)
+                                 {
+                                     std::unique_ptr<juce::AudioFormatReaderSource> newSource (new juce::AudioFormatReaderSource
+                                                                                               (reader, true));
+                                     
+                                     AudioBuffer<float> buffer = AudioBuffer<float>(reader->numChannels, int(reader->lengthInSamples));
+                                     
+                                     reader->read(&buffer, 0, buffer.getNumSamples(), 0, true, true);
+                                     
+                                     if (processor.vcd.loadedTableSizes[idx] > 0)
+                                     {
+                                         mpool_free((char*)processor.vcd.loadedTables[idx], processor.vcd.largePool);
+                                     }
+                                     processor.vcd.loadedTables[idx] =
+                                     (float*) mpool_alloc(sizeof(float) * buffer.getNumSamples(), processor.vcd.largePool);
+                                     processor.vcd.loadedTableSizes[idx] = buffer.getNumSamples();
+                                     for (int i = 0; i < processor.vcd.loadedTableSizes[idx]; ++i)
+                                     {
+                                         processor.vcd.loadedTables[idx][i] = buffer.getSample(0, i);
+                                     }
+                                     
+                                     processor.readerSource.reset(newSource.release());
+                                     
+                                     processor.wavetablePaths.set(idx, result.getFullPathName());
+                                     processor.vcd.loadedFilePaths[idx] = (char*) processor.wavetablePaths[idx].toRawUTF8();
+                                 }
+                                 idx++; n++;
+                                 if (idx >= 4) idx = 0;
+                                 // Only load the first 4 files
+                                 if (n >= 4) break;
+                             }
+                             processor.vcd.newWavLoaded = 1;
+                         });
 }
 
 namespace vocodec

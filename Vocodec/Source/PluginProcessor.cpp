@@ -8,7 +8,6 @@
  ==============================================================================
  */
 
-#include "VocodecStandalone.h"
 #include "PluginProcessor.h"
 #include "PluginEditor.h"
 #include "oled.h"
@@ -32,7 +31,7 @@ pluginParamNames(cPluginParamNames),
 choiceParamNames(cChoiceParamNames)
 {
     formatManager.registerBasicFormats();
-
+    
     SFX_init(&vcd, &ADC_values, &loadWav);
     vcd.currentPreset = vocodec::PresetNil;
     vcd.previousPreset = vocodec::PresetNil;
@@ -40,8 +39,6 @@ choiceParamNames(cChoiceParamNames)
     
     I2C_HandleTypeDef* dummyArg = nullptr;
     vocodec::OLED_init(&vcd, dummyArg);
-    
-    oversamplingRatio = 1;
     
     inputGain = new AudioParameterFloat("inputGain", "inputGain", 0.0f, 4.0f, 1.0f);
     addParameter(inputGain);
@@ -68,7 +65,7 @@ choiceParamNames(cChoiceParamNames)
             }
         }
     }
-                         
+    
     choiceParams.set("vocoder_numVoices",
                      new AudioParameterChoice("vocoder_numVoices", "vocoder_numVoices",
                                               StringArray("Poly", "Mono"), 0));
@@ -276,35 +273,6 @@ void VocodecAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBloc
     processingInactiveCount = 0;
     processingInactiveThreshold = 10 * (samplesPerBlock / sampleRate) * 1000;
     
-    if (leafInitialized)
-    {
-        if (presetInitialized) vcd.freeFunctions[vcd.currentPreset](&vcd);
-        
-        for (int i = 0; i < 4; ++i)
-        {
-            if (vcd.loadedTableSizes[i] > 0)
-            {
-                mpool_free((char*)vcd.loadedTables[i], vcd.largePool);
-                vcd.loadedTableSizes[i] = 0;
-            }
-        }
-        
-        tEnvelopeFollower_free(&inputFollower[0]);
-        tEnvelopeFollower_free(&inputFollower[1]);
-        tEnvelopeFollower_free(&outputFollower[0]);
-        tEnvelopeFollower_free(&outputFollower[1]);
-        
-        tOversampler_free(&oversampler[0]);
-        tOversampler_free(&oversampler[1]);
-        
-        for (int i = 0; i < 6; i++)
-        {
-            tExpSmooth_free(&vcd.adc[i]);
-        }
-        
-        vocodec::freeGlobalSFXObjects(&vcd);
-    }
-    
     LEAF_init(&vcd.leaf, sampleRate, samplesPerBlock, small_memory, SMALL_MEM_SIZE,
               []() {return (float)rand() / RAND_MAX; });
     tMempool_init(&vcd.mediumPool, medium_memory, MED_MEM_SIZE, &vcd.leaf);
@@ -315,9 +283,6 @@ void VocodecAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBloc
     tEnvelopeFollower_init(&outputFollower[0], 0.0001f, 0.9995f, &vcd.leaf);
     tEnvelopeFollower_init(&outputFollower[1], 0.0001f, 0.9995f, &vcd.leaf);
     
-    tOversampler_init(&oversampler[0], 64, 1, &vcd.leaf);
-    tOversampler_init(&oversampler[1], 64, 1, &vcd.leaf);
-
     //ramps to smooth the knobs
     for (int i = 0; i < 6; i++)
     {
@@ -325,7 +290,7 @@ void VocodecAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBloc
     }
     
     vocodec::initGlobalSFXObjects(&vcd);
-
+    
     // Everything in here should only happen on the first prepareToPlay.
     // Make sure not to set presetNumber to 0 except in the constructor.
     if (vcd.currentPreset == vocodec::PresetNil)
@@ -335,38 +300,40 @@ void VocodecAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBloc
     }
     vcd.previousPreset = vocodec::PresetNil;
     vcd.loadingPreset = 1;
-
+    
     int idx = 0;
     for (auto path : wavetablePaths)
     {
         File file(path);
         auto* reader = formatManager.createReaderFor(file);
-
+        
         if (reader != nullptr)
         {
             std::unique_ptr<juce::AudioFormatReaderSource> newSource(new juce::AudioFormatReaderSource
-            (reader, true));
-
+                                                                     (reader, true));
+            
             AudioBuffer<float> buffer = AudioBuffer<float>(reader->numChannels, int(reader->lengthInSamples));
-
+            
             reader->read(&buffer, 0, buffer.getNumSamples(), 0, true, true);
             
+            if (vcd.loadedTableSizes[idx] > 0)
+            {
+                mpool_free((char*)vcd.loadedTables[idx], vcd.largePool);
+            }
             vcd.loadedTables[idx] =
-                (float*)mpool_alloc(sizeof(float) * buffer.getNumSamples(), vcd.largePool);
+            (float*)mpool_alloc(sizeof(float) * buffer.getNumSamples(), vcd.largePool);
             vcd.loadedTableSizes[idx] = buffer.getNumSamples();
             for (int i = 0; i < vcd.loadedTableSizes[idx]; ++i)
             {
                 vcd.loadedTables[idx][i] = buffer.getSample(0, i);
             }
-
+            
             readerSource.reset(newSource.release());
         }
         idx++;
         if (idx >= 4) idx = 0;
     }
     vcd.newWavLoaded = 1;
-    
-    leafInitialized = true;
     
     startTimer(2);
 }
@@ -411,7 +378,7 @@ void VocodecAudioProcessor::processBlock (AudioBuffer<float>& buffer, MidiBuffer
     updateAllValues();
     
     vocodec::VocodecPresetType currentPreset = vcd.currentPreset;
-        
+    
     if (vcd.loadingPreset)
     {
         for (int i = 0; i < vocodec::ButtonNil; ++i)
@@ -426,13 +393,8 @@ void VocodecAudioProcessor::processBlock (AudioBuffer<float>& buffer, MidiBuffer
         if (vcd.previousPreset != vocodec::PresetNil)
             vcd.freeFunctions[vcd.previousPreset](&vcd);
         
-        presetInitialized = false;
-        
         if (currentPreset != vocodec::PresetNil)
-        {
             vcd.allocFunctions[currentPreset](&vcd);
-            presetInitialized = true;
-        }
         
         vcd.previousPreset = currentPreset;
         vcd.loadingPreset = 0;
@@ -483,22 +445,7 @@ void VocodecAudioProcessor::processBlock (AudioBuffer<float>& buffer, MidiBuffer
         audio[1] = leftChannel[i];
         audio[0] = rightChannel[i];
         
-        float oversampled[2][64];
-
-        tOversampler_upsample(&oversampler[0], audio[0], oversampled[0]);
-        tOversampler_upsample(&oversampler[1], audio[1], oversampled[1]);
-        
-        for (int i = 0; i < oversamplingRatio; ++i)
-        {
-            audio[0] = oversampled[0][i];
-            audio[1] = oversampled[1][i];
-            vcd.tickFunctions[currentPreset](&vcd, audio);
-            oversampled[0][i] = audio[0];
-            oversampled[1][i] = audio[1];
-        }
-        
-        audio[0] = tOversampler_downsample(&oversampler[0], oversampled[0]);
-        audio[1] = tOversampler_downsample(&oversampler[1], oversampled[1]);
+        vcd.tickFunctions[currentPreset](&vcd, audio);
         
         audio[1] = LEAF_interpolation_linear(leftChannel[i], audio[1], mix);
         
@@ -506,7 +453,7 @@ void VocodecAudioProcessor::processBlock (AudioBuffer<float>& buffer, MidiBuffer
         
         if(buffer.getNumChannels() > 1)
         {
-			audio[0] = LEAF_interpolation_linear(rightChannel[i], audio[0], mix);
+            audio[0] = LEAF_interpolation_linear(rightChannel[i], audio[0], mix);
             buffer.setSample(1, i, audio[0]);
         }
         
@@ -550,14 +497,12 @@ void VocodecAudioProcessor::getStateInformation (MemoryBlock& destData)
         xml->setAttribute(param->getName(50).removeCharacters(StringRef(" /<>")), param->getIndex());
     
     xml->setAttribute("editorScale", editorScale);
-
+    
     for (int i = 0; i < 4; ++i)
     {
         wavetablePaths.set(i, String(vcd.loadedFilePaths[i]));
         xml->setAttribute("wavetablePath" + String(i), wavetablePaths[i]);
     }
-    
-    xml->setAttribute("oversamplingRatio", oversamplingRatio);
     
     copyXmlToBinary(*xml, destData);
 }
@@ -565,7 +510,7 @@ void VocodecAudioProcessor::getStateInformation (MemoryBlock& destData)
 void VocodecAudioProcessor::setStateInformation (const void* data, int sizeInBytes)
 {
     std::unique_ptr<juce::XmlElement> xmlState(getXmlFromBinary(data, sizeInBytes));
-
+    
     if (xmlState.get() != nullptr)
     {
         vcd.currentPreset = (vocodec::VocodecPresetType) xmlState->getIntAttribute("preset", 0);
@@ -575,7 +520,7 @@ void VocodecAudioProcessor::setStateInformation (const void* data, int sizeInByt
         float value = (float)xmlState->getDoubleAttribute(name, 1.0f);
         value = inputGain->getNormalisableRange().convertTo0to1(value);
         inputGain->setValueNotifyingHost(value);
-
+        
         name = dryWetMix->getName(50);
         value = (float)xmlState->getDoubleAttribute(name, 1.0f);
         dryWetMix->setValueNotifyingHost(value);
@@ -591,7 +536,7 @@ void VocodecAudioProcessor::setStateInformation (const void* data, int sizeInByt
         value = keyCenter->getNormalisableRange().convertTo0to1(value);
         keyCenter->setValueNotifyingHost(value);
         vcd.keyCenter = keyCenter->get();
-
+        
         for (int p = 0; p < int(vocodec::PresetNil); ++p)
         {
             for (int v = 0; v < vcd.numPages[p] * KNOB_PAGE_SIZE; ++v)
@@ -614,14 +559,12 @@ void VocodecAudioProcessor::setStateInformation (const void* data, int sizeInByt
         }
         
         editorScale = xmlState->getDoubleAttribute("editorScale", 1.0);
-
+        
         for (int i = 0; i < 4; ++i)
         {
             wavetablePaths.set(i, xmlState->getStringAttribute("wavetablePath" + String(i), String()));
             vcd.loadedFilePaths[i] = (char*) wavetablePaths[i].toRawUTF8();
         }
-        
-        oversamplingRatio = xmlState->getIntAttribute("oversamplingRatio", 1);
     }
 }
 
@@ -717,48 +660,48 @@ void VocodecAudioProcessor::updateChoiceParams()
     *choiceParams["vocoderCh_numVoices"] = vcd.vocoderChParams.numVoices > 1 ? 0 : 1;
     *choiceParams["vocoderCh_internalExternal"] = vcd.vocoderChParams.internalExternal;
     *choiceParams["vocoderCh_freeze"] = vcd.vocoderChParams.freeze;
-
+    
     //    "pitchShift_"/
-
+    
     *choiceParams["autotuneMono_useChromatic"] = vcd.neartuneParams.useChromatic;
     *choiceParams["autotuneMono_lock"] = vcd.neartuneParams.lock;
-
+    
     //    "autotunePoly_",
-
+    
     *choiceParams["samplerButtonPress_playMode"] = (vcd.samplerBPParams.playMode == PlayLoop) ? 0 : 1;
     *choiceParams["samplerButtonPress_paused"] = vcd.samplerBPParams.paused;
-
+    
     *choiceParams["samplerKeyboard_controlAllKeys"] = vcd.samplerKParams.controlAllKeys;
-
+    
     *choiceParams["samplerAutoGrab_playMode"] = (vcd.samplerAutoParams.playMode == PlayLoop) ? 0 : 1;
     *choiceParams["samplerAutoGrab_triggerChannel"] = vcd.samplerAutoParams.triggerChannel;
     *choiceParams["samplerAutoGrab_quantizeRate"] = vcd.samplerAutoParams.quantizeRate;
-
+    
     *choiceParams["distortion_mode"] = vcd.distortionParams.mode;
-
+    
     *choiceParams["waveFolder_mode"] = vcd.waveFolderParams.mode;
-
+    
     *choiceParams["bitCrusher_stereo"] = vcd.bitcrusherParams.stereo;
-
+    
     *choiceParams["delay_shaper"] = vcd.delayParams.shaper;
     *choiceParams["delay_uncapFeedback"] = vcd.delayParams.uncapFeedback;
     *choiceParams["delay_freeze"] = vcd.delayParams.freeze;
-
+    
     *choiceParams["reverb_uncapFeedback"] = vcd.reverbParams.uncapFeedback;
     *choiceParams["reverb_freeze"] = vcd.reverbParams.freeze;
-
+    
     *choiceParams["reverb2_freeze"] = vcd.reverb2Params.freeze;
-
+    
     *choiceParams["livingString_ignoreFreqKnobs"] = vcd.livingStringParams.ignoreFreqKnobs;
     *choiceParams["livingString_independentStrings"] = vcd.livingStringParams.independentStrings;
     *choiceParams["livingString_feedback"] = vcd.livingStringParams.feedback;
-
+    
     *choiceParams["livingStringSynth_numVoices"] = vcd.livingStringSynthParams.numVoices > 1 ? 0 : 1;
     *choiceParams["livingStringSynth_audioIn"] = vcd.livingStringSynthParams.audioIn;
     *choiceParams["livingStringSynth_feedback"] = vcd.livingStringSynthParams.feedback;
-
+    
     *choiceParams["classicSynth_numVoices"] = vcd.classicSynthParams.numVoices > 1 ? 0 : 1;
-
+    
     *choiceParams["rhodes_numVoices"] = vcd.rhodesParams.numVoices > 1 ? 0 : 1;
     *choiceParams["rhodes_sound"] = vcd.rhodesParams.sound;
     *choiceParams["rhodes_tremoloStereo"] = vcd.rhodesParams.tremoloStereo;
@@ -814,7 +757,7 @@ void VocodecAudioProcessor::updateChoiceValues()
     vcd.livingStringParams.independentStrings = choiceParams["livingString_independentStrings"]->getIndex();
     vcd.livingStringParams.feedback = choiceParams["livingString_feedback"]->getIndex();
     
-    vcd.livingStringSynthParams.numVoices = choiceParams["livingStringSynth_numVoices"]->getIndex() > 0 ? 1 : NUM_STRINGS;
+    vcd.livingStringSynthParams.numVoices = choiceParams["livingStringSynth_numVoices"]->getIndex() > 0 ? 1 : NUM_STRINGS_SYNTH;
     vcd.livingStringSynthParams.audioIn = choiceParams["livingStringSynth_audioIn"]->getIndex();
     vcd.livingStringSynthParams.feedback = choiceParams["livingStringSynth_feedback"]->getIndex();
     
@@ -841,6 +784,6 @@ void VocodecAudioProcessor::updateAllValues()
             }
         }
     }
-
+    
     updateChoiceValues();
 }

@@ -15,6 +15,8 @@
 #define MIN_METER_VOL -80.0f
 #define INV_MIN_METER_VOL -0.0125f
 
+const Colour darkergrey { 0xff333333 };
+
 const std::vector<Colour> cLightColours = {
     Colours::limegreen,
     Colours::red,
