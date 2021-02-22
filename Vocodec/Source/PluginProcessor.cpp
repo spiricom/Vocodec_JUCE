@@ -39,7 +39,15 @@ choiceParamNames(cChoiceParamNames)
     
     I2C_HandleTypeDef* dummyArg = nullptr;
     vocodec::OLED_init(&vcd, dummyArg);
+
+    oversamplingRatio = 1;
     
+    for (int i = 0; i < 4; ++i)
+    {
+        wavetablePaths.set(i, String());
+        vcd.loadedFilePaths[i] = (char*) wavetablePaths[i].toRawUTF8();
+    }
+
     inputGain = new AudioParameterFloat("inputGain", "inputGain", 0.0f, 4.0f, 1.0f);
     addParameter(inputGain);
     dryWetMix = new AudioParameterFloat("dryWetMix", "dryWetMix", 0.0f, 1.0f, 1.0f);
@@ -273,6 +281,39 @@ void VocodecAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBloc
     processingInactiveCount = 0;
     processingInactiveThreshold = 10 * (samplesPerBlock / sampleRate) * 1000;
     
+    if (leafInitialized)
+    {
+        if (presetInitialized)
+        {
+            vcd.freeFunctions[vcd.currentPreset](&vcd);
+            presetInitialized = false;
+        }
+        
+        for (int i = 0; i < 4; ++i)
+        {
+            if (vcd.loadedTableSizes[i] > 0)
+            {
+                mpool_free((char*)vcd.loadedTables[i], vcd.largePool);
+                vcd.loadedTableSizes[i] = 0;
+            }
+        }
+        
+        tEnvelopeFollower_free(&inputFollower[0]);
+        tEnvelopeFollower_free(&inputFollower[1]);
+        tEnvelopeFollower_free(&outputFollower[0]);
+        tEnvelopeFollower_free(&outputFollower[1]);
+        
+        tOversampler_free(&oversampler[0]);
+        tOversampler_free(&oversampler[1]);
+        
+        for (int i = 0; i < 6; i++)
+        {
+            tExpSmooth_free(&vcd.adc[i]);
+        }
+        
+        vocodec::freeGlobalSFXObjects(&vcd);
+    }
+    
     LEAF_init(&vcd.leaf, sampleRate, samplesPerBlock, small_memory, SMALL_MEM_SIZE,
               []() {return (float)rand() / RAND_MAX; });
     tMempool_init(&vcd.mediumPool, medium_memory, MED_MEM_SIZE, &vcd.leaf);
@@ -304,6 +345,7 @@ void VocodecAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBloc
     int idx = 0;
     for (auto path : wavetablePaths)
     {
+        if (path == String()) continue;
         File file(path);
         auto* reader = formatManager.createReaderFor(file);
         
@@ -316,12 +358,7 @@ void VocodecAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBloc
             
             reader->read(&buffer, 0, buffer.getNumSamples(), 0, true, true);
             
-            if (vcd.loadedTableSizes[idx] > 0)
-            {
-                mpool_free((char*)vcd.loadedTables[idx], vcd.largePool);
-            }
-            vcd.loadedTables[idx] =
-            (float*)mpool_alloc(sizeof(float) * buffer.getNumSamples(), vcd.largePool);
+            vcd.loadedTables[idx] = (float*)mpool_alloc(sizeof(float) * buffer.getNumSamples(), vcd.largePool);
             vcd.loadedTableSizes[idx] = buffer.getNumSamples();
             for (int i = 0; i < vcd.loadedTableSizes[idx]; ++i)
             {
@@ -500,7 +537,6 @@ void VocodecAudioProcessor::getStateInformation (MemoryBlock& destData)
     
     for (int i = 0; i < 4; ++i)
     {
-        wavetablePaths.set(i, String(vcd.loadedFilePaths[i]));
         xml->setAttribute("wavetablePath" + String(i), wavetablePaths[i]);
     }
     
