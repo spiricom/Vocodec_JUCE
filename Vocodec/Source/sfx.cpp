@@ -498,96 +498,115 @@ namespace vocodec
             vcd->frameFunctions[Vocoder] = SFXVocoderFrame;
             vcd->tickFunctions[Vocoder] = SFXVocoderTick;
             vcd->freeFunctions[Vocoder] = SFXVocoderFree;
+            vcd->rateFunctions[Vocoder] = SFXVocoderRate;
             
             vcd->allocFunctions[VocoderCh] = SFXVocoderChAlloc;
             vcd->frameFunctions[VocoderCh] = SFXVocoderChFrame;
             vcd->tickFunctions[VocoderCh] = SFXVocoderChTick;
             vcd->freeFunctions[VocoderCh] = SFXVocoderChFree;
+            vcd->rateFunctions[VocoderCh] = SFXVocoderChRate;
             
             vcd->allocFunctions[Pitchshift] = SFXPitchShiftAlloc;
             vcd->frameFunctions[Pitchshift] = SFXPitchShiftFrame;
             vcd->tickFunctions[Pitchshift] = SFXPitchShiftTick;
             vcd->freeFunctions[Pitchshift] = SFXPitchShiftFree;
+            vcd->rateFunctions[Pitchshift] = SFXPitchShiftRate;
             
             vcd->allocFunctions[AutotuneMono] = SFXNeartuneAlloc;
             vcd->frameFunctions[AutotuneMono] = SFXNeartuneFrame;
             vcd->tickFunctions[AutotuneMono] = SFXNeartuneTick;
             vcd->freeFunctions[AutotuneMono] = SFXNeartuneFree;
+            vcd->rateFunctions[AutotuneMono] = SFXNeartuneRate;
             
             vcd->allocFunctions[AutotunePoly] = SFXAutotuneAlloc;
             vcd->frameFunctions[AutotunePoly] = SFXAutotuneFrame;
             vcd->tickFunctions[AutotunePoly] = SFXAutotuneTick;
             vcd->freeFunctions[AutotunePoly] = SFXAutotuneFree;
+            vcd->rateFunctions[AutotunePoly] = SFXAutotuneRate;
             
             vcd->allocFunctions[SamplerButtonPress] = SFXSamplerBPAlloc;
             vcd->frameFunctions[SamplerButtonPress] = SFXSamplerBPFrame;
             vcd->tickFunctions[SamplerButtonPress] = SFXSamplerBPTick;
             vcd->freeFunctions[SamplerButtonPress] = SFXSamplerBPFree;
+            vcd->rateFunctions[SamplerButtonPress] = SFXSamplerBPRate;
             
             vcd->allocFunctions[SamplerKeyboard] = SFXSamplerKAlloc;
             vcd->frameFunctions[SamplerKeyboard] = SFXSamplerKFrame;
             vcd->tickFunctions[SamplerKeyboard] = SFXSamplerKTick;
             vcd->freeFunctions[SamplerKeyboard] = SFXSamplerKFree;
+            vcd->rateFunctions[SamplerKeyboard] = SFXSamplerKRate;
             
             vcd->allocFunctions[SamplerAutoGrab] = SFXSamplerAutoAlloc;
             vcd->frameFunctions[SamplerAutoGrab] = SFXSamplerAutoFrame;
             vcd->tickFunctions[SamplerAutoGrab] = SFXSamplerAutoTick;
             vcd->freeFunctions[SamplerAutoGrab] = SFXSamplerAutoFree;
+            vcd->rateFunctions[SamplerAutoGrab] = SFXSamplerAutoRate;
             
             vcd->allocFunctions[Distortion] = SFXDistortionAlloc;
             vcd->frameFunctions[Distortion] = SFXDistortionFrame;
             vcd->tickFunctions[Distortion] = SFXDistortionTick;
             vcd->freeFunctions[Distortion] = SFXDistortionFree;
+            vcd->rateFunctions[Distortion] = SFXDistortionRate;
             
             vcd->allocFunctions[Wavefolder] = SFXWaveFolderAlloc;
             vcd->frameFunctions[Wavefolder] = SFXWaveFolderFrame;
             vcd->tickFunctions[Wavefolder] = SFXWaveFolderTick;
             vcd->freeFunctions[Wavefolder] = SFXWaveFolderFree;
+            vcd->rateFunctions[Wavefolder] = SFXWaveFolderRate;
             
             vcd->allocFunctions[BitCrusher] = SFXBitcrusherAlloc;
             vcd->frameFunctions[BitCrusher] = SFXBitcrusherFrame;
             vcd->tickFunctions[BitCrusher] = SFXBitcrusherTick;
             vcd->freeFunctions[BitCrusher] = SFXBitcrusherFree;
+            vcd->rateFunctions[BitCrusher] = SFXBitcrusherRate;
             
             vcd->allocFunctions[Delay] = SFXDelayAlloc;
             vcd->frameFunctions[Delay] = SFXDelayFrame;
             vcd->tickFunctions[Delay] = SFXDelayTick;
             vcd->freeFunctions[Delay] = SFXDelayFree;
+            vcd->rateFunctions[Delay] = SFXDelayRate;
             
             vcd->allocFunctions[Reverb] = SFXReverbAlloc;
             vcd->frameFunctions[Reverb] = SFXReverbFrame;
             vcd->tickFunctions[Reverb] = SFXReverbTick;
             vcd->freeFunctions[Reverb] = SFXReverbFree;
+            vcd->rateFunctions[Reverb] = SFXReverbRate;
             
             vcd->allocFunctions[Reverb2] = SFXReverb2Alloc;
             vcd->frameFunctions[Reverb2] = SFXReverb2Frame;
             vcd->tickFunctions[Reverb2] = SFXReverb2Tick;
             vcd->freeFunctions[Reverb2] = SFXReverb2Free;
+            vcd->rateFunctions[Reverb2] = SFXReverb2Rate;
             
             vcd->allocFunctions[LivingString] = SFXLivingStringAlloc;
             vcd->frameFunctions[LivingString] = SFXLivingStringFrame;
             vcd->tickFunctions[LivingString] = SFXLivingStringTick;
             vcd->freeFunctions[LivingString] = SFXLivingStringFree;
+            vcd->rateFunctions[LivingString] = SFXLivingStringRate;
             
             vcd->allocFunctions[LivingStringSynth] = SFXLivingStringSynthAlloc;
             vcd->frameFunctions[LivingStringSynth] = SFXLivingStringSynthFrame;
             vcd->tickFunctions[LivingStringSynth] = SFXLivingStringSynthTick;
             vcd->freeFunctions[LivingStringSynth] = SFXLivingStringSynthFree;
+            vcd->rateFunctions[LivingStringSynth] = SFXLivingStringSynthRate;
             
             vcd->allocFunctions[ClassicSynth] = SFXClassicSynthAlloc;
             vcd->frameFunctions[ClassicSynth] = SFXClassicSynthFrame;
             vcd->tickFunctions[ClassicSynth] = SFXClassicSynthTick;
             vcd->freeFunctions[ClassicSynth] = SFXClassicSynthFree;
+            vcd->rateFunctions[ClassicSynth] = SFXClassicSynthRate;
             
             vcd->allocFunctions[Rhodes] = SFXRhodesAlloc;
             vcd->frameFunctions[Rhodes] = SFXRhodesFrame;
             vcd->tickFunctions[Rhodes] = SFXRhodesTick;
             vcd->freeFunctions[Rhodes] = SFXRhodesFree;
+            vcd->rateFunctions[Rhodes] = SFXRhodesRate;
             
             vcd->allocFunctions[WavetableSynth] = SFXWavetableSynthAlloc;
             vcd->frameFunctions[WavetableSynth] = SFXWavetableSynthFrame;
             vcd->tickFunctions[WavetableSynth] = SFXWavetableSynthTick;
             vcd->freeFunctions[WavetableSynth] = SFXWavetableSynthFree;
+            vcd->rateFunctions[WavetableSynth] = SFXWavetableSynthRate;
         }
         
         void initGlobalSFXObjects(Vocodec* vcd)
@@ -782,7 +801,18 @@ namespace vocodec
             }
         }
         
-        
+        void SFXVocoderRate(Vocodec* vcd, float sr)
+        {
+            tTalkboxFloat_setSampleRate(&vcd->vocoder, sr);
+            tHighpass_setSampleRate(&vcd->noiseHP, sr);
+            tVZFilter_setSampleRate(&vcd->shelf1, sr);
+            tVZFilter_setSampleRate(&vcd->shelf2, sr);
+            for (int i = 0; i < NUM_VOC_VOICES; i++)
+            {
+                tSawtooth_setSampleRate(&vcd->osc[i], sr);
+                tRosenbergGlottalPulse_setSampleRate(&vcd->glottal[i], sr);
+            }
+        }
         
         void SFXVocoderChAlloc(Vocodec* vcd)
         {
@@ -1286,6 +1316,26 @@ namespace vocodec
             }
         }
         
+        void SFXVocoderChRate(Vocodec* vcd, float sr)
+        {
+            for (int i = 0; i < MAX_NUM_VOCODER_BANDS; i++)
+            {
+                tVZFilter_setSampleRate(&vcd->analysisBands[i][0], sr);
+                tVZFilter_setSampleRate(&vcd->analysisBands[i][1], sr);
+                tVZFilter_setSampleRate(&vcd->synthesisBands[i][0], sr);
+                tVZFilter_setSampleRate(&vcd->synthesisBands[i][1], sr);
+            }
+            tHighpass_setSampleRate(&vcd->noiseHP, sr);
+            tVZFilter_setSampleRate(&vcd->vocodec_highshelf, sr);
+            tHighpass_setSampleRate(&vcd->chVocFinalHP1, sr);
+            tHighpass_setSampleRate(&vcd->chVocFinalHP2, sr);
+            for (int i = 0; i < NUM_VOC_VOICES; i++)
+            {
+                tSawtooth_setSampleRate(&vcd->osc[i], sr);
+                tRosenbergGlottalPulse_setSampleRate(&vcd->glottal[i], sr);
+            }
+        }
+        
         // pitch shift
         void SFXPitchShiftAlloc(Vocodec* vcd)
         {
@@ -1393,7 +1443,13 @@ namespace vocodec
             tExpSmooth_free(&vcd->smoother3);
         }
         
-    
+        void SFXPitchShiftRate(Vocodec* vcd, float sr)
+        {
+            tFormantShifter_setSampleRate(&vcd->fs, sr);
+            tRetune_setSampleRate(&vcd->retune, sr);
+            tRetune_setSampleRate(&vcd->retune2, sr);
+            tRamp_setSampleRate(&vcd->pitchshiftRamp, sr);
+        }
         
         //5 autotune mono
         void SFXNeartuneAlloc(Vocodec* vcd)
@@ -1530,6 +1586,12 @@ namespace vocodec
             tExpSmooth_free(&vcd->neartune_smoother);
             tRamp_free(&vcd->nearWetRamp);
         }
+        
+        void SFXNeartuneRate(Vocodec* vcd, float sr)
+        {
+            tRetune_setSampleRate(&vcd->autotuneMono, sr);
+            tRamp_setSampleRate(&vcd->nearWetRamp, sr);
+        }
 
         //6 autotune
         void SFXAutotuneAlloc(Vocodec* vcd)
@@ -1598,6 +1660,12 @@ namespace vocodec
         {
             tRetune_free(&vcd->autotunePoly);
             tCycle_free(&vcd->tremolo);
+        }
+        
+        void SFXAutotuneRate(Vocodec* vcd, float sr)
+        {
+            tRetune_setSampleRate(&vcd->autotunePoly, sr);
+            tCycle_setSampleRate(&vcd->tremolo, sr);
         }
         
         
@@ -1731,6 +1799,11 @@ namespace vocodec
             tSampler_free(&vcd->sampler);
             tExpSmooth_free(&vcd->startSmooth);
             tExpSmooth_free(&vcd->lengthSmooth);
+        }
+        
+        void SFXSamplerBPRate(Vocodec* vcd, float sr)
+        {
+            tSampler_setSampleRate(&vcd->sampler, sr);
         }
         
         // keyboard sampler
@@ -2193,6 +2266,13 @@ namespace vocodec
             }
         }
         
+        void SFXSamplerKRate(Vocodec* vcd, float sr)
+        {
+            for (int i = 0; i < NUM_SAMPLER_KEYS; i++)
+            {
+                tSampler_setSampleRate(&vcd->keySampler[i], sr);
+            }
+        }
         
         
         //8 sampler - auto
@@ -2432,6 +2512,12 @@ namespace vocodec
             setLED_1(vcd, 0);
         }
         
+        void SFXSamplerAutoRate(Vocodec* vcd, float sr)
+        {
+            tSampler_setSampleRate(&vcd->asSampler[0], sr);
+            tSampler_setSampleRate(&vcd->asSampler[1], sr);
+        }
+        
         //10 distortion tanh
         void SFXDistortionAlloc(Vocodec* vcd)
         {
@@ -2502,6 +2588,13 @@ namespace vocodec
             tVZFilter_free(&vcd->shelf1);
             tVZFilter_free(&vcd->shelf2);
             tVZFilter_free(&vcd->bell1);
+        }
+        
+        void SFXDistortionRate(Vocodec* vcd, float sr)
+        {
+            tVZFilter_setSampleRate(&vcd->shelf1, sr * vcd->distOS_ratio);
+            tVZFilter_setSampleRate(&vcd->shelf2, sr * vcd->distOS_ratio);
+            tVZFilter_setSampleRate(&vcd->bell1, sr * vcd->distOS_ratio);
         }
         
         // distortion wave folder
@@ -2616,6 +2709,11 @@ namespace vocodec
             tOversampler_free(&vcd->oversampler);
         }
         
+        void SFXWaveFolderRate(Vocodec* vcd, float sr)
+        {
+            tHighpass_setSampleRate(&vcd->wfHP, sr);
+        }
+        
         
         //13 bitcrusher
         void SFXBitcrusherAlloc(Vocodec* vcd)
@@ -2689,6 +2787,10 @@ namespace vocodec
             tCrusher_free(&vcd->crush2);
         }
         
+        void SFXBitcrusherRate(Vocodec* vcd, float sr)
+        {
+            
+        }
         
         //delay
         void SFXDelayAlloc(Vocodec* vcd)
@@ -2828,6 +2930,15 @@ namespace vocodec
             tFeedbackLeveler_free(&vcd->feedbackControl);
         }
         
+        void SFXDelayRate(Vocodec* vcd, float sr)
+        {
+            tSVF_setSampleRate(&vcd->delayLP, sr);
+            tSVF_setSampleRate(&vcd->delayHP, sr);
+            tSVF_setSampleRate(&vcd->delayLP2, sr);
+            tSVF_setSampleRate(&vcd->delayHP2, sr);
+            
+            tHighpass_setSampleRate(&vcd->delayShaperHp, sr);
+        }
         
         
         //reverb
@@ -2900,7 +3011,13 @@ namespace vocodec
             tExpSmooth_free(&vcd->sizeSmoother);
         }
         
-        
+        void SFXReverbRate(Vocodec* vcd, float sr)
+        {
+            vcd->leaf.clearOnAllocation = 1;
+            tDattorroReverb_setSampleRate(&vcd->reverb, sr);
+            vcd->leaf.clearOnAllocation = 0;
+        }
+
         //reverb2
         void SFXReverb2Alloc(Vocodec* vcd)
         {
@@ -2987,6 +3104,17 @@ namespace vocodec
             tSVF_free(&vcd->bandpass2);
         }
         
+        void SFXReverb2Rate(Vocodec* vcd, float sr)
+        {
+            tNReverb_setSampleRate(&vcd->reverb2, sr);
+            tSVF_setSampleRate(&vcd->lowpass, sr);
+            tSVF_setSampleRate(&vcd->highpass, sr);
+            tSVF_setSampleRate(&vcd->bandpass, sr);
+            tSVF_setSampleRate(&vcd->lowpass2, sr);
+            tSVF_setSampleRate(&vcd->highpass2, sr);
+            tSVF_setSampleRate(&vcd->bandpass2, sr);
+        }
+        
         
         //Living String
         void SFXLivingStringAlloc(Vocodec* vcd)
@@ -3042,9 +3170,6 @@ namespace vocodec
             {
                 if (!vcd->livingStringParams.ignoreFreqKnobs)
                 {
-                    
-                    
-                    
                     for (int i = 0; i < NUM_STRINGS; i++)
                     {
                         float freqVal = vcd->displayValues[0] * (i+1);
@@ -3103,7 +3228,6 @@ namespace vocodec
             }
         }
         
-        
         void SFXLivingStringTick(Vocodec* vcd, float* input)
         {
             float sample = 0.0f;
@@ -3123,6 +3247,14 @@ namespace vocodec
             {
                 tComplexLivingString_free(&vcd->theString[i]);
                 tExpSmooth_free(&vcd->stringGains[i]);
+            }
+        }
+        
+        void SFXLivingStringRate(Vocodec* vcd, float sr)
+        {
+            for (int i = 0; i < NUM_STRINGS; i++)
+            {
+                tComplexLivingString_setSampleRate(&vcd->theString[i], sr);
             }
         }
         
@@ -3151,7 +3283,6 @@ namespace vocodec
             tExpSmooth_init(&vcd->prepPosSmooth, 0.5f, 0.0001f, &vcd->leaf);
             tExpSmooth_init(&vcd->pickupPosSmooth, 0.5f, 0.0001f, &vcd->leaf);
 #endif
-            
         }
         
         void SFXLivingStringSynthFrame(Vocodec* vcd)
@@ -3322,6 +3453,16 @@ namespace vocodec
             tExpSmooth_free(&vcd->prepPosSmooth);
             tExpSmooth_free(&vcd->pickupPosSmooth);
 #endif
+        }
+        
+        void SFXLivingStringSynthRate(Vocodec* vcd, float sr)
+        {
+            for (int i = 0; i < NUM_STRINGS_SYNTH; i++)
+            {
+                tLivingString2_setSampleRate(&vcd->theString2[i], sr);
+                tADSRT_setSampleRate(&vcd->pluckEnvs[i], sr);
+            }
+            tVZFilter_setSampleRate(&vcd->pluckFilt, sr);
         }
         
         
@@ -3605,6 +3746,22 @@ namespace vocodec
             tCycle_free(&vcd->pwmLFO2);
         }
         
+        void SFXClassicSynthRate(Vocodec* vcd, float sr)
+        {
+            for (int i = 0; i < NUM_VOC_VOICES; i++)
+            {
+                for (int j = 0; j < NUM_OSC_PER_VOICE; j++)
+                {
+                    tSawtooth_setSampleRate(&vcd->osc[(i * NUM_OSC_PER_VOICE) + j], sr);
+                    tRosenbergGlottalPulse_setSampleRate(&vcd->glottal[(i * NUM_OSC_PER_VOICE) + j], sr);
+                }
+                tADSRT_setSampleRate(&vcd->polyEnvs[i], sr);
+                tADSRT_setSampleRate(&vcd->polyFiltEnvs[i], sr);
+            }
+            
+            tCycle_setSampleRate(&vcd->pwmLFO1, sr);
+            tCycle_setSampleRate(&vcd->pwmLFO2, sr);
+        }
         
         
         ///FM RHODES ELECTRIC PIANO SYNTH
@@ -3907,14 +4064,25 @@ namespace vocodec
                     tCycle_free(&vcd->FM_sines[i][j]);
                     tADSRT_free(&vcd->FM_envs[i][j]);
                 }
-                
             }
             for (int i = 0; i < 6; i++)
             {
                 tExpSmooth_free(&vcd->susSmoothers[i]);
             }
             tCycle_free(&vcd->tremolo);
-            
+        }
+        
+        void SFXRhodesRate(Vocodec* vcd, float sr)
+        {
+            for (int i = 0; i < NUM_VOC_VOICES; i++)
+            {
+                for (int j = 0; j < 6; j++)
+                {
+                    tCycle_setSampleRate(&vcd->FM_sines[i][j], sr);
+                    tADSRT_setSampleRate(&vcd->FM_envs[i][j], sr);
+                }
+            }
+            tCycle_setSampleRate(&vcd->tremolo, sr);
         }
         
         //reverb
@@ -4050,6 +4218,15 @@ namespace vocodec
             for (int i = 0; i < NUM_VOC_VOICES; ++i)
             {
                 tADSRT_free(&vcd->polyEnvs[i]);
+            }
+        }
+        
+        void SFXWavetableSynthRate(Vocodec* vcd, float sr)
+        {
+            tWaveSynth_setSampleRate(&vcd->waveSynth, sr);
+            for (int i = 0; i < NUM_VOC_VOICES; ++i)
+            {
+                tADSRT_setSampleRate(&vcd->polyEnvs[i], sr);
             }
         }
         

@@ -272,6 +272,7 @@ namespace vocodec
             void (*frameFunctions[PresetNil])(Vocodec* vcd);
             void (*tickFunctions[PresetNil])(Vocodec* vcd, float*);
             void (*freeFunctions[PresetNil])(Vocodec* vcd);
+            void (*rateFunctions[PresetNil])(Vocodec* vcd, float);
             
             float defaultPresetKnobValues[PresetNil][NUM_PRESET_KNOB_VALUES];
             float presetKnobValues[PresetNil][NUM_PRESET_KNOB_VALUES];
@@ -652,114 +653,133 @@ namespace vocodec
         void SFXVocoderFrame(Vocodec* vcd);
         void SFXVocoderTick(Vocodec* vcd, float* input);
         void SFXVocoderFree(Vocodec* vcd);
+        void SFXVocoderRate(Vocodec* vcd, float sr);
         
         //channel Vocoder
         void SFXVocoderChAlloc(Vocodec* vcd);
         void SFXVocoderChFrame(Vocodec* vcd);
         void SFXVocoderChTick(Vocodec* vcd, float* input);
         void SFXVocoderChFree(Vocodec* vcd);
+        void SFXVocoderChRate(Vocodec* vcd, float sr);
         
         // pitch shift
         void SFXPitchShiftAlloc(Vocodec* vcd);
         void SFXPitchShiftFrame(Vocodec* vcd);
         void SFXPitchShiftTick(Vocodec* vcd, float* input);
         void SFXPitchShiftFree(Vocodec* vcd);
+        void SFXPitchShiftRate(Vocodec* vcd, float sr);
         
         // neartune
         void SFXNeartuneAlloc(Vocodec* vcd);
         void SFXNeartuneFrame(Vocodec* vcd);
         void SFXNeartuneTick(Vocodec* vcd, float* input);
         void SFXNeartuneFree(Vocodec* vcd);
+        void SFXNeartuneRate(Vocodec* vcd, float sr);
         
         // autotune
         void SFXAutotuneAlloc(Vocodec* vcd);
         void SFXAutotuneFrame(Vocodec* vcd);
         void SFXAutotuneTick(Vocodec* vcd, float* input);
         void SFXAutotuneFree(Vocodec* vcd);
+        void SFXAutotuneRate(Vocodec* vcd, float sr);
         
         // sampler - button press
         void SFXSamplerBPAlloc(Vocodec* vcd);
         void SFXSamplerBPFrame(Vocodec* vcd);
         void SFXSamplerBPTick(Vocodec* vcd, float* input);
         void SFXSamplerBPFree(Vocodec* vcd);
+        void SFXSamplerBPRate(Vocodec* vcd, float sr);
         
         // sampler - keyboard
         void SFXSamplerKAlloc(Vocodec* vcd);
         void SFXSamplerKFrame(Vocodec* vcd);
         void SFXSamplerKTick(Vocodec* vcd, float* input);
         void SFXSamplerKFree(Vocodec* vcd);
+        void SFXSamplerKRate(Vocodec* vcd, float sr);
         
         // sampler - auto ch1
         void SFXSamplerAutoAlloc(Vocodec* vcd);
         void SFXSamplerAutoFrame(Vocodec* vcd);
         void SFXSamplerAutoTick(Vocodec* vcd, float* input);
         void SFXSamplerAutoFree(Vocodec* vcd);
+        void SFXSamplerAutoRate(Vocodec* vcd, float sr);
         
         // distortion tanh
         void SFXDistortionAlloc(Vocodec* vcd);
         void SFXDistortionFrame(Vocodec* vcd);
         void SFXDistortionTick(Vocodec* vcd, float* input);
         void SFXDistortionFree(Vocodec* vcd);
+        void SFXDistortionRate(Vocodec* vcd, float sr);
         
         // distortion wave folder
         void SFXWaveFolderAlloc(Vocodec* vcd);
         void SFXWaveFolderFrame(Vocodec* vcd);
         void SFXWaveFolderTick(Vocodec* vcd, float* input);
         void SFXWaveFolderFree(Vocodec* vcd);
+        void SFXWaveFolderRate(Vocodec* vcd, float sr);
         
         // bitcrusher
         void SFXBitcrusherAlloc(Vocodec* vcd);
         void SFXBitcrusherFrame(Vocodec* vcd);
         void SFXBitcrusherTick(Vocodec* vcd, float* input);
         void SFXBitcrusherFree(Vocodec* vcd);
+        void SFXBitcrusherRate(Vocodec* vcd, float sr);
         
         // delay
         void SFXDelayAlloc(Vocodec* vcd);
         void SFXDelayFrame(Vocodec* vcd);
         void SFXDelayTick(Vocodec* vcd, float* input);
         void SFXDelayFree(Vocodec* vcd);
+        void SFXDelayRate(Vocodec* vcd, float sr);
         
         // reverb
         void SFXReverbAlloc(Vocodec* vcd);
         void SFXReverbFrame(Vocodec* vcd);
         void SFXReverbTick(Vocodec* vcd, float* input);
         void SFXReverbFree(Vocodec* vcd);
+        void SFXReverbRate(Vocodec* vcd, float sr);
         
         // reverb2
         void SFXReverb2Alloc(Vocodec* vcd);
         void SFXReverb2Frame(Vocodec* vcd);
         void SFXReverb2Tick(Vocodec* vcd, float* input);
         void SFXReverb2Free(Vocodec* vcd);
+        void SFXReverb2Rate(Vocodec* vcd, float sr);
         
         // living string
         void SFXLivingStringAlloc(Vocodec* vcd);
         void SFXLivingStringFrame(Vocodec* vcd);
         void SFXLivingStringTick(Vocodec* vcd, float* input);
         void SFXLivingStringFree(Vocodec* vcd);
+        void SFXLivingStringRate(Vocodec* vcd, float sr);
         
         // living string synth
         void SFXLivingStringSynthAlloc(Vocodec* vcd);
         void SFXLivingStringSynthFrame(Vocodec* vcd);
         void SFXLivingStringSynthTick(Vocodec* vcd, float* input);
         void SFXLivingStringSynthFree(Vocodec* vcd);
+        void SFXLivingStringSynthRate(Vocodec* vcd, float sr);
         
         // classic synth
         void SFXClassicSynthAlloc(Vocodec* vcd);
         void SFXClassicSynthFrame(Vocodec* vcd);
         void SFXClassicSynthTick(Vocodec* vcd, float* input);
         void SFXClassicSynthFree(Vocodec* vcd);
+        void SFXClassicSynthRate(Vocodec* vcd, float sr);
         
         // rhodes
         void SFXRhodesAlloc(Vocodec* vcd);
         void SFXRhodesFrame(Vocodec* vcd);
         void SFXRhodesTick(Vocodec* vcd, float* input);
         void SFXRhodesFree(Vocodec* vcd);
+        void SFXRhodesRate(Vocodec* vcd, float sr);
         
         // wavetable synth
         void SFXWavetableSynthAlloc(Vocodec* vcd);
         void SFXWavetableSynthFrame(Vocodec* vcd);
         void SFXWavetableSynthTick(Vocodec* vcd, float* input);
         void SFXWavetableSynthFree(Vocodec* vcd);
+        void SFXWavetableSynthRate(Vocodec* vcd, float sr);
         
         // MIDI FUNCTIONS
         void noteOn(Vocodec* vcd, int key, int velocity);

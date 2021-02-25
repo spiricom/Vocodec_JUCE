@@ -94,6 +94,9 @@ public:
     
     tOversampler oversampler[2];
     int oversamplingRatio;
+    int prevOversamplingRatio;
+    
+    float currentSampleRate;
     
     vocodec::Vocodec vcd;
     
@@ -106,14 +109,12 @@ public:
     
 private:
     
-    char small_memory[SMALL_MEM_SIZE];
-    char medium_memory[MED_MEM_SIZE];
-    char large_memory[LARGE_MEM_SIZE];
+    // dummy mempools since we're using dynamic allocation
+    char small_memory[1];
+    char medium_memory[1];
+    char large_memory[1];
     
     uint16_t ADC_values[NUM_ADC_CHANNELS];
-    
-    bool leafInitialized = false;
-    bool presetInitialized = false;
     
 	bool isAddingFromMidiInput = false;
     

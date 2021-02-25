@@ -33,8 +33,8 @@ chooser("Select a .wav file to load...", {}, "*.wav")
     oversamplingMenu.addItem("4", 3);
     oversamplingMenu.addItem("8", 4);
     oversamplingMenu.addItem("16", 5);
-    oversamplingMenu.addItem("32", 6);
-    oversamplingMenu.addItem("64", 7);
+//    oversamplingMenu.addItem("32", 6);
+//    oversamplingMenu.addItem("64", 7);
     oversamplingMenu.setJustificationType(Justification::centred);
     oversamplingMenu.setSelectedId(1, dontSendNotification);
     oversamplingMenu.onChange = [this] {
