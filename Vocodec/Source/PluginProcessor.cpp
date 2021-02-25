@@ -44,6 +44,9 @@ choiceParamNames(cChoiceParamNames)
     oversamplingRatio = 1;
     prevOversamplingRatio = 0;
     
+    processingBlock = false;
+    processingFalseBlock = false;
+    
     for (int i = 0; i < 4; ++i)
     {
         wavetablePaths.set(i, String());
@@ -320,6 +323,9 @@ void VocodecAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBloc
     
     if (vcd.currentPreset != vocodec::PresetNil && !vcd.loadingPreset)
         vcd.rateFunctions[vcd.currentPreset](&vcd, currentSampleRate*oversamplingRatio);
+    
+    processingBlock = false;
+    processingFalseBlock = false;
     
     startTimer(2);
 }
@@ -655,7 +661,7 @@ void VocodecAudioProcessor::handleNoteOff(MidiKeyboardState*, int midiChannel, i
 void VocodecAudioProcessor::hiResTimerCallback()
 {
     if (processingBlock) return;
-    else if (processingInactiveCount > processingInactiveThreshold)
+    if (processingInactiveCount > processingInactiveThreshold)
     {
         processingFalseBlock = true;
         

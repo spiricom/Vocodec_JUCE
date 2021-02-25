@@ -120,8 +120,8 @@ private:
     
     int processingInactiveCount;
     int processingInactiveThreshold;
-    bool processingFalseBlock = false;
-    bool processingBlock = false;
+    bool processingFalseBlock;
+    bool processingBlock;
     
     static void loadWav(vocodec::Vocodec* vcd) { vcd->attemptFileLoad = 1; }
     
