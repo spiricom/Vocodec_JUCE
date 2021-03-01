@@ -806,6 +806,7 @@ namespace vocodec
         void SFXVocoderRate(Vocodec* vcd, float sr)
         {
             tTalkboxFloat_setSampleRate(&vcd->vocoder, sr);
+            tExpSmooth_setSampleRate(&vcd->noiseRamp, sr);
             tHighpass_setSampleRate(&vcd->noiseHP, sr);
             tVZFilter_setSampleRate(&vcd->shelf1, sr);
             tVZFilter_setSampleRate(&vcd->shelf2, sr);
@@ -1326,7 +1327,9 @@ namespace vocodec
                 tVZFilter_setSampleRate(&vcd->analysisBands[i][1], sr);
                 tVZFilter_setSampleRate(&vcd->synthesisBands[i][0], sr);
                 tVZFilter_setSampleRate(&vcd->synthesisBands[i][1], sr);
+                tExpSmooth_setSampleRate(&vcd->envFollowers[i], sr);
             }
+            tExpSmooth_setSampleRate(&vcd->noiseRamp, sr);
             tHighpass_setSampleRate(&vcd->noiseHP, sr);
             tVZFilter_setSampleRate(&vcd->vocodec_highshelf, sr);
             tHighpass_setSampleRate(&vcd->chVocFinalHP1, sr);
@@ -1451,6 +1454,9 @@ namespace vocodec
             tRetune_setSampleRate(&vcd->retune, sr);
             tRetune_setSampleRate(&vcd->retune2, sr);
             tRamp_setSampleRate(&vcd->pitchshiftRamp, sr);
+            tExpSmooth_setSampleRate(&vcd->smoother1, sr);
+            tExpSmooth_setSampleRate(&vcd->smoother2, sr);
+            tExpSmooth_setSampleRate(&vcd->smoother3, sr);
         }
         
         //5 autotune mono
@@ -1509,21 +1515,8 @@ namespace vocodec
                 }
             }
             
-            vcd->displayValues[0] = 0.5f + (vcd->presetKnobValues[AutotuneMono][0] * 0.49f); //fidelity
-//            tRetune_setFidelityThreshold(&vcd->autotuneMono, vcd->displayValues[0]);
-            vcd->displayValues[1] = LEAF_clip(0.0f, vcd->presetKnobValues[AutotuneMono][1] * 1.1f, 1.0f); // amount of forcing to new pitch
-            vcd->displayValues[2] = vcd->presetKnobValues[AutotuneMono][2]; //speed to get to desired pitch shift
-            
-            vcd->displayValues[3] = vcd->presetKnobValues[AutotuneMono][3] * 12.0f;
-            vcd->displayValues[4] = (vcd->presetKnobValues[AutotuneMono][4] * 0.5f) + 0.5f;
-        }
-        
-        void SFXNeartuneTick(Vocodec* vcd, float* input)
-        {
-            float sample = 0.0f;
-            
             vcd->displayValues[0] = 0.95f + (vcd->presetKnobValues[AutotuneMono][0] * 0.05f); //fidelity
-            tRetune_setPickiness(&vcd->autotuneMono, vcd->displayValues[0]);
+//            tRetune_setFidelityThreshold(&vcd->autotuneMono, vcd->displayValues[0]);
             vcd->displayValues[1] = LEAF_clip(0.0f, vcd->presetKnobValues[AutotuneMono][1] * 1.1f, 1.0f); // amount of forcing to new pitch
             vcd->displayValues[2] = vcd->presetKnobValues[AutotuneMono][2]; //speed to get to desired pitch shift
             
@@ -1535,6 +1528,12 @@ namespace vocodec
                 vcd->displayValues[2] = 1.0f;
             }
             tExpSmooth_setFactor(&vcd->neartune_smoother, vcd->expBuffer[(int)(vcd->displayValues[2] * vcd->displayValues[2] * vcd->displayValues[2] * vcd->expBufferSizeMinusOne)]);
+        }
+        
+        void SFXNeartuneTick(Vocodec* vcd, float* input)
+        {
+            float sample = 0.0f;
+            
             float destFactor = tExpSmooth_tick(&vcd->neartune_smoother);
             
             float detected = tRetune_getInputFrequency(&vcd->autotuneMono);
@@ -1592,6 +1591,7 @@ namespace vocodec
         void SFXNeartuneRate(Vocodec* vcd, float sr)
         {
             tRetune_setSampleRate(&vcd->autotuneMono, sr);
+            tExpSmooth_setSampleRate(&vcd->neartune_smoother, sr);
             tRamp_setSampleRate(&vcd->nearWetRamp, sr);
         }
 
@@ -1806,6 +1806,8 @@ namespace vocodec
         void SFXSamplerBPRate(Vocodec* vcd, float sr)
         {
             tSampler_setSampleRate(&vcd->sampler, sr);
+            tExpSmooth_setSampleRate(&vcd->startSmooth, sr);
+            tExpSmooth_setSampleRate(&vcd->lengthSmooth, sr);
         }
         
         // keyboard sampler
@@ -2273,6 +2275,7 @@ namespace vocodec
             for (int i = 0; i < NUM_SAMPLER_KEYS; i++)
             {
                 tSampler_setSampleRate(&vcd->keySampler[i], sr);
+                tExpSmooth_setSampleRate(&vcd->kSamplerGains[i], sr);
             }
         }
         
@@ -2518,6 +2521,7 @@ namespace vocodec
         {
             tSampler_setSampleRate(&vcd->asSampler[0], sr);
             tSampler_setSampleRate(&vcd->asSampler[1], sr);
+            tExpSmooth_setSampleRate(&vcd->cfxSmooth, sr);
         }
         
         //10 distortion tanh
@@ -3025,6 +3029,7 @@ namespace vocodec
             vcd->leaf.clearOnAllocation = 1;
             tDattorroReverb_setSampleRate(&vcd->reverb, sr);
             vcd->leaf.clearOnAllocation = 0;
+            tExpSmooth_setSampleRate(&vcd->sizeSmoother, sr);
         }
 
         //reverb2
@@ -3264,6 +3269,7 @@ namespace vocodec
             for (int i = 0; i < NUM_STRINGS; i++)
             {
                 tComplexLivingString_setSampleRate(&vcd->theString[i], sr);
+                tExpSmooth_setSampleRate(&vcd->stringGains[i], sr);
             }
         }
         
@@ -3472,6 +3478,11 @@ namespace vocodec
                 tADSRT_setSampleRate(&vcd->pluckEnvs[i], sr);
             }
             tVZFilter_setSampleRate(&vcd->pluckFilt, sr);
+#ifdef __cplusplus
+            tExpSmooth_setSampleRate(&vcd->pickPosSmooth, sr);
+            tExpSmooth_setSampleRate(&vcd->prepPosSmooth, sr);
+            tExpSmooth_setSampleRate(&vcd->pickupPosSmooth, sr);
+#endif
         }
         
         
@@ -4090,6 +4101,10 @@ namespace vocodec
                     tCycle_setSampleRate(&vcd->FM_sines[i][j], sr);
                     tADSRT_setSampleRate(&vcd->FM_envs[i][j], sr);
                 }
+            }
+            for (int i = 0; i < 6; i++)
+            {
+                tExpSmooth_setSampleRate(&vcd->susSmoothers[i], sr);
             }
             tCycle_setSampleRate(&vcd->tremolo, sr);
         }
