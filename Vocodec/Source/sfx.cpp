@@ -44,6 +44,8 @@ namespace vocodec
                 vcd->loadedTableSizes[i] = 0;
             }
             
+            vcd->delayLengthFactor = 1.0f;
+            
             vcd->expBufferSizeMinusOne = EXP_BUFFER_SIZE - 1;
             vcd->decayExpBufferSizeMinusOne = DECAY_EXP_BUFFER_SIZE - 1;
 
@@ -2796,8 +2798,8 @@ namespace vocodec
         void SFXDelayAlloc(Vocodec* vcd)
         {
             vcd->leaf.clearOnAllocation = 1;
-            tTapeDelay_initToPool(&vcd->delay, 2000, 30000, &vcd->mediumPool);
-            tTapeDelay_initToPool(&vcd->delay2, 2000, 30000, &vcd->mediumPool);
+            tTapeDelay_initToPool(&vcd->delay, 2000, 48000, &vcd->mediumPool);
+            tTapeDelay_initToPool(&vcd->delay2, 2000, 48000, &vcd->mediumPool);
             tSVF_init(&vcd->delayLP, SVFTypeLowpass, 16000.f, .7f, &vcd->leaf);
             tSVF_init(&vcd->delayHP, SVFTypeHighpass, 20.f, .7f, &vcd->leaf);
             
@@ -2833,30 +2835,30 @@ namespace vocodec
                 vcd->buttonActionsSFX[ButtonC][ActionPress] = 0;
                 setLED_C(vcd, vcd->delayParams.freeze);
             }
-            
-            vcd->displayValues[0] = vcd->presetKnobValues[Delay][0] * 30000.0f;
-            vcd->displayValues[1] = vcd->presetKnobValues[Delay][1] * 30000.0f;
-            float cutoff1 = LEAF_clip(10.0f,
-                                      faster_mtof((vcd->presetKnobValues[Delay][2] * 133) + 3.0f),
-                                      20000.0f);
-            float cutoff2 = LEAF_clip(10.0f,
-                                      faster_mtof((vcd->presetKnobValues[Delay][3] * 133) + 3.0f),
-                                      20000.0f);
-            vcd->displayValues[2] = cutoff1;
-            vcd->displayValues[3] = cutoff2;
-            
-            vcd->displayValues[4] = vcd->delayParams.uncapFeedback ?
-            vcd->presetKnobValues[Delay][4] * 1.1f :
-            LEAF_clip(0.0f, vcd->presetKnobValues[Delay][4] * 1.1f, 0.9f);
-            
-            vcd->displayValues[5] = vcd->presetKnobValues[Delay][5];
+//
+//            vcd->displayValues[0] = vcd->presetKnobValues[Delay][0] * 48000.0f;
+//            vcd->displayValues[1] = vcd->presetKnobValues[Delay][1] * 48000.0f;
+//            float cutoff1 = LEAF_clip(10.0f,
+//                                      faster_mtof((vcd->presetKnobValues[Delay][2] * 133) + 3.0f),
+//                                      20000.0f);
+//            float cutoff2 = LEAF_clip(10.0f,
+//                                      faster_mtof((vcd->presetKnobValues[Delay][3] * 133) + 3.0f),
+//                                      20000.0f);
+//            vcd->displayValues[2] = cutoff1;
+//            vcd->displayValues[3] = cutoff2;
+//
+//            vcd->displayValues[4] = vcd->delayParams.uncapFeedback ?
+//            vcd->presetKnobValues[Delay][4] * 1.1f :
+//            LEAF_clip(0.0f, vcd->presetKnobValues[Delay][4] * 1.1f, 0.9f);
+//
+//            vcd->displayValues[5] = vcd->presetKnobValues[Delay][5];
         }
 
         // Add stereo param so in1 -> out1 and in2 -> out2 instead of in1 -> out1 & out2 (like bitcrusher)?
         void SFXDelayTick(Vocodec* vcd, float* input)
         {
-            vcd->displayValues[0] = vcd->presetKnobValues[Delay][0] * 30000.0f;
-            vcd->displayValues[1] = vcd->presetKnobValues[Delay][1] * 30000.0f;
+            vcd->displayValues[0] = vcd->presetKnobValues[Delay][0] * 48000.f*vcd->delayLengthFactor;
+            vcd->displayValues[1] = vcd->presetKnobValues[Delay][1] * 48000.f*vcd->delayLengthFactor;
             float cutoff1 = LEAF_clip(10.0f,
                                       faster_mtof((vcd->presetKnobValues[Delay][2] * 133) + 3.0f),
                                       20000.0f);
@@ -2914,7 +2916,6 @@ namespace vocodec
             
             input[0] = vcd->delayFB1 * vcd->displayValues[5];
             input[1] = vcd->delayFB2 * vcd->displayValues[5];
-            
         }
         
         void SFXDelayFree(Vocodec* vcd)
@@ -2932,6 +2933,14 @@ namespace vocodec
         
         void SFXDelayRate(Vocodec* vcd, float sr)
         {
+            tTapeDelay_free(&vcd->delay);
+            tTapeDelay_free(&vcd->delay2);
+            
+            vcd->leaf.clearOnAllocation = 1;
+            tTapeDelay_initToPool(&vcd->delay, 2000*vcd->delayLengthFactor, 48000*vcd->delayLengthFactor, &vcd->mediumPool);
+            tTapeDelay_initToPool(&vcd->delay2, 2000*vcd->delayLengthFactor, 48000*vcd->delayLengthFactor, &vcd->mediumPool);
+            vcd->leaf.clearOnAllocation = 0;
+            
             tSVF_setSampleRate(&vcd->delayLP, sr);
             tSVF_setSampleRate(&vcd->delayHP, sr);
             tSVF_setSampleRate(&vcd->delayLP2, sr);

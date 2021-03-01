@@ -321,6 +321,8 @@ void VocodecAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBloc
     
     LEAF_setSampleRate(&vcd.leaf, sampleRate);
     
+    vcd.delayLengthFactor = (sampleRate*oversamplingRatio)/48000.0f;
+    
     if (vcd.currentPreset != vocodec::PresetNil && !vcd.loadingPreset)
         vcd.rateFunctions[vcd.currentPreset](&vcd, currentSampleRate*oversamplingRatio);
     
@@ -402,13 +404,14 @@ void VocodecAudioProcessor::processBlock (AudioBuffer<float>& buffer, MidiBuffer
     {
         tOversampler_setRatio(&oversampler[0], oversamplingRatio);
         tOversampler_setRatio(&oversampler[1], oversamplingRatio);
-        prevOversamplingRatio = oversamplingRatio;
+        vcd.delayLengthFactor = (currentSampleRate*oversamplingRatio)/48000.0f;
         vcd.rateFunctions[currentPreset](&vcd, currentSampleRate*oversamplingRatio);
+        prevOversamplingRatio = oversamplingRatio;
     }
     
     vocodec::buttonCheck(&vcd);
     vocodec::adcCheck(&vcd);
-    
+ 
     vcd.frameFunctions[currentPreset](&vcd);
     
     MidiMessage m;

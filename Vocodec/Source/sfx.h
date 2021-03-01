@@ -342,6 +342,7 @@ namespace vocodec
             tCrusher crush;
             tCrusher crush2;
             
+            float delayLengthFactor;
             tTapeDelay delay;
             tSVF delayLP;
             tSVF delayHP;
