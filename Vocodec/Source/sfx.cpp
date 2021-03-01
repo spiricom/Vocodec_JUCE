@@ -3134,6 +3134,7 @@ namespace vocodec
         void SFXLivingStringAlloc(Vocodec* vcd)
         {
             tSimplePoly_setNumVoices(&vcd->poly, NUM_STRINGS);
+            vcd->leaf.clearOnAllocation = 1;
             for (int i = 0; i < NUM_STRINGS; i++)
             {
                 vcd->myDetune[i] = (vcd->leaf.random() * 0.3f) - 0.15f;
@@ -3141,6 +3142,7 @@ namespace vocodec
                 tComplexLivingString_initToPool(&vcd->theString[i], 440.f, 0.8f, 0.3f, 0.f, 9000.f, 1.0f, 0.3f, 0.01f, 0.125f, vcd->livingStringParams.feedback, &vcd->mediumPool);
                 tExpSmooth_init(&vcd->stringGains[i], 0.0f, 0.002f, &vcd->leaf);
             }
+            vcd->leaf.clearOnAllocation = 0;
             setLED_A(vcd, vcd->livingStringParams.ignoreFreqKnobs);
             setLED_B(vcd, vcd->livingStringParams.independentStrings);
             setLED_C(vcd, vcd->livingStringParams.feedback);
@@ -3277,8 +3279,8 @@ namespace vocodec
         //Living String Synth
         void SFXLivingStringSynthAlloc(Vocodec* vcd)
         {
-            vcd->leaf.clearOnAllocation = 0;
             tSimplePoly_setNumVoices(&vcd->poly, vcd->livingStringSynthParams.numVoices);
+            vcd->leaf.clearOnAllocation = 1;
             for (int i = 0; i < NUM_STRINGS_SYNTH; i++)
             {
                 tLivingString2_initToPool(&vcd->theString2[i], 440.f, 0.9f, 0.6f, 0.75f, 0.0f, 1.0f, 0.999f, .99f, 0.01f, 0.125f, vcd->livingStringSynthParams.feedback, &vcd->mediumPool);
@@ -3298,6 +3300,7 @@ namespace vocodec
             tExpSmooth_init(&vcd->prepPosSmooth, 0.5f, 0.0001f, &vcd->leaf);
             tExpSmooth_init(&vcd->pickupPosSmooth, 0.5f, 0.0001f, &vcd->leaf);
 #endif
+            vcd->leaf.clearOnAllocation = 0;
         }
         
         void SFXLivingStringSynthFrame(Vocodec* vcd)
